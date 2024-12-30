@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ticker = params.ticker
 
   const quoteData = await fetchQuote(ticker)
-  const regularMarketPrice = quoteData.regularMarketPrice?.toLocaleString(
+  const regularMarketPrice = quoteData.data?.regularMarketPrice?.toLocaleString(
     "en-US",
     {
       style: "currency",

@@ -34,6 +34,12 @@ export default async function StockChart({
 
   const [chart, quote] = await Promise.all([chartData, quoteData])
 
+  if (quote.error || !quote.data) {
+    return <div>Error loading quote data</div>
+  }
+
+  const quoteInfo = quote.data
+
   const priceChange =
     chart.quotes.length &&
     calculatePriceChange(
@@ -52,85 +58,85 @@ export default async function StockChart({
     <div className="h-[27.5rem] w-full">
       <div>
         <div className="space-x-1 text-muted-foreground">
-          <span className="font-bold text-primary">{quoteData.symbol}</span>
+          <span className="font-bold text-primary">{quoteInfo.symbol}</span>
           <span>·</span>
           <span>
-            {quoteData.fullExchangeName === "NasdaqGS"
+            {quoteInfo.fullExchangeName === "NasdaqGS"
               ? "NASDAQ"
-              : quoteData.fullExchangeName}
+              : quoteInfo.fullExchangeName}
           </span>
-          <span>{quoteData.shortName}</span>
+          <span>{quoteInfo.shortName}</span>
         </div>
 
         <div className="flex flex-row items-end justify-between">
           <div className="space-x-1">
             <span className="text-nowrap">
               <span className="text-xl font-bold">
-                {quote.currency === "USD" ? "$" : ""}
-                {quote.regularMarketPrice?.toFixed(2)}
+                {quoteInfo.currency === "USD" ? "$" : ""}
+                {quoteInfo.regularMarketPrice?.toFixed(2)}
               </span>
               <span className="font-semibold">
-                {quote.regularMarketChange &&
-                quote.regularMarketChangePercent !== undefined ? (
-                  quote.regularMarketChange > 0 ? (
+                {quoteInfo.regularMarketChange &&
+                quoteInfo.regularMarketChangePercent !== undefined ? (
+                  quoteInfo.regularMarketChange > 0 ? (
                     <span className="text-green-800 dark:text-green-400">
-                      +{quote.regularMarketChange.toFixed(2)} (+
-                      {quote.regularMarketChangePercent.toFixed(2)}%)
+                      +{quoteInfo.regularMarketChange.toFixed(2)} (+
+                      {quoteInfo.regularMarketChangePercent.toFixed(2)}%)
                     </span>
                   ) : (
                     <span className="text-red-800 dark:text-red-500">
-                      {quote.regularMarketChange.toFixed(2)} (
-                      {quote.regularMarketChangePercent.toFixed(2)}%)
+                      {quoteInfo.regularMarketChange.toFixed(2)} (
+                      {quoteInfo.regularMarketChangePercent.toFixed(2)}%)
                     </span>
                   )
                 ) : null}
               </span>
             </span>
             <span className="inline space-x-1 font-semibold text-muted-foreground">
-              {quote.hasPrePostMarketData && quote.postMarketPrice && (
+              {quoteInfo.hasPrePostMarketData && quoteInfo.postMarketPrice && (
                 <>
                   <span>·</span>
                   <span>
-                    Post-Market: {quote.currency === "USD" ? "$" : ""}
-                    {quote.postMarketPrice.toFixed(2)}
+                    Post-Market: {quoteInfo.currency === "USD" ? "$" : ""}
+                    {quoteInfo.postMarketPrice.toFixed(2)}
                   </span>
                   <span>
-                    {quote.postMarketChange &&
-                    quote.postMarketChangePercent !== undefined ? (
-                      quote.postMarketChange > 0 ? (
+                    {quoteInfo.postMarketChange &&
+                    quoteInfo.postMarketChangePercent !== undefined ? (
+                      quoteInfo.postMarketChange > 0 ? (
                         <span className="text-green-800 dark:text-green-400">
-                          +{quote.postMarketChange.toFixed(2)} (+
-                          {quote.postMarketChangePercent.toFixed(2)}%)
+                          +{quoteInfo.postMarketChange.toFixed(2)} (+
+                          {quoteInfo.postMarketChangePercent.toFixed(2)}%)
                         </span>
                       ) : (
                         <span className="text-red-800 dark:text-red-500">
-                          {quote.postMarketChange.toFixed(2)} (
-                          {quote.postMarketChangePercent.toFixed(2)}%)
+                          {quoteInfo.postMarketChange.toFixed(2)} (
+                          {quoteInfo.postMarketChangePercent.toFixed(2)}%)
                         </span>
                       )
                     ) : null}
                   </span>
                 </>
               )}
-              {quote.hasPrePostMarketData && quote.preMarketPrice && (
+              {quoteInfo.hasPrePostMarketData && quoteInfo.preMarketPrice && (
                 <>
                   <span>·</span>
                   <span>
-                    Pre-Market: {quote.currency === "USD" ? "$" : ""}
-                    {quote.preMarketPrice.toFixed(2)}
+                    Pre-Market: {quoteInfo.currency === "USD" ? "$" : ""}
+                    {quoteInfo.preMarketPrice.toFixed(2)}
                   </span>
                   <span>
-                    {quote.preMarketChange &&
-                    quote.preMarketChangePercent !== undefined ? (
-                      quote.preMarketChange > 0 ? (
+                    {quoteInfo.preMarketChange &&
+                    quoteInfo.preMarketChangePercent !== undefined ? (
+                      quoteInfo.preMarketChange > 0 ? (
                         <span className="text-green-800 dark:text-green-400">
-                          +{quote.preMarketChange.toFixed(2)} (+
-                          {quote.preMarketChangePercent.toFixed(2)}%)
+                          +{quoteInfo.preMarketChange.toFixed(2)} (+
+                          {quoteInfo.preMarketChangePercent.toFixed(2)}%)
                         </span>
                       ) : (
                         <span className="text-red-800 dark:text-red-500">
-                          {quote.preMarketChange.toFixed(2)} (
-                          {quote.preMarketChangePercent.toFixed(2)}%)
+                          {quoteInfo.preMarketChange.toFixed(2)} (
+                          {quoteInfo.preMarketChangePercent.toFixed(2)}%)
                         </span>
                       )
                     ) : null}
