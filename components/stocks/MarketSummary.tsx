@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
+import { useTheme } from 'next-themes';
 
 interface MarketSummaryProps {
   fearGreedValue: {
@@ -27,6 +28,7 @@ export default function MarketSummary({
   className,
   sentimentColor
 }: MarketSummaryProps) {
+  const { theme } = useTheme();
   const [summary, setSummary] = useState<string>('Loading market analysis...');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -67,7 +69,7 @@ export default function MarketSummary({
     <motion.div 
       className={cn(
         "group relative overflow-hidden rounded-xl",
-        `bg-gradient-to-r from-${sentimentColor} to-${sentimentColor}`,
+        `bg-gradient-to-r from-${theme === 'dark' ? 'white' : 'black'} to-${sentimentColor}`,
         "shadow-lg transition-all duration-300 hover:shadow-2xl p-6",
         "max-w-full mx-auto",
         className
@@ -79,23 +81,23 @@ export default function MarketSummary({
       <div className="space-y-4 p-4">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-black group-hover:text-black transition-colors">
+          <h2 className={`text-xl font-bold ${theme === 'dark' ? 'text-white group-hover:text-gray-300' : 'text-black group-hover:text-gray-700'} transition-colors`}>
             AI Market Analysis
           </h2>
           {isLoading && (
             <div className="flex gap-1 px-1">
               <motion.span 
-                className="animate-pulse h-2 w-2 rounded-full bg-black"
+                className={`animate-pulse h-2 w-2 rounded-full ${theme === 'dark' ? 'bg-white' : 'bg-black'}`}
                 animate={{ scale: [1, 1.5, 1] }}
                 transition={{ repeat: Infinity, duration: 0.6 }}
               />
               <motion.span 
-                className="animate-pulse h-2 w-2 rounded-full bg-black delay-75"
+                className={`animate-pulse h-2 w-2 rounded-full ${theme === 'dark' ? 'bg-white' : 'bg-black'} delay-75`}
                 animate={{ scale: [1, 1.5, 1] }}
                 transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }}
               />
               <motion.span 
-                className="animate-pulse h-2 w-2 rounded-full bg-black delay-150"
+                className={`animate-pulse h-2 w-2 rounded-full ${theme === 'dark' ? 'bg-white' : 'bg-black'} delay-150`}
                 animate={{ scale: [1, 1.5, 1] }}
                 transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }}
               />
@@ -105,7 +107,7 @@ export default function MarketSummary({
 
         {/* Content */}
         <div className="prose prose-sm prose-invert max-w-full py-1">
-          <p className="text-black leading-relaxed text-sm tracking-wide">
+          <p className={`${theme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed text-sm tracking-wide`}>
             {summary}
           </p>
         </div>
