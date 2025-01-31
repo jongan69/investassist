@@ -21,7 +21,7 @@ export default async function ScreenerPage({
 
   return (
     <div>
-      <DataTable columns={columns} data={screenerDataResults.quotes} />
+      <DataTable columns={columns} data={screenerDataResults.quotes as any} />
     </div>
   )
 }

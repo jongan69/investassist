@@ -1,4 +1,5 @@
 import { fetchQuoteSummary } from "@/lib/yahoo-finance/fetchQuoteSummary"
+import { FinanceSummaryData } from "@/types/yahoo-finance"
 
 function formatNumber(num: number) {
   if (num >= 1e12) {
@@ -34,7 +35,7 @@ const keysToDisplay = [
 ]
 
 export default async function FinanceSummary({ ticker }: { ticker: string }) {
-  const financeSummaryData = await fetchQuoteSummary(ticker)
+  const financeSummaryData: FinanceSummaryData = await fetchQuoteSummary(ticker)
 
   return (
     <div className="grid grid-flow-col grid-rows-6 gap-4 md:grid-rows-3">

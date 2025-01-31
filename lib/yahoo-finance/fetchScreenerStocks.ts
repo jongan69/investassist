@@ -1,10 +1,10 @@
 import { unstable_noStore as noStore } from "next/cache"
 import type {
   ScreenerOptions,
-  PredefinedScreenerModules,
   ScreenerResult,
 } from "@/node_modules/yahoo-finance2/dist/esm/src/modules/screener"
 import yahooFinance from "yahoo-finance2"
+import { PredefinedScreenerModules } from "@/types/yahoo-finance"
 
 const ITEMS_PER_PAGE = 40
 

@@ -31,3 +31,9 @@ export type Interval =
   | "1wk"
   | "1mo"
   | "3mo";
+
+export interface FinanceSummaryData {
+  [key: string]: {
+    [key: string]: any; // Adjust 'any' to a more specific type if possible
+  };
+}

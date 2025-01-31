@@ -93,7 +93,7 @@ export default async function StockChart({
               </span>
             </span>
             <span className="inline space-x-1 font-semibold text-muted-foreground">
-              {quoteInfo.hasPrePostMarketData && quoteInfo.postMarketPrice && (
+              {quoteInfo.preMarketChange && quoteInfo.postMarketPrice && (
                 <>
                   <span>·</span>
                   <span>
@@ -118,7 +118,7 @@ export default async function StockChart({
                   </span>
                 </>
               )}
-              {quoteInfo.hasPrePostMarketData && quoteInfo.preMarketPrice && (
+              {quoteInfo.preMarketChange && quoteInfo.preMarketPrice && (
                 <>
                   <span>·</span>
                   <span>
