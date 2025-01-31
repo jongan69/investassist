@@ -23,6 +23,7 @@
     "clsx": "^2.1.0",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
+    "framer-motion": "^12.0.6",
     "lodash": "^4.17.21",
     "lucide-react": "^0.363.0",
     "next": "^14.1.4",
@@ -36,7 +37,7 @@
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.0",
-    "yahoo-finance2": "^2.11.0",
+    "yahoo-finance2": "^2.13.3",
     "zustand": "^4.5.2"
   },
   "devDependencies": {
@@ -51,5 +52,6 @@
     "prettier-plugin-tailwindcss": "^0.5.12",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "yarn@4.6.0+sha512.5383cc12567a95f1d668fbe762dfe0075c595b4bfff433be478dbbe24e05251a8e8c3eb992a986667c1d53b6c3a9c85b8398c35a960587fbd9fa3a0915406728"
 }

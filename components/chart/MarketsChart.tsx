@@ -16,7 +16,8 @@ export default async function MarketsChart({
   const quoteData = await fetchQuote(ticker)
 
   const [chart, quote] = await Promise.all([chartData, quoteData])
-
+  console.log("chart", chart)
+  console.log("quote", quote)
   const stockQuotes = chart.quotes
     ? chart.quotes
         .map((quote) => ({
@@ -26,23 +27,20 @@ export default async function MarketsChart({
         .filter((quote) => quote.close !== undefined && quote.date !== null)
     : []
 
-  if (quote.error) {
-    return (
-      <div className="flex h-full items-center justify-center text-center text-neutral-500">
-        Error loading quote data
-      </div>
-    )
-  }
+  // Check for quote error and handle it gracefully
+  const quoteInfo = !quote.error ? (
+    <div className="mb-0.5 font-medium">
+      {quote.data.shortName} ({quote.data.symbol}){" "}
+      {quote.data.regularMarketPrice?.toLocaleString(undefined, {
+        style: "currency",
+        currency: quote.data.currency,
+      })}
+    </div>
+  ) : null
 
   return (
     <>
-      <div className="mb-0.5 font-medium">
-        {quote.data.shortName} ({quote.data.symbol}){" "}
-        {quote.data.regularMarketPrice?.toLocaleString(undefined, {
-          style: "currency",
-          currency: quote.data.currency,
-        })}
-      </div>
+      {quoteInfo}
       {chart.quotes.length > 0 ? (
         <AreaClosedChart chartQuotes={stockQuotes} range={range} />
       ) : (

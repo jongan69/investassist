@@ -28,7 +28,7 @@ export async function fetchQuote(ticker: string) {
       console.error("HTTP error while fetching quote for ticker:", ticker, error)
       return {
         data: null,
-        error: { message: `Failed to fetch quote: ${error.message}`, code: 'HTTP_ERROR' } as QuoteError
+        error: { message: `Failed to fetch quote for ${ticker}: ${error.message}`, code: 'HTTP_ERROR' } as QuoteError
       }
     }
 

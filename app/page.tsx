@@ -66,7 +66,7 @@ const tickersFutures = [
 ]
 
 const tickerAfterOpen = [
-  { symbol: "^GSPC", shortName: "S&P 500" },
+  // { symbol: "^GSPC", shortName: "S&P 500" },
   { symbol: "^IXIC", shortName: "NASDAQ" },
   { symbol: "^DJI", shortName: "Dow Jones" },
   { symbol: "^RUT", shortName: "Russell 2000" },
@@ -144,7 +144,7 @@ export default async function Home({
 
   const fearGreedValue = await fetchFearGreedIndex()
   const sectorPerformance = await fetchSectorPerformance()
-
+  
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-4 lg:flex-row">
@@ -158,12 +158,13 @@ export default async function Home({
             </CardHeader>
             {fearGreedValue && sectorPerformance && (
               <MarketSummary
+                sentimentColor={sentimentColor}
                 fearGreedValue={fearGreedValue}
                 sectorPerformance={sectorPerformance}
               />
             )}
             {news.news[0] && news.news[0].title && (
-              <CardFooter className="flex-col items-start">
+              <CardFooter className="flex-col items-start p-4">
                 <p className="mb-2 text-sm font-semibold text-neutral-500 dark:text-neutral-500">
                   What you need to know today
                 </p>

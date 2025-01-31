@@ -9,9 +9,9 @@ import Footer from "@/components/ui/footer"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Finly: Stock Quotes, Market News, & Analysis",
+  title: "InvestAssist: Stock Quotes, Market News, & Analysis",
   description:
-    "Finly is a source of free stock quotes, business and finance news, portfolio management tools, and international market data.",
+    "InvestAssist is a source of free stock quotes, business and finance news, portfolio management tools, and international market data.",
 }
 
 export default function RootLayout({
