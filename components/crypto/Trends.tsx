@@ -6,7 +6,7 @@ import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
 
-export default function CryptoTrends() {
+export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
 
     interface WhaleActivity {
@@ -35,7 +35,7 @@ export default function CryptoTrends() {
     const [trends, setTrends] = useState<TrendData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-
+    // console.log(data)
     useEffect(() => {
         const fetchCryptoTrends = async () => {
             try {
@@ -107,7 +107,7 @@ export default function CryptoTrends() {
                                 <thead className={`bg-${resolvedTheme === 'dark' ? 'gray-700' : 'gray-50'}`}>
                                     <tr>
                                         <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase`}>Crypto</th>
-                                        <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase`}>Price</th>
+                                        <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase`}>Averaged Price</th>
                                     </tr>
                                 </thead>
                                 <tbody className={`bg-${resolvedTheme === 'dark' ? 'gray-800' : 'white'} divide-y divide-gray-200`}>
@@ -118,7 +118,17 @@ export default function CryptoTrends() {
                                                 ${(() => {
                                                     try {
                                                         const price = trends[`${crypto.toLowerCase()}Price` as keyof TrendData] as string;
-                                                        return Number(price.replace(",", "")).toFixed(2);
+                                                        const formattedPrice = Number(price.replace(",", "")).toFixed(2);
+
+                                                        // Find the correct object in the data array
+                                                        const cryptoData = data.find((item: any) => item.shortName.toLowerCase() === crypto.toLowerCase());
+
+                                                        // Use yfinance price if available, otherwise use formattedPrice
+                                                        const yfianncePrice = cryptoData ? cryptoData.regularMarketPrice : Number(formattedPrice);
+                                                        // console.log(yfianncePrice);
+
+                                                        const averagePrice = (Number(formattedPrice) + yfianncePrice) / 2;
+                                                        return averagePrice.toFixed(2);
                                                     } catch (e) {
                                                         return 'N/A';
                                                     }

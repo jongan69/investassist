@@ -65,10 +65,12 @@ const tickersFutures = [
   { symbol: "EURUSD=X", shortName: "EUR/USD" },
   { symbol: "^TNX", shortName: "10 Year Bond" },
   { symbol: "BTC-USD", shortName: "Bitcoin" },
+  { symbol: "ETH-USD", shortName: "Ethereum" },
+  { symbol: "SOL-USD", shortName: "Solana" },
 ]
 
 const tickerAfterOpen = [
-  // { symbol: "^GSPC", shortName: "S&P 500" },
+  { symbol: "^GSPC", shortName: "S&P 500" },
   { symbol: "^IXIC", shortName: "NASDAQ" },
   { symbol: "^DJI", shortName: "Dow Jones" },
   { symbol: "^RUT", shortName: "Russell 2000" },
@@ -78,6 +80,8 @@ const tickerAfterOpen = [
   { symbol: "EURUSD=X", shortName: "EUR/USD" },
   { symbol: "^TNX", shortName: "10 Year Bond" },
   { symbol: "BTC-USD", shortName: "Bitcoin" },
+  { symbol: "ETH-USD", shortName: "Ethereum" },
+  { symbol: "SOL-USD", shortName: "Solana" },
 ]
 
 function getMarketSentiment(changePercentage: number | undefined) {
@@ -185,7 +189,7 @@ export default async function Home({
               </Suspense>
             </CardContent>
             <Suspense fallback={<div>Loading...</div>}>
-              <CryptoTrends />
+              <CryptoTrends data={resultsWithTitles} />
             </Suspense>
           </Card>
         </div>
