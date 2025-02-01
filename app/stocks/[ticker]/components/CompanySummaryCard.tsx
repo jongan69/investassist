@@ -11,12 +11,13 @@ export default async function CompanySummaryCard({
   const data = await yahooFinance.quoteSummary(ticker, {
     modules: ["summaryProfile"],
   })
-
+  // console.log(data)
   if (!data.summaryProfile) {
     return null
   }
   const {
     longBusinessSummary,
+    description,
     sector,
     industryDisp,
     country,
@@ -30,7 +31,7 @@ export default async function CompanySummaryCard({
 
       <CardContent className="z-50 flex h-full w-full flex-col items-start justify-center gap-6 py-10 text-sm lg:flex-row">
         <div className="z-50 max-w-2xl text-pretty font-medium">
-          <ReadMoreText text={longBusinessSummary ?? ""} truncateLength={500} />
+          <ReadMoreText text={longBusinessSummary ?? description ?? ""} truncateLength={500} />
         </div>
         {sector && industryDisp && country && fullTimeEmployees && website && (
           <div className="z-50 min-w-fit font-medium text-muted-foreground">
