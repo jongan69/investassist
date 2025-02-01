@@ -16,8 +16,8 @@ export default async function MarketsChart({
   const quoteData = await fetchQuote(ticker)
 
   const [chart, quote] = await Promise.all([chartData, quoteData])
-  console.log("chart", chart)
-  console.log("quote", quote)
+  // console.log("chart", chart)
+  // console.log("quote", quote)
   const stockQuotes = chart.quotes
     ? chart.quotes
         .map((quote) => ({

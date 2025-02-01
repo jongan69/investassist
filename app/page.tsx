@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card"
 import { DEFAULT_INTERVAL, DEFAULT_RANGE } from "@/lib/yahoo-finance/constants"
 import { Interval } from "@/types/yahoo-finance"
-import { Suspense } from "react"
+import { Suspense, useState } from "react"
 import MarketsChart from "@/components/chart/MarketsChart"
 import Link from "next/link"
 import { columns } from "@/components/stocks/markets/columns"
@@ -22,6 +22,8 @@ import { fetchStockSearch } from "@/lib/yahoo-finance/fetchStockSearch"
 import MarketSummary from '@/components/stocks/MarketSummary';
 import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
 import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
+import CryptoTrends from "@/components/crypto/Trends"
+import NewsSection from "@/components/NewsSection"
 
 function isMarketOpen() {
   const now = new Date()
@@ -98,6 +100,7 @@ export default async function Home({
     ticker?: string
     range?: string
     interval?: string
+    page?: string
   }
 }) {
   const tickers = isMarketOpen() ? tickerAfterOpen : tickersFutures
@@ -108,7 +111,7 @@ export default async function Home({
     range,
     (searchParams?.interval as Interval) || DEFAULT_INTERVAL
   )
-  const news = await fetchStockSearch("^DJI", 1)
+  const news = await fetchStockSearch("^DJI", 100)
 
   const promises = tickers.map(({ symbol }) =>
     yahooFinance.quoteCombine(symbol)
@@ -164,20 +167,7 @@ export default async function Home({
                 sectorPerformance={sectorPerformance}
               />
             )}
-            {news.news[0] && news.news[0].title && (
-              <CardFooter className="flex-col items-start p-4">
-                <p className="mb-2 text-sm font-semibold text-neutral-500 dark:text-neutral-500">
-                  What you need to know today
-                </p>
-                <Link
-                  prefetch={false}
-                  href={news.news[0].link}
-                  className="text-lg font-extrabold"
-                >
-                  {news.news[0].title}
-                </Link>
-              </CardFooter>
-            )}
+            <NewsSection news={news.news} />
             <div
               className={`pointer-events-none absolute inset-0 z-0 h-[65%] w-[65%] -translate-x-[10%] -translate-y-[30%] rounded-full blur-3xl ${sentimentBackground}`}
             />
@@ -193,6 +183,9 @@ export default async function Home({
                 <SectorPerformance />
               </Suspense>
             </CardContent>
+            <Suspense fallback={<div>Loading...</div>}>
+              <CryptoTrends />
+            </Suspense>
           </Card>
         </div>
       </div>

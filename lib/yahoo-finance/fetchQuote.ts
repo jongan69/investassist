@@ -11,7 +11,7 @@ export async function fetchQuote(ticker: string) {
 
   try {
     const response = await yahooFinance.quote(ticker)
-    console.log("Fetched stock quote for ticker:", ticker, response)
+    // console.log("Fetched stock quote for ticker:", ticker, response)
     return { data: response, error: null }
   } catch (err: unknown) {
     const error = err as Error
