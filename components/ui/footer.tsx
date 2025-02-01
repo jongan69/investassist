@@ -15,12 +15,12 @@ export default function Footer() {
             rel="noreferrer"
             className="font-medium underline underline-offset-4"
           >
-            Jonathan Gan
+            Jongan69
           </Link>
           . View my other projects at{" "}
           <Link
             prefetch={false}
-            href="https://jongan.com"
+            href="https://bandzcapital.com"
             target="_blank"
             rel="noreferrer"
             className="font-medium underline underline-offset-4"
