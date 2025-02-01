@@ -8,18 +8,53 @@ import Link from 'next/link';
 
 export default function CryptoTrends() {
     const { resolvedTheme } = useTheme();
-    const [trends, setTrends] = useState<any>(null);
+
+    interface WhaleActivity {
+        symbol: string;
+        name: string;
+        token_address: string;
+        bullishScore?: number;
+        bearishScore?: number;
+    }
+
+    interface TrendData {
+        bitcoinPrice: string;
+        ethereumPrice: string;
+        solanaPrice: string;
+        topTweetedTickers: Array<{
+            ticker: string;
+            ca: string;
+            count: number;
+        }>;
+        whaleActivity: {
+            bullish: WhaleActivity[];
+            bearish: WhaleActivity[];
+        };
+    }
+
+    const [trends, setTrends] = useState<TrendData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchCryptoTrends = async () => {
             try {
                 setIsLoading(true);
+                setError(null);
                 const response = await fetch('/api/crypto-trends');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 const data = await response.json();
+                
+                if (!data.bitcoinPrice || !data.ethereumPrice || !data.solanaPrice) {
+                    throw new Error('Missing required price data');
+                }
+                
                 setTrends(data);
             } catch (error) {
                 console.error('Error fetching crypto trends:', error);
+                setError('Failed to load crypto trends');
                 setTrends(null);
             } finally {
                 setIsLoading(false);
@@ -61,7 +96,11 @@ export default function CryptoTrends() {
                     )}
                 </div>
 
-                {trends ? (
+                {error ? (
+                    <p className={`${resolvedTheme === 'dark' ? 'text-red-400' : 'text-red-600'} leading-relaxed text-xs`}>
+                        {error}
+                    </p>
+                ) : trends ? (
                     <Fragment>
                         <div className="prose prose-sm prose-invert max-w-full py-1">
                             <table className="min-w-full divide-y divide-gray-200">
@@ -76,7 +115,14 @@ export default function CryptoTrends() {
                                         <tr key={crypto}>
                                             <td className={`px-4 py-2 whitespace-nowrap text-xs font-medium text-${resolvedTheme === 'dark' ? 'white' : 'gray-900'}`}>{crypto}</td>
                                             <td className={`px-4 py-2 whitespace-nowrap text-xs text-${resolvedTheme === 'dark' ? 'gray-400' : 'gray-500'}`}>
-                                                ${Number(trends[`${crypto.toLowerCase()}Price`].replace(",", "")).toFixed(2)}
+                                                ${(() => {
+                                                    try {
+                                                        const price = trends[`${crypto.toLowerCase()}Price` as keyof TrendData] as string;
+                                                        return Number(price.replace(",", "")).toFixed(2);
+                                                    } catch (e) {
+                                                        return 'N/A';
+                                                    }
+                                                })()}
                                             </td>
                                         </tr>
                                     ))}
@@ -134,7 +180,7 @@ export default function CryptoTrends() {
                                         </tr>
                                     </thead>
                                     <tbody className={`bg-${resolvedTheme === 'dark' ? 'gray-800' : 'white'} divide-y divide-gray-200`}>
-                                        {trends.whaleActivity[type].map((activity: any) => (
+                                        {trends.whaleActivity[type as 'bullish' | 'bearish'].map((activity: WhaleActivity) => (
                                             <tr key={activity.symbol} className="group">
                                                 <td colSpan={3} className="p-0">
                                                     <Link
@@ -152,7 +198,7 @@ export default function CryptoTrends() {
                                                                 </span>
                                                             </div>
                                                             <div className={`px-4 py-2 whitespace-nowrap text-xs text-${resolvedTheme === 'dark' ? 'gray-400' : 'gray-500'} w-1/3`}>
-                                                                {activity[`${type}Score`]}
+                                                                {activity[`${type}Score` as 'bullishScore' | 'bearishScore']}
                                                             </div>
                                                         </div>
                                                     </Link>

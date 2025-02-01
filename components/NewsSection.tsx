@@ -20,25 +20,25 @@ const NewsSection: React.FC<NewsSectionProps> = ({ news }) => {
   const articlesPerPage = 5
 
   useEffect(() => {
-    console.log('useEffect triggered')
-    console.log('newsItems length:', newsItems.length)
-    console.log('currentPage:', currentPage)
+    // console.log('useEffect triggered')
+    // console.log('newsItems length:', newsItems.length)
+    // console.log('currentPage:', currentPage)
     const indexOfLastArticle = currentPage * articlesPerPage
     const indexOfFirstArticle = indexOfLastArticle - articlesPerPage
-    console.log('indexOfFirstArticle:', indexOfFirstArticle)
-    console.log('indexOfLastArticle:', indexOfLastArticle)
+    // console.log('indexOfFirstArticle:', indexOfFirstArticle)
+    // console.log('indexOfLastArticle:', indexOfLastArticle)
     const newCurrentNews = newsItems.slice(indexOfFirstArticle, indexOfLastArticle)
-    console.log('new currentNews:', newCurrentNews)
+    // console.log('new currentNews:', newCurrentNews)
     setCurrentNews(newCurrentNews)
   }, [currentPage, newsItems])
 
   const totalPages = Math.ceil(newsItems.length / articlesPerPage)
-  console.log('totalPages:', totalPages)
+//   console.log('totalPages:', totalPages)
 
   const handleNextPage = () => {
-    console.log('handleNextPage clicked')
-    console.log('current page before:', currentPage)
-    console.log('totalPages:', totalPages)
+    // console.log('handleNextPage clicked')
+    // console.log('current page before:', currentPage)
+    // console.log('totalPages:', totalPages)
     if (currentPage < totalPages) {
       const nextPage = currentPage + 1
       console.log('setting page to:', nextPage)
@@ -47,11 +47,11 @@ const NewsSection: React.FC<NewsSectionProps> = ({ news }) => {
   }
 
   const handlePreviousPage = () => {
-    console.log('handlePreviousPage clicked')
-    console.log('current page before:', currentPage)
+    // console.log('handlePreviousPage clicked')
+    // console.log('current page before:', currentPage)
     if (currentPage > 1) {
       const prevPage = currentPage - 1
-      console.log('setting page to:', prevPage)
+    //   console.log('setting page to:', prevPage)
       setCurrentPage(prevPage)
     }
   }

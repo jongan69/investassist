@@ -16,7 +16,7 @@ export async function fetchStockSearch(ticker: string, newsCount: number = 5) {
       ticker,
       queryOptions
     )
-    console.log("response", response)
+    // console.log("response", response)
     return response
   } catch (error) {
     console.log("Failed to fetch stock search", error)

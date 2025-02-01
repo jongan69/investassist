@@ -150,6 +150,7 @@ export default async function Home({
   
   return (
     <div className="flex flex-col gap-4">
+      <h1 className="text-2xl font-bold">Invest Assist</h1>
       <div className="flex flex-col gap-4 lg:flex-row">
         <div className="w-full lg:w-1/2">
           <Card className="relative flex h-full min-h-[15rem] flex-col justify-between overflow-hidden">
