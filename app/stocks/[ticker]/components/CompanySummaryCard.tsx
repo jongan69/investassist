@@ -11,7 +11,7 @@ export default async function CompanySummaryCard({
   const data = await yahooFinance.quoteSummary(ticker, {
     modules: ["summaryProfile"],
   })
-  console.log(data)
+  // console.log(data)
   if (!data.summaryProfile) {
     return null
   }
