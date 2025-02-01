@@ -29,13 +29,15 @@ export default async function StockChart({
   range,
   interval,
 }: StockGraphProps) {
-  const chartData = await fetchChartData(ticker, range, interval)
-  const quoteData = await fetchQuote(ticker)
+  const decodedTicker = decodeURIComponent(ticker)
+
+  const chartData = await fetchChartData(decodedTicker, range, interval)
+  const quoteData = await fetchQuote(decodedTicker)
 
   const [chart, quote] = await Promise.all([chartData, quoteData])
 
   if (quote.error || !quote.data) {
-    return <div>Error loading quote data</div>
+    return <div>Error loading quote data for {ticker}</div>
   }
 
   const quoteInfo = quote.data

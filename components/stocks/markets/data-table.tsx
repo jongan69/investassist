@@ -15,16 +15,24 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import Link from "next/link"
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[]
-  data: TData[]
+// Define an interface for the data type
+interface StockData {
+  symbol: string;
+  // Add other properties that are part of TData
 }
 
-export function DataTable<TData, TValue>({
+// Update the DataTableProps to use StockData
+interface DataTableProps<TValue> {
+  columns: ColumnDef<StockData, TValue>[];
+  data: StockData[];
+}
+
+export function DataTable<TValue>({
   columns,
   data,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TValue>) {
   const table = useReactTable({
     data,
     columns,
@@ -59,10 +67,13 @@ export function DataTable<TData, TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
+                className="hover:bg-gray-100 dark:hover:bg-gray-900"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    <Link href={`/stocks/${row.original.symbol}`} className="w-full block">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </Link>
                   </TableCell>
                 ))}
               </TableRow>

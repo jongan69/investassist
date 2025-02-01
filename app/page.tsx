@@ -199,7 +199,7 @@ export default async function Home({
         <Card className="flex flex-col gap-4 p-6 lg:flex-row">
           <div className="w-full lg:w-1/2">
             <Suspense fallback={<div>Loading...</div>}>
-              <DataTable columns={columns} data={resultsWithTitles} />
+              <DataTable columns={columns as any} data={resultsWithTitles} />
             </Suspense>
           </div>
           <div className="w-full lg:w-1/2">

@@ -8,9 +8,15 @@ export default async function CompanySummaryCard({
 }: {
   ticker: string
 }) {
-  const data = await yahooFinance.quoteSummary(ticker, {
-    modules: ["summaryProfile"],
-  })
+  let data = null
+  try { 
+    data = await yahooFinance.quoteSummary(ticker, {
+      modules: ["summaryProfile"],
+    })
+  } catch (error) {
+    console.error(error)
+    return null
+  }
   // console.log(data)
   if (!data.summaryProfile) {
     return null
