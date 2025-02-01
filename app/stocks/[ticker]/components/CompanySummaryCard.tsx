@@ -11,7 +11,7 @@ export default async function CompanySummaryCard({
   const data = await yahooFinance.quoteSummary(ticker, {
     modules: ["summaryProfile"],
   })
-  // console.log(data)
+  console.log(data)
   if (!data.summaryProfile) {
     return null
   }
@@ -23,6 +23,7 @@ export default async function CompanySummaryCard({
     country,
     fullTimeEmployees,
     website,
+    twitter,
   } = data.summaryProfile
 
   return (
@@ -33,36 +34,60 @@ export default async function CompanySummaryCard({
         <div className="z-50 max-w-2xl text-pretty font-medium">
           <ReadMoreText text={longBusinessSummary ?? description ?? ""} truncateLength={500} />
         </div>
-        {sector && industryDisp && country && fullTimeEmployees && website && (
+        {(sector || industryDisp || country || fullTimeEmployees || website || twitter) && (
           <div className="z-50 min-w-fit font-medium text-muted-foreground">
-            <div>
-              Sector: <span className="text-foreground ">{sector}</span>
-            </div>
-            <div>
-              Industry: <span className="text-foreground ">{industryDisp}</span>
-            </div>
-            <div>
-              Country: <span className="text-foreground ">{country}</span>
-            </div>
-            <div>
-              Employees:{" "}
-              <span className="text-foreground ">
-                {fullTimeEmployees?.toLocaleString("en-US")}
-              </span>
-            </div>
-            <div>
-              Website:{" "}
-              <span className="text-foreground ">
-                {website && (
+            {sector && (
+              <div>
+                Sector: <span className="text-foreground ">{sector}</span>
+              </div>
+            )}
+            {industryDisp && (
+              <div>
+                Industry: <span className="text-foreground ">{industryDisp}</span>
+              </div>
+            )}
+            {country && (
+              <div>
+                Country: <span className="text-foreground ">{country}</span>
+              </div>
+            )}
+            {fullTimeEmployees && (
+              <div>
+                Employees:{" "}
+                <span className="text-foreground ">
+                  {fullTimeEmployees.toLocaleString("en-US")}
+                </span>
+              </div>
+            )}
+            {website && (
+              <div>
+                Website:{" "}
+                <span className="text-foreground ">
                   <Link
                     href={website}
+                    target="_blank"
                     className="text-blue-600 hover:underline dark:text-blue-500"
                   >
                     {website}
                   </Link>
-                )}
-              </span>
-            </div>
+                </span>
+              </div>
+            )}
+            {twitter && (
+              <div>
+                Twitter:{" "}
+                <span className="text-foreground ">
+                  <Link
+                    href={twitter.includes("http") ? twitter.replace(/"/g, '') : `https://twitter.com/${twitter.replace(/"/g, '')}`}
+                    className="text-blue-600 hover:underline dark:text-blue-500"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {twitter.replace(/"/g, '')}
+                  </Link>
+                </span>
+              </div>
+            )}
           </div>
         )}
       </CardContent>
