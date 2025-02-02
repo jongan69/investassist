@@ -3,15 +3,13 @@ import yahooFinance from "yahoo-finance2"
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 import { DEFAULT_INTERVAL, DEFAULT_RANGE } from "@/lib/yahoo-finance/constants"
 import { Interval } from "@/types/yahoo-finance"
-import { Suspense, useState } from "react"
+import { Suspense } from "react"
 import MarketsChart from "@/components/chart/MarketsChart"
-import Link from "next/link"
 import { columns } from "@/components/stocks/markets/columns"
 import SectorPerformance from "@/components/stocks/SectorPerformance"
 import {
