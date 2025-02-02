@@ -92,7 +92,8 @@ export default async function Home({
 
   const fearGreedValue = await fetchFearGreedIndex()
   const sectorPerformance = await fetchSectorPerformance()
-  
+  // console.log('sectorPerformance', sectorPerformance)
+  // console.log('fearGreedValue', fearGreedValue)
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Invest Assist</h1>
@@ -106,7 +107,7 @@ export default async function Home({
                 {/* because Zach is a {marketSentiment === "bullish" ? "a genius" : "couch fucker"} */}
               </CardTitle>
             </CardHeader>
-            {fearGreedValue && sectorPerformance && (
+            {fearGreedValue && sectorPerformance && sectorPerformance?.length > 0 && (
               <MarketSummary
                 sentimentColor={sentimentColor}
                 fearGreedValue={fearGreedValue}
