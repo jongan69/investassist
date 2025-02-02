@@ -36,7 +36,9 @@ export async function POST(req: Request) {
 
     let attempt = 0;
     let completion;
-    while (attempt < maxRetries) {
+    let responseGenerated = false;
+
+    while (attempt < maxRetries && !responseGenerated) {
       try {
         completion = await deepseekOpenAI.chat.completions.create({
           messages: [{ role: "user", content: prompt }],
@@ -46,41 +48,49 @@ export async function POST(req: Request) {
         });
 
         if (completion.choices[0].message.content) {
+          responseGenerated = true;
           return NextResponse.json({
             summary: completion.choices[0].message.content,
             model: "DeepSeek Reasoner"
           });
-        } else {
-          // Fallback to ChatGPT if DeepSeek fails
-          console.log("Falling back to ChatGPT...");
-          try {
-            completion = await chatgptOpenAI.chat.completions.create({
-              messages: [{ role: "user", content: prompt }],
-              model: "gpt-4o-mini", // or another available ChatGPT model
-              temperature: 0.7,
-              max_tokens: 200,
-            });
-
-            if (completion.choices[0].message.content) {
-              return NextResponse.json({
-                summary: completion.choices[0].message.content,
-                model: "GPT-4o-mini"
-              });
-            } else {
-              throw new Error("Empty response from ChatGPT");
-            }
-          } catch (fallbackError) {
-            console.error('Error with ChatGPT fallback:', fallbackError);
-            return NextResponse.json({ error: "Failed to generate market summary with fallback" }, { status: 500 });
-          }
         }
       } catch (apiError) {
-        console.error(`Attempt ${attempt + 1} failed:`, apiError);
-        if (attempt < maxRetries - 1) {
-          await new Promise(resolve => setTimeout(resolve, retryDelay));
+        console.error(`DeepSeek attempt ${attempt + 1} failed:`, apiError);
+      }
+
+      if (!responseGenerated) {
+        // Fallback to ChatGPT if DeepSeek fails
+        console.log("Falling back to ChatGPT...");
+        try {
+          completion = await chatgptOpenAI.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: "gpt-4o-mini", // or another available ChatGPT model
+            temperature: 0.7,
+            max_tokens: 200,
+          });
+
+          if (completion.choices[0].message.content) {
+            responseGenerated = true;
+            return NextResponse.json({
+              summary: completion.choices[0].message.content,
+              model: "GPT-4o-mini"
+            });
+          } else {
+            throw new Error("Empty response from ChatGPT");
+          }
+        } catch (fallbackError) {
+          console.error('Error with ChatGPT fallback:', fallbackError);
         }
       }
+
+      if (!responseGenerated && attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, retryDelay));
+      }
       attempt++;
+    }
+
+    if (!responseGenerated) {
+      return NextResponse.json({ error: "Failed to generate market summary" }, { status: 500 });
     }
   } catch (error) {
     console.error('Error generating market summary:', error);
