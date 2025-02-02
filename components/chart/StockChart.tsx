@@ -148,7 +148,8 @@ export default async function StockChart({
               )}
             </span>
           </div>
-          <span className="space-x-1 whitespace-nowrap font-semibold">
+    
+          <span className="flex flex-col sm:flex-row sm:items-center sm:space-x-1 whitespace-nowrap font-semibold text-[10px] xs:text-xs sm:text-base">
             {priceChange !== 0 && rangeTextMapping[range] !== "" && (
               <span
                 className={cn(
