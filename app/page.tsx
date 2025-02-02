@@ -103,7 +103,7 @@ export default async function Home({
               <CardTitle className="z-50 w-fit rounded-full px-4  py-2 font-medium dark:bg-neutral-100/5">
                 The markets are{" "}
                 <strong className={sentimentColor}>{marketSentiment} </strong>
-                because Zach is a {marketSentiment === "bullish" ? "a genius" : "couch fucker"}
+                {/* because Zach is a {marketSentiment === "bullish" ? "a genius" : "couch fucker"} */}
               </CardTitle>
             </CardHeader>
             {fearGreedValue && sectorPerformance && (
