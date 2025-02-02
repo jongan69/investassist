@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react';
 
 // SVG Icons as React components
 const XIcon = () => (
@@ -32,6 +33,15 @@ const TelegramIcon = () => (
 
 export default function Footer() {
   const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null; // or a loading spinner, or a default theme
+  }
 
   return (
     <footer className={`container py-8 md:px-10 md:py-4 ${resolvedTheme === 'dark' ? 'bg-black-800' : 'bg-gray-100'}`}>
