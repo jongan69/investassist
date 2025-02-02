@@ -7,25 +7,25 @@ import Link from "next/link"
 
 export const columns: ColumnDef<Quote>[] = [
   {
-    accessorKey: "shortName",
-    header: "Title",
-    cell: (props) => {
-      const { row } = props
-      const title = row.getValue("shortName") as string
-      const symbol = row.original.symbol
-
+    accessorKey: "symbol",
+    header: "Symbol",
+    cell: ({ row }) => {
+      const symbol = row.original.symbol;
       return (
-        <Link
-          prefetch={false}
-          href={{
-            pathname: "/",
-            query: { ticker: symbol },
-          }}
-          className="font-medium"
+        <Link 
+          href={`/stocks/${symbol}`}
+          className="hover:underline"
         >
-          {title}
+          {symbol}
         </Link>
       )
+    },
+  },
+  {
+    accessorKey: "shortName",
+    header: "Name",
+    cell: ({ row }) => {
+      return row.original.shortName
     },
   },
   {

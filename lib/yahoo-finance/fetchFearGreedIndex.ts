@@ -5,7 +5,7 @@ export async function fetchFearGreedIndex() {
     const options = {
       method: "GET",
       headers: {
-        "X-RapidAPI-Key": "a6296db2bamshd608b485c322047p1b0b03jsn5e4c3b5d0c77",
+        "X-RapidAPI-Key": process.env.RAPID_API_KEY as string,
         "X-RapidAPI-Host": "fear-and-greed-index.p.rapidapi.com",
       },
       next: {

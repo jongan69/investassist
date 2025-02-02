@@ -30,9 +30,17 @@ export default function MarketSummary({
 }: MarketSummaryProps) {
   const { resolvedTheme } = useTheme();
   const [summary, setSummary] = useState<string>('Loading market analysis...');
+  const [model, setModel] = useState<string>('AI');
   const [isLoading, setIsLoading] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return; // Ensure the component is mounted before fetching data
+
     const generateMarketSummary = async () => {
       try {
         setIsLoading(true);
@@ -54,6 +62,7 @@ export default function MarketSummary({
 
         const data = await response.json();
         setSummary(data.summary);
+        setModel(data.model.charAt(0).toUpperCase() + data.model.slice(1));
       } catch (error) {
         console.error('Error generating market summary:', error);
         setSummary('Unable to generate market summary at this time.');
@@ -63,10 +72,10 @@ export default function MarketSummary({
     };
 
     generateMarketSummary();
-  }, [fearGreedValue, sectorPerformance]);
+  }, [fearGreedValue, sectorPerformance, isMounted]);
 
-  if (!resolvedTheme) {
-    return null;
+  if (!resolvedTheme || !isMounted) {
+    return null; // Ensure the theme is resolved and component is mounted
   }
 
   return (
@@ -86,7 +95,7 @@ export default function MarketSummary({
         {/* Header */}
         <div className="flex items-center justify-between">
           <h2 className={`text-xl font-bold ${resolvedTheme === 'dark' ? 'text-white group-hover:text-gray-300' : 'text-black group-hover:text-gray-700'} transition-colors`}>
-            AI Market Analysis
+            {isLoading ? "AI Market Analysis" : `${model} Market Analysis`}
           </h2>
           {isLoading && (
             <div className="flex gap-1 px-1">

@@ -56,6 +56,7 @@ export default async function StockChart({
     }))
     .filter((quote) => quote.close !== undefined && quote.date !== null)
 
+  console.log("ChartQuotes", ChartQuotes)
   return (
     <div className="h-[27.5rem] w-full">
       <div>
@@ -169,7 +170,7 @@ export default async function StockChart({
       </div>
       {chart.quotes.length === 0 && (
         <div className="flex h-full items-center justify-center text-center text-neutral-500">
-          No data available
+          No Quote Data Was Available for {decodedTicker}
         </div>
       )}
       {chart.quotes.length > 0 && (

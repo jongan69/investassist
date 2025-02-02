@@ -24,65 +24,8 @@ import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
 import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
 import CryptoTrends from "@/components/crypto/Trends"
 import NewsSection from "@/components/NewsSection"
+import { tickersFutures, tickerAfterOpen, isMarketOpen } from "@/lib/utils"
 
-function isMarketOpen() {
-  const now = new Date()
-
-  // Convert to New York time
-  const options: Intl.DateTimeFormatOptions = {
-    timeZone: "America/New_York",
-    hour: "numeric",
-    minute: "numeric",
-    hour12: false,
-  }
-  const formatter = new Intl.DateTimeFormat([], options)
-
-  const timeString = formatter.format(now)
-  const [hour, minute] = timeString.split(":").map(Number)
-  const timeInET = hour + minute / 60
-
-  // Get the day of the week in New York time
-  const dayInET = new Date(
-    now.toLocaleString("en-US", { timeZone: "America/New_York" })
-  ).getDay()
-
-  // Check if the current time is between 9:30 AM and 4:00 PM ET on a weekday
-  if (dayInET >= 1 && dayInET <= 5 && timeInET >= 9.5 && timeInET < 16) {
-    return true
-  } else {
-    return false
-  }
-}
-
-const tickersFutures = [
-  { symbol: "ES=F", shortName: "S&P 500 Futures" },
-  { symbol: "NQ=F", shortName: "NASDAQ Futures" },
-  { symbol: "YM=F", shortName: "Dow Jones Futures" },
-  { symbol: "RTY=F", shortName: "Russell 2000 Futures" },
-  { symbol: "CL=F", shortName: "Crude Oil" },
-  { symbol: "GC=F", shortName: "Gold" },
-  { symbol: "SI=F", shortName: "Silver" },
-  { symbol: "EURUSD=X", shortName: "EUR/USD" },
-  { symbol: "^TNX", shortName: "10 Year Bond" },
-  { symbol: "BTC-USD", shortName: "Bitcoin" },
-  { symbol: "ETH-USD", shortName: "Ethereum" },
-  { symbol: "SOL-USD", shortName: "Solana" },
-]
-
-const tickerAfterOpen = [
-  { symbol: "^GSPC", shortName: "S&P 500" },
-  { symbol: "^IXIC", shortName: "NASDAQ" },
-  { symbol: "^DJI", shortName: "Dow Jones" },
-  { symbol: "^RUT", shortName: "Russell 2000" },
-  { symbol: "CL=F", shortName: "Crude Oil" },
-  { symbol: "GC=F", shortName: "Gold" },
-  { symbol: "SI=F", shortName: "Silver" },
-  { symbol: "EURUSD=X", shortName: "EUR/USD" },
-  { symbol: "^TNX", shortName: "10 Year Bond" },
-  { symbol: "BTC-USD", shortName: "Bitcoin" },
-  { symbol: "ETH-USD", shortName: "Ethereum" },
-  { symbol: "SOL-USD", shortName: "Solana" },
-]
 
 function getMarketSentiment(changePercentage: number | undefined) {
   if (!changePercentage) {
@@ -109,7 +52,7 @@ export default async function Home({
 }) {
   const tickers = isMarketOpen() ? tickerAfterOpen : tickersFutures
 
-  const ticker = searchParams?.ticker || tickers[0].symbol
+  const ticker = tickers[0].symbol || "BTC-USD"
   const range = validateRange(searchParams?.range || DEFAULT_RANGE)
   const interval = validateInterval(
     range,
@@ -202,7 +145,7 @@ export default async function Home({
               <DataTable columns={columns as any} data={resultsWithTitles} />
             </Suspense>
           </div>
-          <div className="w-full lg:w-1/2">
+          <div className="w-full lg:w-3/4">
             <Suspense fallback={<div>Loading...</div>}>
               <MarketsChart ticker={ticker} range={range} interval={interval} />
             </Suspense>

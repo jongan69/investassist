@@ -24,15 +24,15 @@ interface StockData {
 }
 
 // Update the DataTableProps to use StockData
-interface DataTableProps<TValue> {
-  columns: ColumnDef<StockData, TValue>[];
-  data: StockData[];
+interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
 }
 
-export function DataTable<TValue>({
+export function DataTable<TData, TValue>({
   columns,
   data,
-}: DataTableProps<TValue>) {
+}: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
@@ -41,23 +41,21 @@ export function DataTable<TValue>({
   // console.log("data", data)
   // console.log("columns", columns)
   return (
-    <div className="rounded-md">
+    <div className="rounded-md border">
       <Table>
-        <TableHeader className="hidden">
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                )
-              })}
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id}>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              ))}
             </TableRow>
           ))}
         </TableHeader>
@@ -67,20 +65,20 @@ export function DataTable<TValue>({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="hover:bg-gray-100 dark:hover:bg-gray-900"
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
-                    <Link href={`/stocks/${row.original.symbol}`} className="w-full block">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </Link>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
+              <TableCell
+                colSpan={columns.length}
+                className="h-24 text-center"
+              >
                 No results.
               </TableCell>
             </TableRow>

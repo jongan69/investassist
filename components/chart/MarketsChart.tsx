@@ -12,14 +12,28 @@ export default async function MarketsChart({
   range: Range
   interval: Interval
 }) {
-  const chartData = await fetchChartData(ticker, range, interval)
-  const quoteData = await fetchQuote(ticker)
+  let [chartResult, quoteResult] = await Promise.allSettled([
+    fetchChartData(ticker, range, interval),
+    fetchQuote(ticker),
+  ])
 
-  const [chart, quote] = await Promise.all([chartData, quoteData])
-  // console.log("chart", chart)
-  // console.log("quote", quote)
-  const stockQuotes = chart.quotes
-    ? chart.quotes
+  let chartData = chartResult.status === "fulfilled" ? chartResult.value : null
+  let quoteData = quoteResult.status === "fulfilled" ? quoteResult.value : null
+
+  // If chartData fetch is successful but quotes are empty, attempt to fetch BTC-USD data and quote
+  if (chartData && chartData.quotes.length === 0) {
+    const [fallbackChartResult, fallbackQuoteResult] = await Promise.allSettled([
+      fetchChartData("BTC-USD", range, interval),
+      fetchQuote("BTC-USD"),
+    ]);
+    chartResult = fallbackChartResult;
+    quoteResult = fallbackQuoteResult;
+    chartData = chartResult.status === "fulfilled" ? chartResult.value : null
+    quoteData = quoteResult.status === "fulfilled" ? quoteResult.value : null
+  }
+
+  const stockQuotes = chartData?.quotes
+    ? chartData.quotes
         .map((quote) => ({
           date: quote.date,
           close: quote.close?.toFixed(2),
@@ -28,12 +42,12 @@ export default async function MarketsChart({
     : []
 
   // Check for quote error and handle it gracefully
-  const quoteInfo = !quote.error ? (
+  const quoteInfo = quoteData && !quoteData.error ? (
     <div className="mb-0.5 font-medium">
-      {quote.data.shortName} ({quote.data.symbol}){" "}
-      {quote.data.regularMarketPrice?.toLocaleString(undefined, {
+      {quoteData.data.shortName} ({quoteData.data.symbol}){" "}
+      {quoteData.data.regularMarketPrice?.toLocaleString(undefined, {
         style: "currency",
-        currency: quote.data.currency,
+        currency: quoteData.data.currency,
       })}
     </div>
   ) : null
@@ -41,7 +55,7 @@ export default async function MarketsChart({
   return (
     <>
       {quoteInfo}
-      {chart.quotes.length > 0 ? (
+      {chartData && chartData.quotes && chartData.quotes.length > 0 ? (
         <AreaClosedChart chartQuotes={stockQuotes} range={range} />
       ) : (
         <div className="flex h-full items-center justify-center text-center text-neutral-500">

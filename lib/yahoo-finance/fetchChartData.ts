@@ -33,7 +33,7 @@ export async function fetchChartData(
       ticker,
       queryOptions
     )
-
+    // console.log("chartData", chartData)
     return chartData
   } catch (error) {
     console.log("Failed to fetch chart data", error)

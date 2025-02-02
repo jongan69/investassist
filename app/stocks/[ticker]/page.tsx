@@ -26,8 +26,8 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ticker = params.ticker
-
-  const quoteData = await fetchQuote(ticker)
+  const decodedTicker = decodeURIComponent(ticker)
+  const quoteData = await fetchQuote(decodedTicker)
   const regularMarketPrice = quoteData.data?.regularMarketPrice?.toLocaleString(
     "en-US",
     {
@@ -37,9 +37,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   )
 
   return {
-    title: `${ticker} ${regularMarketPrice}`,
-    description: `Stocks page for ${ticker}`,
-    keywords: [ticker, "stocks"],
+    title: `${decodedTicker} ${regularMarketPrice}`,
+    description: `Stocks page for ${decodedTicker}`,
+    keywords: [decodedTicker, "stocks"],
   }
 }
 

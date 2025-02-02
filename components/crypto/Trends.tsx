@@ -8,6 +8,7 @@ import Link from 'next/link';
 
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
+    const [isMounted, setIsMounted] = useState(false);
 
     interface WhaleActivity {
         symbol: string;
@@ -64,7 +65,12 @@ export default function CryptoTrends({ data }: { data: any }) {
         fetchCryptoTrends();
     }, []);
 
-    if (!resolvedTheme) return null;
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
+
+    // Ensure the component only renders after the theme is resolved and the component is mounted
+    if (!resolvedTheme || !isMounted) return null;
 
     return (
         <motion.div
@@ -140,75 +146,33 @@ export default function CryptoTrends({ data }: { data: any }) {
                             </table>
                         </div>
 
-                        <div className="prose prose-sm prose-invert max-w-full py-1">
-                            <h1 className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed font-bold`}>
-                                Top Tweeted Cryptos
-                            </h1>
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className={`bg-${resolvedTheme === 'dark' ? 'gray-700' : 'gray-50'}`}>
-                                    <tr>
-                                        <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase`}>Ticker</th>
-                                        <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase`}>Count</th>
-                                    </tr>
-                                </thead>
-                                <tbody className={`bg-${resolvedTheme === 'dark' ? 'gray-800' : 'white'} divide-y divide-gray-200 relative z-10`}>
-                                    {trends.topTweetedTickers.map((ticker: any) => (
-                                        <tr key={ticker.ticker} className="group">
-                                            <td colSpan={2} className="p-0">
-                                                <Link
-                                                    href={`https://dexscreener.com/solana/${ticker.ca}`}
-                                                    className="block w-full relative z-10"
-                                                    target="_blank"
-                                                >
-                                                    <div className="flex cursor-pointer hover:bg-gray-700/50 transition-colors">
-                                                        <div className={`px-4 py-2 whitespace-nowrap text-xs font-medium text-${resolvedTheme === 'dark' ? 'white' : 'gray-900'} w-1/2`}>
-                                                            {ticker.ticker}
-                                                        </div>
-                                                        <div className={`px-4 py-2 whitespace-nowrap text-xs text-${resolvedTheme === 'dark' ? 'gray-400' : 'gray-500'} w-1/2`}>
-                                                            {ticker.count}
-                                                        </div>
-                                                    </div>
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div className="prose prose-sm prose-invert max-w-full py-1">
-                            <h1 className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed font-bold`}>
-                                Whale Activity
-                            </h1>
-                            {['bullish', 'bearish'].map((type) => (
-                                <table key={type} className="min-w-full divide-y divide-gray-200">
+                        {trends.topTweetedTickers.length > 0 && (
+                            <div className="prose prose-sm prose-invert max-w-full py-1">
+                                <h1 className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed font-bold`}>
+                                    Top Tweeted Cryptos
+                                </h1>
+                                <table className="min-w-full divide-y divide-gray-200">
                                     <thead className={`bg-${resolvedTheme === 'dark' ? 'gray-700' : 'gray-50'}`}>
                                         <tr>
-                                            <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase w-1/3`}>Symbol</th>
-                                            <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase w-1/3`}>Name</th>
-                                            <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase w-1/3`}>{`${type.charAt(0).toUpperCase() + type.slice(1)} Score`}</th>
+                                            <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase`}>Ticker</th>
+                                            <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase`}>Count</th>
                                         </tr>
                                     </thead>
-                                    <tbody className={`bg-${resolvedTheme === 'dark' ? 'gray-800' : 'white'} divide-y divide-gray-200`}>
-                                        {trends.whaleActivity[type as 'bullish' | 'bearish'].map((activity: WhaleActivity) => (
-                                            <tr key={activity.symbol} className="group">
-                                                <td colSpan={3} className="p-0">
+                                    <tbody className={`bg-${resolvedTheme === 'dark' ? 'gray-800' : 'white'} divide-y divide-gray-200 relative z-10`}>
+                                        {trends.topTweetedTickers.map((ticker: any) => (
+                                            <tr key={ticker.ticker} className="group">
+                                                <td colSpan={2} className="p-0">
                                                     <Link
-                                                        href={`https://dexscreener.com/solana/${activity.token_address}`}
+                                                        href={`https://dexscreener.com/solana/${ticker.ca}`}
                                                         className="block w-full relative z-10"
                                                         target="_blank"
                                                     >
-                                                        <div className="flex hover:bg-gray-700/50 transition-colors">
-                                                            <div className={`px-4 py-2 whitespace-nowrap text-xs font-medium text-${resolvedTheme === 'dark' ? 'white' : 'gray-900'} w-1/3`}>
-                                                                {activity.symbol}
+                                                        <div className="flex cursor-pointer hover:bg-gray-700/50 transition-colors">
+                                                            <div className={`px-4 py-2 whitespace-nowrap text-xs font-medium text-${resolvedTheme === 'dark' ? 'white' : 'gray-900'} w-1/2`}>
+                                                                {ticker.ticker}
                                                             </div>
-                                                            <div className={`px-4 py-2 whitespace-nowrap text-xs text-${resolvedTheme === 'dark' ? 'gray-400' : 'gray-500'} w-1/3`}>
-                                                                <span className="block truncate sm:text-clip">
-                                                                    {activity.name}
-                                                                </span>
-                                                            </div>
-                                                            <div className={`px-4 py-2 whitespace-nowrap text-xs text-${resolvedTheme === 'dark' ? 'gray-400' : 'gray-500'} w-1/3`}>
-                                                                {activity[`${type}Score` as 'bullishScore' | 'bearishScore']}
+                                                            <div className={`px-4 py-2 whitespace-nowrap text-xs text-${resolvedTheme === 'dark' ? 'gray-400' : 'gray-500'} w-1/2`}>
+                                                                {ticker.count}
                                                             </div>
                                                         </div>
                                                     </Link>
@@ -217,6 +181,62 @@ export default function CryptoTrends({ data }: { data: any }) {
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
+                        )}
+
+                        <div className="prose prose-sm prose-invert max-w-full py-1">
+                            <h1 className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed font-bold`}>
+                                Whale Activity
+                            </h1>
+                            {['bullish', 'bearish'].map((type, index) => (
+                                <Fragment key={type}>
+                                    {index === 1 && (
+                                        <div className={`my-4 h-1 ${resolvedTheme === 'dark' ? 'bg-green-500' : 'bg-red-500'}`} />
+                                    )}
+                                    <table className="min-w-full divide-y divide-gray-200">
+                                        <thead className={`bg-${resolvedTheme === 'dark' ? 'gray-700' : 'gray-50'}`}>
+                                            <tr>
+                                                <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase w-1/3`}>Symbol</th>
+                                                <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase w-1/3`}>Name</th>
+                                                <th className={`px-4 py-2 text-left text-xs font-medium text-${resolvedTheme === 'dark' ? 'gray-300' : 'gray-500'} uppercase w-1/3`}>{`${type.charAt(0).toUpperCase() + type.slice(1)} Score`}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className={`bg-${resolvedTheme === 'dark' ? 'gray-800' : 'white'} divide-y divide-gray-200`}>
+                                            {trends.whaleActivity[type as 'bullish' | 'bearish'].map((activity: WhaleActivity) => {
+                                                const score = (type === 'bullish' ? activity.bullishScore : activity.bearishScore) ?? 0;
+                                                const scoreColor = type === 'bullish'
+                                                    ? `hsl(${Math.min(120, score * 1.2)}, 100%, 50%)` // Green scale
+                                                    : `hsl(${Math.max(0, 120 - score * 1.2)}, 100%, 50%)`; // Red scale
+
+                                                return (
+                                                    <tr key={activity.symbol} className="group">
+                                                        <td colSpan={3} className="p-0">
+                                                            <Link
+                                                                href={`https://dexscreener.com/solana/${activity.token_address}`}
+                                                                className="block w-full relative z-10"
+                                                                target="_blank"
+                                                            >
+                                                                <div className="flex hover:bg-gray-700/50 transition-colors">
+                                                                    <div className={`px-4 py-2 whitespace-nowrap text-xs font-medium text-${resolvedTheme === 'dark' ? 'white' : 'gray-900'} w-1/3`}>
+                                                                        {activity.symbol}
+                                                                    </div>
+                                                                    <div className={`px-4 py-2 whitespace-nowrap text-xs text-${resolvedTheme === 'dark' ? 'gray-400' : 'gray-500'} w-1/3`}>
+                                                                        <span className="block truncate sm:text-clip">
+                                                                            {activity.name}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div className={`px-4 py-2 whitespace-nowrap text-xs w-1/3 text-center`} style={{ color: scoreColor }}>
+                                                                        {score}
+                                                                    </div>
+                                                                </div>
+                                                            </Link>
+                                                        </td>
+                                                    </tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </Fragment>
                             ))}
                         </div>
                     </Fragment>
