@@ -5,6 +5,7 @@ import { ViewTransitions } from "next-view-transitions"
 import { ThemeProvider } from "@/components/ui/theme-provider"
 import Navigation from "@/components/ui/navigation"
 import Footer from "@/components/ui/footer"
+import WalletContextProvider from "@/components/contexts/WalletContextProvider"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -31,9 +32,11 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Navigation />
-            <main className="container">{children}</main>
-            <Footer />
+            <WalletContextProvider>
+              <Navigation />
+              <main className="container">{children}</main>
+              <Footer />
+            </WalletContextProvider>
           </ThemeProvider>
         </body>
       </html>
