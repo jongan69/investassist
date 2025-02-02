@@ -46,12 +46,33 @@ export async function POST(req: Request) {
         });
 
         if (completion.choices[0].message.content) {
-          return NextResponse.json({ 
+          return NextResponse.json({
             summary: completion.choices[0].message.content,
             model: "DeepSeek Reasoner"
           });
         } else {
-          throw new Error("Empty response from API");
+          // Fallback to ChatGPT if DeepSeek fails
+          console.log("Falling back to ChatGPT...");
+          try {
+            completion = await chatgptOpenAI.chat.completions.create({
+              messages: [{ role: "user", content: prompt }],
+              model: "gpt-4o-mini", // or another available ChatGPT model
+              temperature: 0.7,
+              max_tokens: 200,
+            });
+
+            if (completion.choices[0].message.content) {
+              return NextResponse.json({
+                summary: completion.choices[0].message.content,
+                model: "GPT-4o-mini"
+              });
+            } else {
+              throw new Error("Empty response from ChatGPT");
+            }
+          } catch (fallbackError) {
+            console.error('Error with ChatGPT fallback:', fallbackError);
+            return NextResponse.json({ error: "Failed to generate market summary with fallback" }, { status: 500 });
+          }
         }
       } catch (apiError) {
         console.error(`Attempt ${attempt + 1} failed:`, apiError);
@@ -61,33 +82,6 @@ export async function POST(req: Request) {
       }
       attempt++;
     }
-
-    // Fallback to ChatGPT if DeepSeek fails
-    console.log("Falling back to ChatGPT...");
-    try {
-      // Reinitialize OpenAI without baseURL for ChatGPT
-
-
-      completion = await chatgptOpenAI.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: "gpt-4o-mini", // or another available ChatGPT model
-        temperature: 0.7,
-        max_tokens: 200,
-      });
-
-      if (completion.choices[0].message.content) {
-        return NextResponse.json({ 
-          summary: completion.choices[0].message.content,
-          model: "GPT-4o-mini"
-        });
-      } else {
-        throw new Error("Empty response from ChatGPT");
-      }
-    } catch (fallbackError) {
-      console.error('Error with ChatGPT fallback:', fallbackError);
-      return NextResponse.json({ error: "Failed to generate market summary with fallback" }, { status: 500 });
-    }
-
   } catch (error) {
     console.error('Error generating market summary:', error);
     return NextResponse.json(

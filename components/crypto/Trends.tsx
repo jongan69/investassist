@@ -205,8 +205,8 @@ export default function CryptoTrends({ data }: { data: any }) {
                                             {trends.whaleActivity[type as 'bullish' | 'bearish'].map((activity: WhaleActivity) => {
                                                 const score = (type === 'bullish' ? activity.bullishScore : activity.bearishScore) ?? 0;
                                                 const scoreColor = type === 'bullish'
-                                                    ? `hsl(${Math.min(120, score * 1.2)}, 100%, 50%)` // Green scale
-                                                    : `hsl(${Math.max(0, 120 - score * 1.2)}, 100%, 50%)`; // Red scale
+                                                    ? `hsl(120, ${Math.min(100, score * 1.2)}%, 50%)` // Always green
+                                                    : `hsl(0, ${Math.min(100, score * 1.2)}%, 50%)`; // Always red
 
                                                 return (
                                                     <tr key={activity.symbol} className="group">
