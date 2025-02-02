@@ -9,8 +9,6 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
-  CommandShortcut,
 } from "@/components/ui/command"
 import { Button } from "./button"
 import tickers from "@/data/tickers.json"

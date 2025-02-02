@@ -1,15 +1,12 @@
 "use client"
 import { ThemeToggle } from "./theme-toggle"
 import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu"
 import Link from "next/link"
 import GoBack from "./go-back"
 import { usePathname } from "next/navigation"
+
 import CommandMenu from "./command-menu"
 import dynamic from 'next/dynamic'
 import { useTheme } from 'next-themes'
