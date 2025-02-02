@@ -35,52 +35,36 @@ export async function POST(req: Request) {
     `;
 
     let attempt = 0;
-    let completion;
     let responseGenerated = false;
 
     while (attempt < maxRetries && !responseGenerated) {
       try {
-        completion = await deepseekOpenAI.chat.completions.create({
-          messages: [{ role: "user", content: prompt }],
-          model: "deepseek-reasoner",
-          temperature: 0.7,
-          max_tokens: 200,
-        });
-
-        if (completion.choices[0].message.content) {
-          responseGenerated = true;
-          return NextResponse.json({
-            summary: completion.choices[0].message.content,
-            model: "DeepSeek Reasoner"
-          });
-        }
-      } catch (apiError) {
-        console.error(`DeepSeek attempt ${attempt + 1} failed:`, apiError);
-      }
-
-      if (!responseGenerated) {
-        // Fallback to ChatGPT if DeepSeek fails
-        console.log("Falling back to ChatGPT...");
-        try {
-          completion = await chatgptOpenAI.chat.completions.create({
+        // Use Promise.race to get the first successful response
+        const completion = await Promise.race([
+          deepseekOpenAI.chat.completions.create({
+            messages: [{ role: "user", content: prompt }],
+            model: "deepseek-reasoner",
+            temperature: 0.7,
+            max_tokens: 200,
+          }).then(result => ({ model: "DeepSeek Reasoner", result })),
+          
+          chatgptOpenAI.chat.completions.create({
             messages: [{ role: "user", content: prompt }],
             model: "gpt-4o-mini", // or another available ChatGPT model
             temperature: 0.7,
             max_tokens: 200,
-          });
+          }).then(result => ({ model: "GPT-4o-mini", result }))
+        ]);
 
-          if (completion.choices[0].message.content) {
-            responseGenerated = true;
-            return NextResponse.json({
-              summary: completion.choices[0].message.content,
-              model: "GPT-4o-mini"
-            });
-          } else {
-            throw new Error("Empty response from ChatGPT");
-          }
-        } catch (fallbackError) {
-          console.error('Error with ChatGPT fallback:', fallbackError);
+        if (completion.result.choices[0].message.content) {
+          responseGenerated = true;
+          return NextResponse.json({
+            summary: completion.result.choices[0].message.content,
+            model: completion.model
+          });
         }
+      } catch (apiError) {
+        console.error(`Attempt ${attempt + 1} failed:`, apiError);
       }
 
       if (!responseGenerated && attempt < maxRetries - 1) {
