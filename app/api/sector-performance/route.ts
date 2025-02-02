@@ -8,7 +8,13 @@ export async function GET() {
         if (!res.ok) {
            console.error("Failed to fetch sector performance: ", res)
         }
-        return NextResponse.json(await res.json())
+
+        const data = await res.json();
+        return NextResponse.json(data, {
+            headers: {
+              'Cache-Control': 'public, max-age=3600, stale-while-revalidate=3600',
+            },
+          });
     } catch (error) {
         console.error("Error fetching sector performance:", error)
         return NextResponse.json([])
