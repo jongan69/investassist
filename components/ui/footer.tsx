@@ -31,10 +31,10 @@ const TelegramIcon = () => (
 );
 
 export default function Footer() {
-  const { theme } = useTheme()
+  const { resolvedTheme } = useTheme()
 
   return (
-    <footer className={`container py-8 md:px-10 md:py-4 ${theme === 'dark' ? 'bg-black-800' : 'bg-gray-100'}`}>
+    <footer className={`container py-8 md:px-10 md:py-4 ${resolvedTheme === 'dark' ? 'bg-black-800' : 'bg-gray-100'}`}>
       <div className="flex flex-col items-center justify-center space-y-4 md:space-y-0 md:space-x-8 md:flex-row">
         <Link
           prefetch={false}
@@ -42,7 +42,7 @@ export default function Footer() {
           target="_blank"
           rel="noreferrer"
           aria-label="Visit InvestAssist on X"
-          className={`font-semibold ${theme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors duration-200 flex items-center`}
+          className={`font-semibold ${resolvedTheme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors duration-200 flex items-center`}
         >
           <XIcon />
         </Link>
@@ -52,7 +52,7 @@ export default function Footer() {
           target="_blank"
           rel="noreferrer"
           aria-label="Visit Bandz Capital"
-          className={`font-semibold ${theme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors duration-200 flex items-center`}
+          className={`font-semibold ${resolvedTheme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors duration-200 flex items-center`}
         >
           <TelegramIcon />
         </Link>
