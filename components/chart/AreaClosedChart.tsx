@@ -130,9 +130,11 @@ function Area({ mask, id, data, x, y, yScale, color }: AreaProps) {
       <LinearGradient
         id={id}
         from={color}
-        fromOpacity={0.6}
+        fromOpacity={0.4}
         to={color}
-        toOpacity={0}
+        toOpacity={0.1}
+        y1="0%"
+        y2="100%"
       />
       <MemoAreaClosed
         data={data}
@@ -143,7 +145,14 @@ function Area({ mask, id, data, x, y, yScale, color }: AreaProps) {
         fill={`url(#${id})`}
         mask={mask}
       />
-      <MemoLinePath data={data} x={x} y={y} stroke={color} mask={mask} />
+      <MemoLinePath 
+        data={data} 
+        x={x} 
+        y={y} 
+        stroke={color}
+        strokeWidth={2}
+        mask={mask}
+      />
     </g>
   )
 }
@@ -176,6 +185,11 @@ function GraphSlider({ data, width, height, top, state, dispatch }: any) {
 
   const isIncreasing = data[data.length - 1].close > data[0].close
 
+  const getChartColor = (isHovered: boolean, isIncreasing: boolean) => {
+    if (isHovered) return "#3b82f6" // Bright blue
+    return isIncreasing ? "#22c55e" : "#ef4444" // Green or red
+  }
+
   return (
     <svg height={height} width="100%" viewBox={`0 0 ${width} ${height}`}>
       <mask id="mask" className="w-full">
@@ -197,7 +211,7 @@ function GraphSlider({ data, width, height, top, state, dispatch }: any) {
         y={y}
         top={top}
         yScale={yScale}
-        color={state.hovered ? "dodgerblue" : isIncreasing ? "green" : "red"}
+        color={getChartColor(state.hovered, isIncreasing)}
       />
       <Area
         id="top"
@@ -206,7 +220,7 @@ function GraphSlider({ data, width, height, top, state, dispatch }: any) {
         y={y}
         yScale={yScale}
         top={top}
-        color={state.hovered ? "dodgerblue" : isIncreasing ? "green" : "red"}
+        color={getChartColor(state.hovered, isIncreasing)}
         mask="url(#mask)"
       />
       {state.x && (
@@ -216,16 +230,14 @@ function GraphSlider({ data, width, height, top, state, dispatch }: any) {
             x2={state.x}
             y1={0}
             y2={680}
-            stroke={
-              state.hovered ? "dodgerblue" : isIncreasing ? "green" : "red"
-            }
+            stroke={getChartColor(state.hovered, isIncreasing)}
             strokeWidth={2}
           />
           <circle
             cx={state.x}
             cy={yScale(state.close)}
             r={8}
-            fill={state.hovered ? "dodgerblue" : isIncreasing ? "green" : "red"}
+            fill={getChartColor(state.hovered, isIncreasing)}
             stroke="#FFF"
             strokeWidth={3}
           />
@@ -234,7 +246,7 @@ function GraphSlider({ data, width, height, top, state, dispatch }: any) {
             x={state.x + 8 > width / 2 ? state.x - 8 : state.x + 6}
             y={0}
             dy={"0.75em"}
-            fill={state.hovered ? "dodgerblue" : isIncreasing ? "green" : "red"}
+            fill={getChartColor(state.hovered, isIncreasing)}
             className="text-base font-medium"
           >
             {formatCurrency(state.close)}

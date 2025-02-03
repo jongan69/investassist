@@ -53,6 +53,7 @@ export default async function Home({
 
   const ticker = tickers[0].symbol || "BTC-USD"
   const range = validateRange(searchParams?.range || DEFAULT_RANGE)
+
   const interval = validateInterval(
     range,
     (searchParams?.interval as Interval) || DEFAULT_INTERVAL

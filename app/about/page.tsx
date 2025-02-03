@@ -12,18 +12,14 @@ export default function AboutPage() {
         <li>Access the latest financial news and market sentiment analysis.</li>
         <li>Utilize advanced charting tools to visualize market data.</li>
       </ul>
-      <h2 className="text-2xl font-semibold mb-2">InvestAssist Token ($IA)</h2>
-      <p className="mb-4">
-        The InvestAssist token is a unique digital asset on the Solana blockchain that enhances your experience on the platform. By holding InvestAssist tokens, users can unlock premium features, such as:
-      </p>
+      <h2 className="text-2xl font-semibold mb-2">Features</h2>
       <ul className="list-disc list-inside mb-4">
-        <li>Access to exclusive market insights and reports.</li>
-        <li>Priority customer support and personalized investment advice.</li>
-        <li>Discounts on transaction fees and other services.</li>
+        <li>Real-time market data and analytics</li>
+        <li>Comprehensive market insights and reports</li>
+        <li>Professional customer support</li>
+        <li>Advanced trading tools and charts</li>
+        <li>Purchase AI generated investment plans</li>
       </ul>
-      <p className="mb-4">
-        To get started with InvestAssist tokens, simply create an account and follow the instructions to purchase and manage your tokens within the app.
-      </p>
       <h2 className="text-2xl font-semibold mb-2">Join Us</h2>
       <p>
         Join thousands of investors who trust InvestAssist to guide their investment journey. Sign up today and take control of your financial future with confidence.

@@ -16,4 +16,6 @@ export const JUPITER_QUOTE = "https://quote-api.jup.ag/v6";
 export const BLOCKENGINE = `mainnet.block-engine.jito.wtf`
 
 // You can use any of the other enpoints here
-export const NETWORK = HELIUS || SOLANA_MAIN;
+export const NETWORK = "https://api.devnet.solana.com"; // for devnet
+// or
+// export const NETWORK = "https://api.mainnet-beta.solana.com"; // for mainnet
