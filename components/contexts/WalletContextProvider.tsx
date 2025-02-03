@@ -21,7 +21,10 @@ const WalletContextProvider = ({ children }: { children: React.ReactNode }) => {
 
     const endpoint = NETWORK ?? web3.clusterApiUrl('mainnet-beta');
     const wallets = [
-        new walletAdapterWallets.PhantomWalletAdapter()
+        new walletAdapterWallets.PhantomWalletAdapter(),
+        new walletAdapterWallets.CoinbaseWalletAdapter(),
+        new walletAdapterWallets.BraveWalletAdapter(),
+        new walletAdapterWallets.TorusWalletAdapter()
     ];
 
     const [wallet, setWallet] = useState<any>(null); // Replace 'any' with the actual type if known
