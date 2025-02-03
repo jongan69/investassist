@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import * as web3 from '@solana/web3.js';
 import { toast } from 'react-hot-toast';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from '@solana/wallet-adapter-react';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
-import { encodeURL, createQR, findReference, FindReferenceError, validateTransfer } from "@solana/pay";
+import { encodeURL, findReference, FindReferenceError, validateTransfer } from "@solana/pay";
 import BigNumber from "bignumber.js";
 import QRCode from "react-qr-code";
 import { Connection } from '@solana/web3.js';
@@ -23,9 +23,9 @@ const InvestmentPlan = (initialData: any) => {
 
     // Generate reference for the payment
     const reference = new web3.Keypair().publicKey;
-    const amount = new BigNumber(0.1);
+    const amount = new BigNumber(0.01);
     const label = "Investment Plan Payment";
-    const message = "0.1 SOL Investment Plan Payment";
+    const message = "0.01 SOL Investment Plan Payment";
     const memo = "Investment Plan Transfer";
 
     const createPaymentQR = async () => {
@@ -41,7 +41,10 @@ const InvestmentPlan = (initialData: any) => {
             });
 
             setQrCodeValue(url.toString());
-            checkPayment(recipientAddress);
+            // Add delay before checking payment
+            setTimeout(() => {
+                checkPayment(recipientAddress);
+            }, 3000); // Wait 3 seconds before starting to check
         } catch (error) {
             console.error(error);
             toast.error('Failed to create payment QR code');
@@ -54,7 +57,7 @@ const InvestmentPlan = (initialData: any) => {
         try {
             const { signature } = await new Promise<{ signature: string }>((resolve, reject) => {
                 let attempts = 0;
-                const maxAttempts = 30; // 30 seconds timeout
+                const maxAttempts = 60; // Increase to 60 seconds timeout
                 
                 const interval = setInterval(async () => {
                     try {
@@ -72,14 +75,12 @@ const InvestmentPlan = (initialData: any) => {
                         clearInterval(interval);
                         resolve({ signature: signatureInfo.signature });
                     } catch (error) {
-                        if (!(error instanceof FindReferenceError)) {
-                            console.error('Error checking payment:', error);
-                            // Only reject for non-FindReference errors if we've exceeded max attempts
-                            if (attempts > maxAttempts) {
-                                clearInterval(interval);
-                                reject(error);
-                            }
+                        // Continue checking even for FindReferenceError
+                        if (attempts > maxAttempts) {
+                            clearInterval(interval);
+                            reject(error);
                         }
+                        // Otherwise just continue checking
                     }
                 }, 1000);
             });
