@@ -1,10 +1,10 @@
 import axios from "axios";
-
-export async function GET(req: Request, res: Response) {
+import { NextResponse } from "next/server";
+export async function GET() {
   try {
     const result = await axios.get(`https://api.hel.io/v1/currency/all`);
 
-    return new Response(JSON.stringify(result.data), {
+    return NextResponse.json(result.data, {
       status: 200,
     });
   } catch (error: any) {
@@ -12,7 +12,7 @@ export async function GET(req: Request, res: Response) {
       `${error.response?.data?.code} ${error.response?.data?.message}`,
     );
 
-    return new Response(error.response?.data?.message || "Error", {
+    return NextResponse.json(error.response?.data?.message || "Error", {
       status: error.response?.status || 500,
     });
   }

@@ -8,15 +8,15 @@ export const metadata: Metadata = {
   title: "InvestAssist: Investment Assistant",
   description: "Generate a your portfolio with AI",
 }
+
+interface ScreenerPageProps {
+  searchParams: Promise<any>
+}
+
 export default async function ScreenerPage({
   searchParams,
-}: {
-  searchParams?: {
-    screener?: string
-  }
-}) {
-  const screener = searchParams?.screener || DEFAULT_SCREENER
-
+}: ScreenerPageProps) {
+  const screener = (await searchParams)?.screener || DEFAULT_SCREENER
   const screenerDataResults = await fetchScreenerStocks(screener)
 
   return (

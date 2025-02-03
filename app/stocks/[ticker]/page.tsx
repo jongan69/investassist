@@ -14,18 +14,16 @@ import type { Metadata } from "next"
 import { fetchQuote } from "@/lib/yahoo-finance/fetchQuote"
 
 type Props = {
-  params: {
-    ticker: string
-  }
-  searchParams?: {
+  params: Promise<any>
+  searchParams: Promise<{
     ticker?: string
     range?: string
     interval?: string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const ticker = params.ticker
+  const ticker = (await params).ticker
   const decodedTicker = decodeURIComponent(ticker)
   const quoteData = await fetchQuote(decodedTicker)
   const regularMarketPrice = quoteData.data?.regularMarketPrice?.toLocaleString(
@@ -44,11 +42,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function StocksPage({ params, searchParams }: Props) {
-  const ticker = params.ticker
-  const range = validateRange(searchParams?.range || DEFAULT_RANGE)
+  const ticker = (await params).ticker
+  const typedSearchParams = await searchParams
+  const range = validateRange(typedSearchParams?.range || DEFAULT_RANGE)
   const interval = validateInterval(
     range,
-    (searchParams?.interval as Interval) || DEFAULT_INTERVAL
+    (typedSearchParams?.interval as Interval) || DEFAULT_INTERVAL
   )
 
   return (
