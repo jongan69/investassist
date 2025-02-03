@@ -8,15 +8,17 @@ import { encodeURL, createQR, findReference, FindReferenceError, validateTransfe
 import BigNumber from "bignumber.js";
 import QRCode from "react-qr-code";
 import { Connection } from '@solana/web3.js';
+import { NETWORK } from '@/lib/solana/constants';
 
 const receiverPublicKey = "LockmjYWctcbeQCJt5u5z536xbmeU6n5XeQJhuPWxp2";
 
 const InvestmentPlan = (initialData: any) => {
+    const connection = new Connection(NETWORK);
     const [txSig, setTxSig] = useState('');
     const [balance, setBalance] = useState(0);
     const [qrCodeValue, setQrCodeValue] = useState('');
     const [paymentStatus, setPaymentStatus] = useState('');
-    const { connection } = useConnection();
+    // const { connection } = useConnection();
     const { publicKey, sendTransaction } = useWallet();
 
     // Generate reference for the payment
@@ -51,45 +53,79 @@ const InvestmentPlan = (initialData: any) => {
         
         try {
             const { signature } = await new Promise<{ signature: string }>((resolve, reject) => {
+                let attempts = 0;
+                const maxAttempts = 30; // 30 seconds timeout
+                
                 const interval = setInterval(async () => {
                     try {
-                        const signatureInfo = await findReference(connection, reference, { finality: 'confirmed' });
+                        attempts++;
+                        if (attempts > maxAttempts) {
+                            clearInterval(interval);
+                            reject(new Error('Payment timeout - please try again'));
+                            return;
+                        }
+
+                        const signatureInfo = await findReference(connection, reference, { 
+                            finality: 'confirmed'
+                        });
+                        
                         clearInterval(interval);
                         resolve({ signature: signatureInfo.signature });
                     } catch (error) {
                         if (!(error instanceof FindReferenceError)) {
-                            clearInterval(interval);
-                            reject(error);
+                            console.error('Error checking payment:', error);
+                            // Only reject for non-FindReference errors if we've exceeded max attempts
+                            if (attempts > maxAttempts) {
+                                clearInterval(interval);
+                                reject(error);
+                            }
                         }
                     }
-                }, 1000); // Increased interval to 1 second to reduce rate limiting
+                }, 1000);
             });
 
             setPaymentStatus('confirmed');
             
-            await validateTransfer(
-                connection,
-                signature,
-                {
-                    recipient: recipientAddress,
-                    amount,
-                }
-            );
-
-            setPaymentStatus('validated');
-            setTxSig(signature);
-            toast.success('Payment validated successfully!');
+            // Add retry logic for validation
+            let validationAttempts = 0;
+            const maxValidationAttempts = 3;
             
-            // Update balance after successful payment
-            if (publicKey) {
-                const info = await connection.getAccountInfo(publicKey);
-                if (info) {
-                    setBalance(info.lamports / web3.LAMPORTS_PER_SOL);
+            while (validationAttempts < maxValidationAttempts) {
+                try {
+                    await validateTransfer(
+                        connection,
+                        signature,
+                        {
+                            recipient: recipientAddress,
+                            amount,
+                        }
+                    );
+                    
+                    setPaymentStatus('validated');
+                    setTxSig(signature);
+                    toast.success('Payment validated successfully!');
+                    
+                    // Update balance after successful payment
+                    if (publicKey) {
+                        const info = await connection.getAccountInfo(publicKey);
+                        if (info) {
+                            setBalance(info.lamports / web3.LAMPORTS_PER_SOL);
+                        }
+                    }
+                    return;
+                } catch (error) {
+                    validationAttempts++;
+                    if (validationAttempts === maxValidationAttempts) {
+                        throw error;
+                    }
+                    // Wait 1 second before retrying
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
             }
         } catch (error) {
             console.error('Payment failed', error);
-            toast.error('Payment validation failed');
+            setPaymentStatus('failed');
+            toast.error(error instanceof Error ? error.message : 'Payment validation failed');
         }
     };
 
@@ -140,7 +176,8 @@ const InvestmentPlan = (initialData: any) => {
                         <div className={`mt-4 p-3 text-center rounded-lg border ${
                             paymentStatus === 'pending' ? 'bg-yellow-900/30 text-yellow-100 border-yellow-500/30' :
                             paymentStatus === 'confirmed' ? 'bg-[#fa6ece]/30 text-pink-100 border-[#fa6ece]/30' :
-                            paymentStatus === 'validated' ? 'bg-green-900/30 text-green-100 border-green-500/30' : ''
+                            paymentStatus === 'validated' ? 'bg-green-900/30 text-green-100 border-green-500/30' :
+                            paymentStatus === 'failed' ? 'bg-red-900/30 text-red-100 border-red-500/30' : ''
                         }`}>
                             Status: {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
                         </div>
