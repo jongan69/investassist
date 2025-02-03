@@ -1,81 +1,95 @@
+"use client"
 import React, { useState, useEffect } from 'react';
 import * as web3 from '@solana/web3.js';
 import { toast } from 'react-toastify';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
+import { encodeURL, createQR, findReference, FindReferenceError, validateTransfer } from "@solana/pay";
+import BigNumber from "bignumber.js";
+import QRCode from "react-qr-code";
+import { Connection } from '@solana/web3.js';
 
-const InvestmentPlan = () => {
-    const [account, setAccount] = useState('');
-    const [amount, setAmount] = useState(0);
-    const [balance, setBalance] = useState(0);
+const receiverPublicKey = "LockmjYWctcbeQCJt5u5z536xbmeU6n5XeQJhuPWxp2";
+
+const InvestmentPlan = (initialData: any) => {
     const [txSig, setTxSig] = useState('');
-
+    const [balance, setBalance] = useState(0);
+    const [qrCodeValue, setQrCodeValue] = useState('');
+    const [paymentStatus, setPaymentStatus] = useState('');
     const { connection } = useConnection();
     const { publicKey, sendTransaction } = useWallet();
 
-    const handleTransaction = async () => {
-        if (!connection || !publicKey) {
-            toast.error('Please connect your wallet.');
-            return;
-        }
+    // Generate reference for the payment
+    const reference = new web3.Keypair().publicKey;
+    const amount = new BigNumber(0.1);
+    const label = "Investment Plan Payment";
+    const message = "0.1 SOL Investment Plan Payment";
+    const memo = "Investment Plan Transfer";
 
+    const createPaymentQR = async () => {
         try {
-            const toPubkey = new web3.PublicKey(account);
-            const transaction = new web3.Transaction();
-            const instruction = web3.SystemProgram.transfer({
-                fromPubkey: publicKey,
-                lamports: amount * web3.LAMPORTS_PER_SOL,
-                toPubkey: toPubkey,
+            const recipientAddress = new web3.PublicKey(receiverPublicKey);
+            const url = encodeURL({
+                recipient: recipientAddress,
+                amount,
+                reference,
+                label,
+                message,
+                memo,
             });
 
-            transaction.add(instruction);
-            
-            const signature = await sendTransaction(transaction, connection);
-            setTxSig(signature);
-
-            // Call the API with the transaction hash
-            await callApiWithTransactionHash(signature);
-
-            const newBalance = balance - amount;
-            setBalance(newBalance);
-        }
-        catch (error) {
-            console.log(error);
-            toast.error('Transaction failed!');
-        } 
-        finally {
-            setAccount('');
-            setAmount(0);
-            const accountInput = document.getElementById('account') as HTMLInputElement | null;
-            const amountInput = document.getElementById('amount') as HTMLInputElement | null;
-            
-            if (accountInput) {
-                accountInput.value = '';
-            }
-            if (amountInput) {
-                amountInput.value = '';
-            }
+            setQrCodeValue(url.toString());
+            checkPayment(recipientAddress);
+        } catch (error) {
+            console.error(error);
+            toast.error('Failed to create payment QR code');
         }
     };
 
-    const callApiWithTransactionHash = async (transactionHash: string) => {
+    const checkPayment = async (recipientAddress: web3.PublicKey) => {
+        setPaymentStatus('pending');
+        
         try {
-            const response = await fetch('/api/your-endpoint', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ transactionHash }),
+            const { signature } = await new Promise<{ signature: string }>((resolve, reject) => {
+                const interval = setInterval(async () => {
+                    try {
+                        const signatureInfo = await findReference(connection, reference, { finality: 'confirmed' });
+                        clearInterval(interval);
+                        resolve({ signature: signatureInfo.signature });
+                    } catch (error) {
+                        if (!(error instanceof FindReferenceError)) {
+                            clearInterval(interval);
+                            reject(error);
+                        }
+                    }
+                }, 1000); // Increased interval to 1 second to reduce rate limiting
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to call API');
-            }
+            setPaymentStatus('confirmed');
+            
+            await validateTransfer(
+                connection,
+                signature,
+                {
+                    recipient: recipientAddress,
+                    amount,
+                }
+            );
 
-            toast.success('API called successfully with transaction hash!');
+            setPaymentStatus('validated');
+            setTxSig(signature);
+            toast.success('Payment validated successfully!');
+            
+            // Update balance after successful payment
+            if (publicKey) {
+                const info = await connection.getAccountInfo(publicKey);
+                if (info) {
+                    setBalance(info.lamports / web3.LAMPORTS_PER_SOL);
+                }
+            }
         } catch (error) {
-            console.error('Error calling API:', error);
-            toast.error('Failed to call API with transaction hash.');
+            console.error('Payment failed', error);
+            toast.error('Payment validation failed');
         }
     };
 
@@ -114,45 +128,44 @@ const InvestmentPlan = () => {
                             Purchase Investment Plan
                         </h2>
                         <button
-                            onClick={handleTransaction}
-                            disabled={!account || !amount}
-                            className='disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#fa6ece] bg-[#fa6ece] rounded-lg w-24 py-1 font-semibold transition-all duration-200 hover:bg-transparent border-2 border-transparent hover:border-[#fa6ece]'
+                            onClick={createPaymentQR}
+                            type="button"
+                            className='bg-[#fa6ece] rounded-lg px-4 py-1 font-semibold transition-all duration-200 hover:bg-transparent border-2 border-transparent hover:border-[#fa6ece]'
                         >
-                            Purchase
+                            Pay 0.1 SOL
                         </button>
                     </div>
-                    <div className='mt-6'>
-                        <h3 className='italic text-sm'>
-                            Address of receiver
-                        </h3>
-                        <input
-                            id='account'
-                            type="text"
-                            placeholder='Public key of receiver'
-                            className='text-[#9e80ff] py-1 w-full bg-transparent outline-none resize-none border-2 border-transparent border-b-white'
-                            onChange={event => setAccount(event.target.value)}
-                        />
-                    </div>
-                    <div className='mt-6'>
-                        <h3 className='italic text-sm'>
-                            Number amount
-                        </h3>
-                        <input
-                            id='amount'
-                            type="number"
-                            min={0}
-                            placeholder='Amount of SOL'
-                            className='text-[#9e80ff] py-1 w-full bg-transparent outline-none resize-none border-2 border-transparent border-b-white'
-                            onChange={event => setAmount(Number(event.target.value))}
-                        />
-                    </div>
+
+                    {paymentStatus && (
+                        <div className={`mt-4 p-3 text-center rounded-lg border ${
+                            paymentStatus === 'pending' ? 'bg-yellow-900/30 text-yellow-100 border-yellow-500/30' :
+                            paymentStatus === 'confirmed' ? 'bg-[#fa6ece]/30 text-pink-100 border-[#fa6ece]/30' :
+                            paymentStatus === 'validated' ? 'bg-green-900/30 text-green-100 border-green-500/30' : ''
+                        }`}>
+                            Status: {paymentStatus.charAt(0).toUpperCase() + paymentStatus.slice(1)}
+                        </div>
+                    )}
+
+                    {qrCodeValue && !paymentStatus.includes('validated') && (
+                        <div className='flex flex-col items-center mt-4'>
+                            <p className='mb-2 text-sm text-gray-300'>Scan this QR code to pay</p>
+                            <div className='p-4 bg-white rounded-xl'>
+                                <QRCode
+                                    size={256}
+                                    style={{ height: "auto", maxWidth: "100%", width: "100%" }}
+                                    value={qrCodeValue}
+                                    viewBox={`0 0 256 256`}
+                                />
+                            </div>
+                        </div>
+                    )}
+
                     <div className='text-sm font-semibold mt-8 bg-[#222524] border-2 border-gray-500 rounded-lg p-2'>
                         <ul className='p-2'>
                             {outputs.map(({ title, dependency, href }, index) => (
                                 <li key={title} className={`flex justify-between items-center ${index !== 0 && 'mt-4'}`}>
                                     <p className='tracking-wider'>{title}</p>
-                                    {
-                                        dependency &&
+                                    {dependency &&
                                         <a
                                             href={href}
                                             target='_blank'

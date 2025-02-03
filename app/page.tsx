@@ -23,6 +23,7 @@ import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerforman
 import CryptoTrends from "@/components/crypto/Trends"
 import NewsSection from "@/components/NewsSection"
 import { tickersFutures, tickerAfterOpen, isMarketOpen } from "@/lib/utils"
+import InvestmentPlan from "@/components/crypto/InvestmentPlan"
 
 
 function getMarketSentiment(changePercentage: number | undefined) {
@@ -150,6 +151,10 @@ export default async function Home({
             </Suspense>
           </div>
         </Card>
+      </div>
+      <div>
+        <h2 className="py-4 text-xl font-medium">Investment Plan</h2>
+        <InvestmentPlan initialData={resultsWithTitles} />
       </div>
     </div>
   )
