@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import * as web3 from '@solana/web3.js';
-import { toast } from 'react-toastify';
+import { toast } from 'react-hot-toast';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { ExternalLinkIcon } from '@heroicons/react/outline';
 import { encodeURL, createQR, findReference, FindReferenceError, validateTransfer } from "@solana/pay";
