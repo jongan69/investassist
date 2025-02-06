@@ -237,7 +237,7 @@ export async function getDexScreenerData(contractAddress: string): Promise<DexSc
 }
 
 export async function getPairDetails(pairAddress: string): Promise<PairDetails> {
-    console.log("pairAddress", pairAddress)
+    // console.log("pairAddress", pairAddress)
     const response = await fetch(
         `https://io.dexscreener.com/dex/pair-details/v3/solana/${pairAddress}`
     );

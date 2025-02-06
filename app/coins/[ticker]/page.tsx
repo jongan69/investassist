@@ -1,6 +1,3 @@
-import StockChart from "@/components/chart/StockChart"
-import CompanySummaryCard from "@/app/stocks/[ticker]/components/CompanySummaryCard"
-import FinanceSummary from "@/app/stocks/[ticker]/components/FinanceSummary"
 import News from "@/app/stocks/[ticker]/components/News"
 import { Card, CardContent } from "@/components/ui/card"
 import { Suspense } from "react"
@@ -74,15 +71,6 @@ function LoadingChart() {
   )
 }
 
-// Add this new component
-// function DelayedFallback({ children }: { children: React.ReactNode }) {
-//   return (
-//     <div className="transition-opacity duration-1000">
-//       {children}
-//     </div>
-//   )
-// }
-
 export default async function CoinsPage({ params, searchParams }: Props) {
   const ticker = (await params).ticker
   const typedSearchParams = await searchParams
@@ -92,11 +80,6 @@ export default async function CoinsPage({ params, searchParams }: Props) {
   const interval = typedSearchParams?.interval as KrakenInterval || '1m'
 
   const allTimeframeData = await fetchAllTimeframes(ticker)
-
-  // if (!allTimeframeData.data) {
-  //   return <div>Error loading data</div>
-  // }
-  // console.log("allTimeframeData", allTimeframeData.data)
   return (
     <div suppressHydrationWarning>
       <Card>
@@ -122,16 +105,6 @@ export default async function CoinsPage({ params, searchParams }: Props) {
               />}
           </Suspense>
 
-
-          {/* <Suspense
-            fallback={
-              <div className="flex h-[10rem] items-center justify-center text-muted-foreground ">
-                Loading...
-              </div>
-            }
-          >
-            <CompanySummaryCard ticker={ticker} />
-          </Suspense>
           <Suspense
             fallback={
               <div className="flex h-[20rem] items-center justify-center text-muted-foreground ">
@@ -140,7 +113,7 @@ export default async function CoinsPage({ params, searchParams }: Props) {
             }
           >
             <News ticker={ticker} />
-          </Suspense> */}
+          </Suspense>
         </CardContent>
       </Card>
     </div>

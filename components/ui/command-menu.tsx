@@ -100,8 +100,9 @@ export default function CommandMenu() {
         </p>
       </Button>
       <Command>
-        <CommandDialog open={open} onOpenChange={setOpen}>
+        <CommandDialog open={open} onOpenChange={setOpen} >
           <CommandInput
+            title="Search"
             placeholder="Search by symbols or companies..."
             value={search}
             onValueChange={setSearch}
