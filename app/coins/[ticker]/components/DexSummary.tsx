@@ -154,6 +154,8 @@ export default async function DexSummary({ ticker, ca, hasCa }: { ticker: string
     return <div>Error: Token info not found</div>
   }
   const detailsPair = tokenInfo.pairs[0]
+  if (!ca) ca = tokenInfo.pairs[0].pairAddress
+  console.log("ca", ca)
   const datiledOfPair = await getPairDetails(tokenInfo.pairs[0].pairAddress)
   const krakenData = await fetchKrakenTickerData(ticker)
   const tokenPair = tokenInfo.pairs[0]

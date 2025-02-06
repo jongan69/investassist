@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   //   : "N/A"
   const latestPrice = price?.pairs[0]?.priceUsd || 'N/A'
   return {
-    title: `${decodedTicker} Price7: $${latestPrice}`,
+    title: `${decodedTicker} Price: $${latestPrice}`,
     description: `Coin page for ${decodedTicker}`,
     keywords: [decodedTicker, "coins"],
   }
