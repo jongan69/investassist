@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 // import type { Interval, Range } from "@/types/yahoo-finance"
 import AreaClosedCoinChart from "./AreaClosedCoinChart"
 // import yahooFinance from "yahoo-finance2"
-import { fetchCoinQuote } from "@/lib/solana/fetchCoinQuote"
+// import { fetchCoinQuote } from "@/lib/solana/fetchCoinQuote"
 import { type KrakenRange, type KrakenInterval, type KrakenOHLCResponse, type QuoteError } from "@/lib/solana/fetchCoinQuote"
 import { useMemo, memo, Suspense } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -164,13 +164,11 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
             </div>
           )}
 
-          <Suspense fallback={<ChartSkeleton />}>
-            <AreaClosedCoinChart 
-              chartQuotes={quotes} 
-              range={effectiveRange}
-              availableRanges={availableRanges}
-            />
-          </Suspense>
+          <AreaClosedCoinChart 
+            chartQuotes={quotes} 
+            range={effectiveRange}
+            availableRanges={availableRanges}
+          />
         </div>
       </div>
     </div>

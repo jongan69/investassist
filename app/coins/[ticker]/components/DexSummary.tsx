@@ -167,7 +167,7 @@ export default async function DexSummary({ ticker, ca, hasCa }: { ticker: string
     const krakenPair = krakenData?.result?.[ticker.toUpperCase() + 'USD']
 
     switch (key) {
-      case "priceUsd": return parseFloat(detailsData?.priceUsd || tokenPair.priceUsd)
+      case "priceUsd": return parseFloat(detailsData?.priceUsd || krakenPair.p[5])
       case "volume24h": return detailsData?.volume?.h24 || tokenPair.volume?.h24
       case "liquidity": return detailsData?.liquidity?.usd || tokenPair.liquidity?.usd
       case "marketCap": return detailsData?.marketCap || tokenPair.marketCap

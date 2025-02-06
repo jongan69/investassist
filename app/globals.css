@@ -85,13 +85,15 @@ body {
 .graph {
   -webkit-user-select: none;
   user-select: none;
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 #boundary {
-  -webkit-transition: -webkit-transform 0.5s;
-  transition: transform 0.5s;
-  -webkit-animation: 1s ease-out 0s 1 slideInFromLeft;
-  animation: 1s ease-out 0s 1 slideInFromLeft;
+  -webkit-transition: -webkit-transform 0.15s ease-out;
+  transition: transform 0.15s ease-out;
+  will-change: transform;
+  transform: translateZ(0);
 }
 
 .graph:hover #boundary {
@@ -101,26 +103,4 @@ body {
 
 .marker line {
   pointer-events: none;
-}
-
-@-webkit-keyframes slideInFromLeft {
-  0% {
-    -webkit-transform: translateX(-100%);
-    transform: translateX(-100%);
-  }
-  100% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInFromLeft {
-  0% {
-    -webkit-transform: translateX(-100%);
-    transform: translateX(-100%);
-  }
-  100% {
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-  }
 }

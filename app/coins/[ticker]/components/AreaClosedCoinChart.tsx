@@ -146,7 +146,6 @@ interface AreaProps {
 }
 
 function Area({ mask, id, data, x, y, yScale, color }: AreaProps) {
-  // Pre-calculate the path data for immediate render
   const areaPath = useMemo(() => {
     const area = d3.area()
       .x((d: any) => x(d))
@@ -169,7 +168,8 @@ function Area({ mask, id, data, x, y, yScale, color }: AreaProps) {
   return (
     <g 
       strokeLinecap="round" 
-      className="stroke-1"
+      className="stroke-1 transition-transform duration-200"
+      style={{ willChange: 'transform' }}
     >
       <LinearGradient
         id={id}
@@ -184,30 +184,30 @@ function Area({ mask, id, data, x, y, yScale, color }: AreaProps) {
         d={areaPath}
         stroke="transparent"
         fill={`url(#${id})`}
-        mask={mask}
+        className="transition-opacity duration-200"
       />
       <path 
         d={linePath}
         stroke={color}
         strokeWidth={2}
         fill="none"
-        mask={mask}
+        className="transition-opacity duration-200"
       />
     </g>
   )
 }
 
-// Add animation for the hover marker
+// Update the spring configuration for faster marker movement
 function MarkerCircle({ cx, cy, color }: { cx: number; cy: number; color: string }) {
   const spring = useSpring({
     to: { cx, cy },
     config: { 
-      tension: 170,
-      friction: 26,
-      mass: 1,
+      tension: 300, // Increased from 170
+      friction: 20, // Decreased from 26
+      mass: 0.5,    // Decreased from 1
       clamp: true
     },
-    immediate: false
+    immediate: false // Changed from true to allow smooth animation
   })
 
   return (
@@ -317,6 +317,7 @@ function GraphSlider({ data, width, height, top, state, dispatch, range }: Graph
               width={width}
               height="100%"
               fill="#fff"
+              id="boundary"
               style={{
                 transform: `translateX(${(parseFloat(state.translate) / 100) * width}px)`,
               }}
@@ -452,7 +453,7 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
   const initialState = useMemo(() => ({
     close: last.close,
     date: last.date,
-    translate: "0%",
+    translate: "100%",
     hovered: false,
   }), [last])
 
