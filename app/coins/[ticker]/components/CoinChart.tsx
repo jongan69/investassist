@@ -50,13 +50,61 @@ const ChartSkeleton = () => (
   </div>
 )
 
-// Modify the CoinChart component to use React.memo
+// Add this utility function at the top
+function isTimeframeAvailable(timeframeData: Record<KrakenRange, {
+  data: KrakenOHLCResponse | null
+  error: QuoteError | null
+}>, range: KrakenRange) {
+  const data = timeframeData[range]
+  return data?.data?.result && !data?.error
+}
+
+// Modify the CoinChart component
 const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: CoinChartProps) {
   const upperCaseTicker = useMemo(() => ticker.toUpperCase(), [ticker])
   
-  // Memoize the current timeframe data processing
+  // Add this to check available ranges
+  const availableRanges = useMemo(() => {
+    return Object.keys(timeframeData).filter(r => 
+      isTimeframeAvailable(timeframeData, r as KrakenRange)
+    ) as KrakenRange[]
+  }, [timeframeData])
+
+  // If current range is unavailable, use the closest available range
+  const effectiveRange = useMemo(() => {
+    if (isTimeframeAvailable(timeframeData, range)) {
+      return range
+    }
+    
+    // Order ranges from shortest to longest
+    const rangeOrder: KrakenRange[] = ['1d', '1w', '1m', '3m', '1y']
+    const currentIndex = rangeOrder.indexOf(range)
+    
+    // Try to find the closest available range
+    let closestRange = range
+    let distance = 1
+    while (distance < rangeOrder.length) {
+      // Try ranges both shorter and longer than current
+      const shorterIndex = currentIndex - distance
+      const longerIndex = currentIndex + distance
+      
+      if (shorterIndex >= 0 && availableRanges.includes(rangeOrder[shorterIndex])) {
+        closestRange = rangeOrder[shorterIndex]
+        break
+      }
+      if (longerIndex < rangeOrder.length && availableRanges.includes(rangeOrder[longerIndex])) {
+        closestRange = rangeOrder[longerIndex]
+        break
+      }
+      distance++
+    }
+    
+    return closestRange
+  }, [range, timeframeData, availableRanges])
+
+  // Use effectiveRange instead of range for data access
   const { currentData, quotes, priceStats } = useMemo(() => {
-    const currentData = timeframeData[range]
+    const currentData = timeframeData[effectiveRange]
     
     if (!currentData?.data?.result?.[`${upperCaseTicker}USD`]) {
       return { currentData, quotes: [], priceStats: null }
@@ -81,7 +129,7 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
     }
 
     return { currentData, quotes, priceStats }
-  }, [timeframeData, range, upperCaseTicker])
+  }, [timeframeData, effectiveRange, upperCaseTicker])
 
   // Handle error state
   if (currentData?.error) {
@@ -96,7 +144,7 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
   if (!quotes.length || !priceStats) {
     return (
       <div className="flex h-80 items-center justify-center text-muted-foreground">
-        No data available for {upperCaseTicker} on the {range} timeframe
+        No data available for {upperCaseTicker} on the {effectiveRange} timeframe
       </div>
     )
   }
@@ -110,8 +158,18 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
             priceStats={priceStats}
           />
 
+          {effectiveRange !== range && (
+            <div className="mt-2 text-sm text-muted-foreground">
+              {range.toUpperCase()} data unavailable. Showing {effectiveRange.toUpperCase()} instead.
+            </div>
+          )}
+
           <Suspense fallback={<ChartSkeleton />}>
-            <AreaClosedCoinChart chartQuotes={quotes} range={range} />
+            <AreaClosedCoinChart 
+              chartQuotes={quotes} 
+              range={effectiveRange}
+              availableRanges={availableRanges}
+            />
           </Suspense>
         </div>
       </div>

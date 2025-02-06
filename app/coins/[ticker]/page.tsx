@@ -6,35 +6,40 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Suspense } from "react"
 import type { Metadata } from "next"
 // import { fetchQuote } from "@/lib/yahoo-finance/fetchQuote"
-import { type KrakenRange, type KrakenInterval, fetchAllTimeframes } from "@/lib/solana/fetchCoinQuote"
+import { type KrakenRange, type KrakenInterval, fetchAllTimeframes, getDexScreenerData } from "@/lib/solana/fetchCoinQuote"
 import CoinChart from "@/app/coins/[ticker]/components/CoinChart"
 import { Skeleton } from "@/components/ui/skeleton"
 import DexSummary from "./components/DexSummary"
 // import { DelayedFallback } from "@/components/DelayedFallback"
-
+import { getTokenInfoFromTicker } from "@/lib/solana/getTokenInfoFromTicker"
 type Props = {
   params: Promise<any>
   searchParams: Promise<{
     ticker?: string
     range?: string
     interval?: string
+    ca?: string
   }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ticker = (await params).ticker.toUpperCase()
+  const ca = (await params).ca
+  const hasCa = ca ? true : false
   const decodedTicker = decodeURIComponent(ticker)
-  const allData = await fetchAllTimeframes(decodedTicker)
-  
-  // Get the latest price from 1d timeframe data
-  const dayData = allData.data?.["1d"]?.data?.result?.[`${decodedTicker}USD`]
-  // console.log("dayData", dayData)
-  const latestPrice = Array.isArray(dayData) 
-    ? Number(dayData[0]?.[4] || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })
-    : "N/A"
+  const price = hasCa ? await getDexScreenerData(ca) : await getTokenInfoFromTicker(decodedTicker)
+  // console.log("price", price)
+  // const allData = await fetchAllTimeframes(decodedTicker)
 
+  // Get the latest price from 1d timeframe data
+  // const dayData = allData.data?.["1d"]?.data?.result?.[`${decodedTicker}USD`]
+  // // console.log("dayData", dayData)
+  // const latestPrice = Array.isArray(dayData)
+  //   ? Number(dayData[0]?.[4] || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })
+  //   : "N/A"
+  const latestPrice = price?.pairs[0]?.priceUsd || 'N/A'
   return {
-    title: `${decodedTicker} ${latestPrice || 'N/A'}`,
+    title: `${decodedTicker} Price7: $${latestPrice}`,
     description: `Coin page for ${decodedTicker}`,
     keywords: [decodedTicker, "coins"],
   }
@@ -55,7 +60,7 @@ function LoadingChart() {
           ))}
         </div>
       </div>
-      
+
       <div className="relative h-[350px]">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
@@ -81,30 +86,21 @@ function LoadingChart() {
 export default async function CoinsPage({ params, searchParams }: Props) {
   const ticker = (await params).ticker
   const typedSearchParams = await searchParams
+  const ca = typedSearchParams?.ca as string || null
+  const hasCa = ca ? true : false
   const range = typedSearchParams?.range as KrakenRange || '1d'
   const interval = typedSearchParams?.interval as KrakenInterval || '1m'
-  
+
   const allTimeframeData = await fetchAllTimeframes(ticker)
-  
+
   // if (!allTimeframeData.data) {
   //   return <div>Error loading data</div>
   // }
-
+  // console.log("allTimeframeData", allTimeframeData.data)
   return (
     <div suppressHydrationWarning>
       <Card>
         <CardContent className="space-y-10 pt-6 lg:px-40 lg:py-14">
-          <Suspense fallback={
-            <LoadingChart />
-          }>
-            {allTimeframeData.data && <CoinChart 
-              ticker={ticker} 
-              range={range} 
-              interval={interval}
-              timeframeData={allTimeframeData.data} 
-            />}
-          </Suspense>
-
           <Suspense
             fallback={
               <div className="flex h-[10rem] items-center justify-center text-muted-foreground ">
@@ -112,8 +108,21 @@ export default async function CoinsPage({ params, searchParams }: Props) {
               </div>
             }
           >
-            <DexSummary ticker={ticker} />
+            <DexSummary ticker={ticker} ca={ca || ''} hasCa={hasCa} />
           </Suspense>
+          <Suspense fallback={
+            <LoadingChart />
+          }>
+            {allTimeframeData.data && !allTimeframeData.data["1d"].error &&
+              <CoinChart
+                ticker={ticker}
+                range={range}
+                interval={interval}
+                timeframeData={allTimeframeData.data}
+              />}
+          </Suspense>
+
+
           {/* <Suspense
             fallback={
               <div className="flex h-[10rem] items-center justify-center text-muted-foreground ">

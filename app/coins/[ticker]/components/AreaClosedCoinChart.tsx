@@ -16,6 +16,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 // import { Range } from "@/lib/yahoo-finance/types"
 import { useSpring, animated } from "@react-spring/web"
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect"
+import { cn } from "@/lib/utils"
 // UTILS
 const toDate = (d: any) => +new Date(d?.date || d)
 
@@ -395,6 +396,7 @@ interface ChartQuote {
 interface AreaClosedCoinChartProps {
   chartQuotes: ChartQuote[]
   range: KrakenRange
+  availableRanges: KrakenRange[]
 }
 
 // Add Range type import
@@ -438,7 +440,8 @@ const MemoizedArea = memo(Area)
 // Optimize the main component
 const AreaClosedCoinChart = memo(function AreaClosedCoinChart({ 
   chartQuotes, 
-  range 
+  range,
+  availableRanges
 }: AreaClosedCoinChartProps) {
   const searchParams = useSearchParams()
   const { replace } = useRouter()
@@ -517,11 +520,13 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
             key={r}
             variant={"ghost"}
             onClick={handleClick}
-            className={
+            disabled={!availableRanges.includes(r)}
+            className={cn(
               range === r
                 ? "bg-accent font-bold text-accent-foreground"
-                : "text-muted-foreground"
-            }
+                : "text-muted-foreground",
+              !availableRanges.includes(r) && "opacity-50 cursor-not-allowed"
+            )}
           >
             {r.toUpperCase()}
           </Button>

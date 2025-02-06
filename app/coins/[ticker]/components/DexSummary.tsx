@@ -3,7 +3,8 @@ import { getDexScreenerData, getPairDetails, fetchKrakenTickerData } from "@/lib
 import { getSolanaTokenCA } from "@/lib/solana/getCaFromTicker"
 import { Card } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
-import { Twitter, Send, Globe, Search} from "lucide-react"
+import { Twitter, Send, Globe, Search } from "lucide-react"
+import { getTokenInfoFromTicker } from "@/lib/solana/getTokenInfoFromTicker"
 
 function formatNumber(num: number) {
   if (num >= 1e12) return `${(num / 1e12).toFixed(2)}T`
@@ -70,25 +71,25 @@ const keysToDisplay = [
   },
   {
     key: "krakenVWAP",
-    title: "24h VWAP",
+    title: "Kraken 24h VWAP",
     format: (n: number) => `$${n.toFixed(6)}`,
     tooltip: "Volume Weighted Average Price - The average price of all trades over the last 24 hours, weighted by the volume of each trade"
   },
   {
     key: "krakenTrades",
-    title: "24h Trades",
+    title: "Kraken 24h Trades",
     format: formatWholeNumber,
     tooltip: "Number of trades executed on Kraken in the last 24 hours"
   },
   {
     key: "krakenHigh",
-    title: "24h High",
+    title: "Kraken 24h High",
     format: (n: number) => `$${n.toFixed(6)}`,
     tooltip: "Highest price traded on Kraken in the last 24 hours"
   },
   {
     key: "krakenLow",
-    title: "24h Low",
+    title: "Kraken 24h Low",
     format: (n: number) => `$${n.toFixed(6)}`,
     tooltip: "Lowest price traded on Kraken in the last 24 hours"
   },
@@ -137,19 +138,21 @@ const SocialLinks = ({ dexScreenerData, pairDetails, hasCmc }: { dexScreenerData
 
   return (
     <div className="flex flex-row items-center gap-4 justify-center">
-      {dexScreenerData?.ds?.socials?.map((social: { type: string, url: string }) => 
+      {dexScreenerData?.ds?.socials?.map((social: { type: string, url: string }) =>
         renderSocialLink(social.url, social.type)
       )}
-      {dexScreenerData?.cg?.websites?.map((website: { url: string }) => 
+      {dexScreenerData?.cg?.websites?.map((website: { url: string }) =>
         renderSocialLink(website.url, 'website')
       )}
     </div>
   )
 }
 
-export default async function DexSummary({ ticker }: { ticker: string }) {
-  const contractAddress = await getSolanaTokenCA(ticker)
-  const tokenInfo = await getDexScreenerData(contractAddress)
+export default async function DexSummary({ ticker, ca, hasCa }: { ticker: string, ca: string, hasCa: boolean }) {
+  const tokenInfo = hasCa ? await getDexScreenerData(ca) : await getTokenInfoFromTicker(ticker)
+  if (!tokenInfo) {
+    return <div>Error: Token info not found</div>
+  }
   const detailsPair = tokenInfo.pairs[0]
   const datiledOfPair = await getPairDetails(tokenInfo.pairs[0].pairAddress)
   const krakenData = await fetchKrakenTickerData(ticker)
@@ -167,7 +170,7 @@ export default async function DexSummary({ ticker }: { ticker: string }) {
       case "liquidity": return detailsData?.liquidity?.usd || tokenPair.liquidity?.usd
       case "marketCap": return detailsData?.marketCap || tokenPair.marketCap
       case "priceChange24h": return detailsData?.priceChange?.h24 || tokenPair.priceChange?.h24
-      case "holders": return datiledOfPair?.holders?.count || tokenInfo.holders?.count
+      case "holders": return datiledOfPair?.holders?.count || 0
       case "krakenBid": return krakenPair ? parseFloat(krakenPair.b[0]) : undefined
       case "krakenAsk": return krakenPair ? parseFloat(krakenPair.a[0]) : undefined
       case "krakenVWAP": return krakenPair ? parseFloat(krakenPair.p[1]) : undefined
@@ -184,35 +187,41 @@ export default async function DexSummary({ ticker }: { ticker: string }) {
         {/* Token Header Section */}
         <div className="space-y-4">
           {datiledOfPair?.ti?.name && (
-            <h2 className="text-2xl font-bold text-center">
-              {datiledOfPair.ti.name}
-            </h2>
+            <a href={`https://dexscreener.com/solana/${ca}`} target="_blank" rel="noopener noreferrer">
+              <h2 className="text-2xl font-bold text-center">
+                {datiledOfPair.ti.name}
+              </h2>
+            </a>
           )}
 
           <div className="flex flex-col items-center gap-4">
             {datiledOfPair?.cg?.imageUrl && (
               <div className="relative">
-                <Image
-                  src={datiledOfPair.cg.imageUrl}
-                  alt={datiledOfPair.cg.id}
-                  width={80}
-                  height={80}
-                  className="rounded-full"
-                />
+                <a href={`https://dexscreener.com/solana/${ca}`} target="_blank" rel="noopener noreferrer">
+                  <Image
+                    src={datiledOfPair.cg.imageUrl}
+                    alt={datiledOfPair.cg.id}
+                    width={80}
+                    height={80}
+                    className="rounded-full"
+                  />
+                </a>
               </div>
             )}
 
             {datiledOfPair?.ti?.headerImage && (
               <div className="w-full flex justify-center">
-                <Image
-                  src={datiledOfPair.ti.headerImage}
-                  alt={datiledOfPair.ti.name || 'Token header image'}
-                  width={0}
-                  height={0}
-                  sizes="100vw"
-                  className="w-full h-auto max-w-2xl rounded-lg shadow-md"
-                  style={{ objectFit: 'contain' }}
-                />
+             
+                  <Image
+                    src={datiledOfPair.ti.headerImage}
+                    alt={datiledOfPair.ti.name || 'Token header image'}
+                    width={0}
+                    height={0}
+                    sizes="100vw"
+                    className="w-full h-auto max-w-2xl rounded-lg shadow-md"
+                    style={{ objectFit: 'contain' }}
+                  />
+              
               </div>
             )}
             <SocialLinks dexScreenerData={datiledOfPair} pairDetails={datiledOfPair} hasCmc={hasCmc} />

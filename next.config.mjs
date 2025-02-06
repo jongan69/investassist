@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['dd.dexscreener.com', 'coin-images.coingecko.com'],
+        domains: ['dd.dexscreener.com', 'coin-images.coingecko.com']
     },
 };
 

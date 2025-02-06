@@ -237,6 +237,7 @@ export async function getDexScreenerData(contractAddress: string): Promise<DexSc
 }
 
 export async function getPairDetails(pairAddress: string): Promise<PairDetails> {
+    console.log("pairAddress", pairAddress)
     const response = await fetch(
         `https://io.dexscreener.com/dex/pair-details/v3/solana/${pairAddress}`
     );
@@ -246,7 +247,8 @@ export async function getPairDetails(pairAddress: string): Promise<PairDetails> 
     const data = await response.json(); 
     // console.log("dexscreener socials", data?.ds?.socials)
     // console.log("dexscreener websites", data?.ds?.websites)
-    // console.log("tokeninfo socials", data.ti.socials)
+    // console.log("tokeninfo socials", data?.ti?.socials)
+    // console.log("tokeninfo websites", data)
     // console.log("cmc urls", data?.cmc?.urls)
     // console.log("cmc socials", data.cmc.urls.twitter)
     // console.log("cmc socials", data.cmc.urls.website)

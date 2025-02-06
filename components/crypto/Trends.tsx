@@ -5,64 +5,19 @@ import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import { fetchCryptoTrends } from '@/lib/solana/getTrends';
 
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
     const [isMounted, setIsMounted] = useState(false);
-
-    interface WhaleActivity {
-        symbol: string;
-        name: string;
-        token_address: string;
-        bullishScore?: number;
-        bearishScore?: number;
-    }
-
-    interface TrendData {
-        bitcoinPrice: string;
-        ethereumPrice: string;
-        solanaPrice: string;
-        topTweetedTickers: Array<{
-            ticker: string;
-            ca: string;
-            count: number;
-        }>;
-        whaleActivity: {
-            bullish: WhaleActivity[];
-            bearish: WhaleActivity[];
-        };
-    }
 
     const [trends, setTrends] = useState<TrendData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     // console.log(data)
     useEffect(() => {
-        const fetchCryptoTrends = async () => {
-            try {
-                setIsLoading(true);
-                setError(null);
-                const response = await fetch('/api/crypto-trends');
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data = await response.json();
-                
-                if (!data.bitcoinPrice || !data.ethereumPrice || !data.solanaPrice) {
-                    throw new Error('Missing required price data');
-                }
-                
-                setTrends(data);
-            } catch (error) {
-                console.error('Error fetching crypto trends:', error);
-                setError('Failed to load crypto trends');
-                setTrends(null);
-            } finally {
-                setIsLoading(false);
-            }
-        };
 
-        fetchCryptoTrends();
+        fetchCryptoTrends(setTrends, setIsLoading, setError);
     }, []);
 
     useEffect(() => {
