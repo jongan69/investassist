@@ -1,45 +1,205 @@
 import { unstable_noStore as noStore } from "next/cache"
-import { getSolanaTokenCA } from "./getCaFromTicker"
-// import yahooFinance from "yahoo-finance2"
 
 export type QuoteError = {
     message: string;
-    code: 'VALIDATION_ERROR' | 'HTTP_ERROR' | 'API_ERROR' | 'UNKNOWN_ERROR';
+    code: 'VALIDATION_ERROR' | 'HTTP_ERROR' | 'API_ERROR' | 'UNKNOWN_ERROR' | 'PARTIAL_ERROR';
 }
 
 export type KrakenInterval = keyof typeof krakenIntervalMapping;
 
-interface DexScreenerToken {
+export interface DexScreenerToken {
+    pairs: {
+        chainId: string;
+        dexId: string;
+        url: string;
+        pairAddress: string;
+        labels?: string[];
+        baseToken: {
+            symbol: string;
+            address: string;
+            name?: string;
+        };
+        quoteToken: {
+            address: string;
+            symbol?: string;
+            name?: string;
+        };
+        priceNative: string;
+        priceUsd: string;
+        txns: {
+            buys: number;
+            sells: number;
+        };
+        volume: {
+            h24?: number;
+            h6?: number;
+            h1?: number;
+            m5?: number;
+        };
+        priceChange: {
+            h24?: number;
+            h6?: number;
+            h1?: number;
+            m5?: number;
+        };
+        liquidity: {
+            usd: number;
+        };
+        fdv: number;
+        marketCap: number;
+        pairCreatedAt: number;
+        info?: Record<string, any>;
+    }[];
+}
+
+export interface TokenScreenerPair {
+    chainId: string;
+    dexId: string;
+    url: string;
+    pairAddress: string;
     baseToken: {
         symbol: string;
         address: string;
+        name?: string;
     };
     quoteToken: {
         address: string;
+        symbol?: string;
+        name?: string;
     };
-    pairAddress: string;
+    priceUsd: string;
+    volume: { h24?: number };
+    liquidity: { usd: number };
+    marketCap: number;
+    priceChange: { h24?: number };
+}
+
+export interface DexScreenerPair extends TokenScreenerPair {
+    priceNative: string;
     txns: {
         buys: number;
         sells: number;
     };
-    volume: {
-        h24: number;
-        h6: number;
-        h1: number;
-        m5: number;
+    pairCreatedAt: number;
+    info?: Record<string, any>;
+}
+
+export interface PairDetails {
+    pairs: DexScreenerPair[];
+    holders: {
+        count: number;
+        totalSupply: string;
     };
-    priceChange: {
-        h24: number;
-        h6: number;
-        h1: number;
-        m5: number;
+    cg?: {
+        id: string;
+        url: string;
+        description: string;
+        maxSupply: number;
+        totalSupply: number;
+        websites: [
+            {
+                url: string;
+                label: string;
+            }
+        ];
+        social: any[];
+        imageUrl: string;
+        categories: string[];
     };
-    liquidity: {
-        usd: number;
+    ti?: {
+        id: string;
+        chain: { id: string };
+        address: string;
+        name: string;
+        symbol: string;
+        description: string;
+        image: string;
+        headerImage: string;
+        websites: [
+            {
+                url: string;
+                label: string;
+            }
+        ];
+        socials: [
+            {
+                url: string;
+                type: string;
+            }
+        ];
+        lockedAddresses: any[];
+        createdAt: string;
+        updatedAt: string;
+        sortByDate: string;
+    };
+    ds?: {
+        socials: any[];
+        websites: string[];
+    }
+}
+
+export interface DexScreenerTokenInfo {
+    schemaVersion: string;
+    pairs: TokenScreenerPair[];  // Use new TokenScreenerPair for token pairs
+    cg?: {
+        id: string;
+        url: string;
+        description: string;
+        maxSupply: number;
+        totalSupply: number;
+        circulatingSupply: number;
+        websites: any[];
+        social: any[];
+        imageUrl: string;
+        categories: string[];
+    };
+    ti?: {
+        id: string;
+        chain: { id: string };
+        address: string;
+        name: string;
+        symbol: string;
+        description: string;
+        websites: string[];
+        socials: any[];
+        lockedAddresses: any[];
+        createdAt: string;
+        updatedAt: string;
+        sortByDate: string;
+        image: string;
+        headerImage: string;
+        claims: any[];
+        profile: {
+            header: boolean;
+            website: boolean;
+            twitter: boolean;
+            discord: boolean;
+            linkCount: number;
+            imgKey: string;
+        };
+    };
+    holders?: {
+        count: number;
+        totalSupply: string;
+    };
+    lpHolders?: {
+        count: number;
+        totalSupply: string;
+        holders: any[];
+    };
+    su?: {
+        totalSupply: number;
+        circulatingSupply: number;
+    };
+    ta?: {
+        solana: {
+            isMintable: boolean;
+            isFreezable: boolean;
+        };
     };
 }
 
-async function getDexScreenerData(contractAddress: string) {
+export async function getDexScreenerData(contractAddress: string): Promise<DexScreenerTokenInfo> {
     const response = await fetch(
         `https://api.dexscreener.com/latest/dex/tokens/${contractAddress}`
     );
@@ -49,7 +209,7 @@ async function getDexScreenerData(contractAddress: string) {
     return response.json();
 }
 
-async function getPairDetails(pairAddress: string) {
+export async function getPairDetails(pairAddress: string): Promise<PairDetails> {
     const response = await fetch(
         `https://io.dexscreener.com/dex/pair-details/v3/solana/${pairAddress}`
     );
@@ -86,8 +246,51 @@ export const krakenIntervalMapping = {
 
 export type KrakenRange = keyof typeof krakenIntervalMapping;
 
+// Add more sophisticated caching with types
+interface CacheEntry<T> {
+  timestamp: number
+  data: T
+}
+
+const CACHE_TIME = {
+  "1d": 60 * 1000,    // 1 minute for 1d data
+  "1w": 5 * 60 * 1000,  // 5 minutes for 1w data
+  "1m": 15 * 60 * 1000, // 15 minutes for 1m data
+  "3m": 30 * 60 * 1000, // 30 minutes for 3m data
+  "1y": 60 * 60 * 1000, // 1 hour for 1y data
+} as const
+
+const priceCache = new Map<string, CacheEntry<KrakenOHLCResponse>>()
+
+// Add retry utility
+async function fetchWithRetry(url: string, options: RequestInit, retries = 3): Promise<Response> {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const response = await fetch(url, options)
+            if (response.ok) return response
+            
+            // If we get rate limited, wait longer before retry
+            if (response.status === 429) {
+                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)))
+                continue
+            }
+            
+            throw new Error(`HTTP error ${response.status}`)
+        } catch (error) {
+            if (i === retries - 1) throw error
+            await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)))
+        }
+    }
+    throw new Error('Max retries reached')
+}
+
 export async function fetchCoinQuote(ticker: string, range: KrakenRange = "1d") {
-    noStore()
+    const cacheKey = `${ticker}-${range}`
+    const cached = priceCache.get(cacheKey)
+    
+    if (cached && Date.now() - cached.timestamp < CACHE_TIME[range]) {
+        return { data: cached.data, error: null }
+    }
     
     try {
         const pair = `${ticker}USD`
@@ -99,7 +302,9 @@ export async function fetchCoinQuote(ticker: string, range: KrakenRange = "1d") 
         })
         url.search = params.toString()
 
-        const response = await fetch(url)
+        const response = await fetchWithRetry(url.toString(), {
+            next: { revalidate: 300 } // 5 minutes
+        })
 
         if (!response.ok) {
             const errorData = await response.json()
@@ -124,6 +329,11 @@ export async function fetchCoinQuote(ticker: string, range: KrakenRange = "1d") 
             }
         }
 
+        priceCache.set(cacheKey, {
+            timestamp: Date.now(),
+            data
+        })
+        
         return { data, error: null }
 
     } catch (err: unknown) {
@@ -139,146 +349,71 @@ export async function fetchCoinQuote(ticker: string, range: KrakenRange = "1d") 
     }
 }
 
-export interface OHLCVResponse {
-    data: {
-        id: string;
-        type: string;
-        attributes: {
-            ohlcv_list: [number, number, number, number, number, number][];
-            meta: {
-                base: {
-                    address: string;
-                    name: string;
-                    symbol: string;
-                };
-                quote: {
-                    address: string;
-                    name: string;
-                    symbol: string;
-                };
-            };
-        };
-    };
-}
-
-export interface OHLCVParams {
-    network: string;
-    poolAddress: string;
-    timeframe: 'day' | 'hour' | 'minute';
-    aggregate?: number;
-    beforeTimestamp?: number;
-    limit?: number;
-    currency?: 'usd' | string;
-    token?: 'base' | 'quote' | string;
-}
-
-export type OHLCVError = QuoteError & {
-    code: 'VALIDATION_ERROR' | 'HTTP_ERROR' | 'API_ERROR' | 'UNKNOWN_ERROR';
-};
-
-export async function fetchSolanaOHLCV({
-    network,
-    poolAddress,
-    timeframe,
-    aggregate = 1,
-    beforeTimestamp,
-    limit = 100,
-    currency = 'usd',
-    token,
-}: OHLCVParams) {
-    noStore();
-
-    const apiKey = process.env.COINGECKO_PRO_API_KEY;
-    console.log('apiKey', apiKey)
-    if (!apiKey) {
-        return {
-            data: null,
-            error: {
-                message: 'CoinGecko Pro API key not configured',
-                code: 'VALIDATION_ERROR'
-            } as OHLCVError
-        };
-    }
-    // pro base url
-    //   const proBaseUrl = 'https://pro-api.coingecko.com/api/v3';
-    // DEMO base url
-    const baseUrl = 'https://api.coingecko.com/api/v3';
-    const queryParams = new URLSearchParams({
-        aggregate: aggregate.toString(),
-        limit: limit.toString(),
-        currency,
-        ...(beforeTimestamp && { before_timestamp: beforeTimestamp.toString() }),
-        ...(token && { token }),
-    });
-
-    const url = `${baseUrl}/onchain/networks/${network}/pools/${poolAddress}/ohlcv/${timeframe}?${queryParams}`;
-    console.log('url', url)
-    try {
-        const response = await fetch(url, {
-            headers: {
-                'x-cg-pro-api-key': apiKey,
-            },
-        });
-        console.log('response', response)
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => null);
-            return {
-                data: null,
-                error: {
-                    message: errorData?.error || `HTTP error ${response.status}`,
-                    code: 'HTTP_ERROR'
-                } as OHLCVError
-            };
-        }
-
-        const data: OHLCVResponse = await response.json();
-        return { data, error: null };
-
-    } catch (err: unknown) {
-        const error = err as Error;
-        console.error("Failed to fetch OHLCV data:", error);
-
-        return {
-            data: null,
-            error: {
-                message: error.message || "Unknown error occurred",
-                code: 'UNKNOWN_ERROR'
-            } as OHLCVError
-        };
-    }
-}
-
 export async function fetchAllTimeframes(ticker: string) {
     noStore()
     
+    console.time(`fetchAllTimeframes:${ticker}`)  // Start timer
+    
     const timeframes = Object.keys(krakenIntervalMapping) as KrakenRange[]
+    const timeframeData: Record<KrakenRange, { 
+        data: KrakenOHLCResponse | null, 
+        error: QuoteError | null 
+    }> = {} as any
     
     try {
-        const results = await Promise.all(
+        // Track if any timeframe failed
+        let hasPartialFailure = false
+        let completeFailure = true
+
+        // Fetch all timeframes
+        await Promise.all(
             timeframes.map(async (range) => {
-                const result = await fetchCoinQuote(ticker, range)
-                return {
-                    range,
-                    ...result
+                try {
+                    const result = await fetchCoinQuote(ticker, range)
+                    timeframeData[range] = result
+                    
+                    if (!result.error) {
+                        completeFailure = false
+                    } else {
+                        hasPartialFailure = true
+                    }
+                } catch (err) {
+                    hasPartialFailure = true
+                    timeframeData[range] = {
+                        data: null,
+                        error: {
+                            message: err instanceof Error ? err.message : "Failed to fetch timeframe",
+                            code: 'UNKNOWN_ERROR'
+                        } as QuoteError
+                    }
                 }
             })
         )
 
-        // Create a map of timeframe data
-        const timeframeData = results.reduce((acc, { range, data, error }) => {
-            acc[range] = { data, error }
-            return acc
-        }, {} as Record<KrakenRange, { 
-            data: KrakenOHLCResponse | null, 
-            error: QuoteError | null 
-        }>)
+        console.timeEnd(`fetchAllTimeframes:${ticker}`)  // End timer
 
+        // If all timeframes failed, return error
+        if (completeFailure) {
+            return {
+                data: null,
+                error: {
+                    message: "Failed to fetch data for all timeframes",
+                    code: 'UNKNOWN_ERROR'
+                } as QuoteError
+            }
+        }
+
+        // Return data with warning if some timeframes failed
         return {
             data: timeframeData,
-            error: null
+            error: hasPartialFailure ? {
+                message: "Some timeframes failed to load",
+                code: 'PARTIAL_ERROR'
+            } as QuoteError : null
         }
 
     } catch (err: unknown) {
+        console.timeEnd(`fetchAllTimeframes:${ticker}`)  // End timer in case of error
         const error = err as Error
         console.error("Failed to fetch timeframe data:", error)
         return {
@@ -288,5 +423,17 @@ export async function fetchAllTimeframes(ticker: string) {
                 code: 'UNKNOWN_ERROR'
             } as QuoteError
         }
+    }
+}
+
+export async function fetchKrakenTickerData(ticker: string) {
+    noStore()
+    try {   
+        const response = await fetch(`https://api.kraken.com/0/public/Ticker?pair=${ticker.toUpperCase()}USD`)
+        const data = await response.json()
+        return data
+    } catch (err) {
+        console.error("Failed to fetch kraken ticker data:", err)
+        return null
     }
 }

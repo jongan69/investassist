@@ -8,6 +8,10 @@ import type { Metadata } from "next"
 // import { fetchQuote } from "@/lib/yahoo-finance/fetchQuote"
 import { type KrakenRange, type KrakenInterval, fetchAllTimeframes } from "@/lib/solana/fetchCoinQuote"
 import CoinChart from "@/app/coins/[ticker]/components/CoinChart"
+import { Skeleton } from "@/components/ui/skeleton"
+import DexSummary from "./components/DexSummary"
+// import { DelayedFallback } from "@/components/DelayedFallback"
+
 type Props = {
   params: Promise<any>
   searchParams: Promise<{
@@ -36,6 +40,44 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
+// Update the LoadingChart component
+function LoadingChart() {
+  return (
+    <div className="space-y-8" suppressHydrationWarning>
+      <div className="flex items-center justify-between opacity-50">
+        <div className="space-y-3">
+          <Skeleton className="h-5 w-24 bg-muted/50" />
+          <Skeleton className="h-8 w-36 bg-muted/50" />
+        </div>
+        <div className="flex gap-1.5">
+          {['1H', '1D', '1W', '1M', 'ALL'].map((_, i) => (
+            <Skeleton key={i} className="h-7 w-12 bg-muted/50" />
+          ))}
+        </div>
+      </div>
+      
+      <div className="relative h-[350px]">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            <div className="text-sm text-muted-foreground">Loading chart data...</div>
+          </div>
+        </div>
+        <Skeleton className="h-full w-full bg-muted/25" />
+      </div>
+    </div>
+  )
+}
+
+// Add this new component
+// function DelayedFallback({ children }: { children: React.ReactNode }) {
+//   return (
+//     <div className="transition-opacity duration-1000">
+//       {children}
+//     </div>
+//   )
+// }
+
 export default async function CoinsPage({ params, searchParams }: Props) {
   const ticker = (await params).ticker
   const typedSearchParams = await searchParams
@@ -49,16 +91,12 @@ export default async function CoinsPage({ params, searchParams }: Props) {
   }
 
   return (
-    <div>
+    <div suppressHydrationWarning>
       <Card>
         <CardContent className="space-y-10 pt-6 lg:px-40 lg:py-14">
-          <Suspense
-            fallback={
-              <div className="flex h-[27.5rem] items-center justify-center text-muted-foreground ">
-                Loading...
-              </div>
-            }
-          >
+          <Suspense fallback={
+            <LoadingChart />
+          }>
             <CoinChart 
               ticker={ticker} 
               range={range} 
@@ -67,15 +105,15 @@ export default async function CoinsPage({ params, searchParams }: Props) {
             />
           </Suspense>
 
-          {/* <Suspense
+          <Suspense
             fallback={
               <div className="flex h-[10rem] items-center justify-center text-muted-foreground ">
                 Loading...
               </div>
             }
           >
-            <FinanceSummary ticker={ticker} />
-          </Suspense> */}
+            <DexSummary ticker={ticker} />
+          </Suspense>
           {/* <Suspense
             fallback={
               <div className="flex h-[10rem] items-center justify-center text-muted-foreground ">

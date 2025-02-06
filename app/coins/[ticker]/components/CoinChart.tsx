@@ -5,7 +5,8 @@ import AreaClosedCoinChart from "./AreaClosedCoinChart"
 // import yahooFinance from "yahoo-finance2"
 import { fetchCoinQuote } from "@/lib/solana/fetchCoinQuote"
 import { type KrakenRange, type KrakenInterval, type KrakenOHLCResponse, type QuoteError } from "@/lib/solana/fetchCoinQuote"
-import { useMemo } from "react"
+import { useMemo, memo, Suspense } from "react"
+import { Skeleton } from "@/components/ui/skeleton"
 // import { fetchQuote } from "@/lib/yahoo-finance/fetchQuote"
 
 interface CoinChartProps {
@@ -36,75 +37,132 @@ function calculatePriceChangeUsd(qouteClose: number, currentPrice: number) {
   return currentPrice - firstItemPrice
 }
 
-export default function CoinChart({ ticker, range, timeframeData }: CoinChartProps) {
-  // Get the data for the current range
-  const upperCaseTicker = ticker.toUpperCase()
-  const memoizedCurrentData = useMemo(() => timeframeData, [timeframeData])
-  const currentData = memoizedCurrentData[range]
+// Add a loading component
+const ChartSkeleton = () => (
+  <div className="space-y-4">
+    <div className="flex items-end justify-between">
+      <div className="space-y-2">
+        <Skeleton className="h-6 w-32" />
+        <Skeleton className="h-4 w-48" />
+      </div>
+    </div>
+    <Skeleton className="h-[350px] w-full" />
+  </div>
+)
 
-  if (!currentData?.data) {
-    return <div>No data available for {upperCaseTicker} on the {range} range</div>
+// Modify the CoinChart component to use React.memo
+const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: CoinChartProps) {
+  const upperCaseTicker = useMemo(() => ticker.toUpperCase(), [ticker])
+  
+  // Memoize the current timeframe data processing
+  const { currentData, quotes, priceStats } = useMemo(() => {
+    const currentData = timeframeData[range]
+    
+    if (!currentData?.data?.result?.[`${upperCaseTicker}USD`]) {
+      return { currentData, quotes: [], priceStats: null }
+    }
+
+    const data = currentData.data as KrakenOHLCResponse
+    const quotes = data.result[`${upperCaseTicker}USD`].map(
+      ([timestamp, open, high, low, close]) => ({
+        date: new Date(timestamp * 1000),
+        close: parseFloat(close)
+      })
+    )
+
+    const lastQuote = data.result[`${upperCaseTicker}USD`][quotes.length - 1]
+    const currentPrice = Number(lastQuote[4])
+    const firstPrice = Number(quotes[0].close)
+    
+    const priceStats = {
+      priceChangePercentage: ((currentPrice - firstPrice) / firstPrice) * 100,
+      priceChangeUsd: currentPrice - firstPrice,
+      currentPrice
+    }
+
+    return { currentData, quotes, priceStats }
+  }, [timeframeData, range, upperCaseTicker])
+
+  // Handle error state
+  if (currentData?.error) {
+    return (
+      <div className="flex h-80 items-center justify-center text-destructive">
+        Error: {currentData.error.message}
+      </div>
+    )
   }
-  // console.log("currentData", currentData)
-  // console.log("ticker", ticker)
-  // console.log("currentData.data.result[`${upperCaseTicker}USD`]", currentData.data.result[`${upperCaseTicker}USD`])
-  const quotes = currentData.data.result[`${upperCaseTicker}USD`]?.map(
-    ([timestamp, open, high, low, close]) => ({
-      date: new Date(timestamp * 1000),
-      close: parseFloat(close)
-    })
-  ) || []
 
-  const priceChangePercentage =
-    quotes.length &&
-    calculatePriceChangePercentage(
-      Number(quotes[0].close),
-      Number(currentData.data.result[`${upperCaseTicker}USD`][quotes.length - 1][4])
+  // Handle loading/no data state
+  if (!quotes.length || !priceStats) {
+    return (
+      <div className="flex h-80 items-center justify-center text-muted-foreground">
+        No data available for {upperCaseTicker} on the {range} timeframe
+      </div>
     )
-  const priceChangeUsd =
-    quotes.length &&
-    calculatePriceChangeUsd(
-      Number(quotes[0].close),
-      Number(currentData.data.result[`${upperCaseTicker}USD`][quotes.length - 1][4])
-    )
-  console.log("priceChangePercentage", priceChangePercentage)
-  // log("quotes", quotes)
+  }
+
   return (
-    <div>
+    <div suppressHydrationWarning>
       <div className="flex flex-row items-end justify-between">
         <div className="space-x-1">
-          <span className="text-nowrap">
-            <span className="text-xl font-bold">
-              {upperCaseTicker}{" "}
-              <span className="text-muted-foreground">·{" "}</span>
-              ${currentData.data.result[`${upperCaseTicker}USD`][quotes.length - 1][4]}{" "}
-            </span>
-            <span className="font-semibold">
-              <span className="text-muted-foreground">·{" "}</span>
-              {priceChangePercentage &&
-                priceChangePercentage !== undefined ? (
-                priceChangePercentage > 0 ? (
-                  <span className="text-green-800 dark:text-green-400">
-                    +{priceChangeUsd}{" "}
-                    <span className="text-muted-foreground">
-                      (+{priceChangePercentage.toFixed(2)}%)
-                    </span>
-                  </span>
-                ) : (
-                  <span className="text-red-800 dark:text-red-500">
-                    {priceChangeUsd}{" "}
-                    <span className="text-muted-foreground">
-                      ({priceChangePercentage.toFixed(2)}%)
-                    </span>
-                  </span>
-                )
-              ) : null}
-            </span>
-          </span>
+          <PriceHeader 
+            ticker={upperCaseTicker}
+            priceStats={priceStats}
+          />
 
-          <AreaClosedCoinChart chartQuotes={quotes} range={range} />
+          <Suspense fallback={<ChartSkeleton />}>
+            <AreaClosedCoinChart chartQuotes={quotes} range={range} />
+          </Suspense>
         </div>
       </div>
     </div>
   )
-}
+})
+
+// Extract PriceHeader to its own memoized component
+const PriceHeader = memo(function PriceHeader({ 
+  ticker, 
+  priceStats 
+}: { 
+  ticker: string
+  priceStats: { currentPrice: number; priceChangeUsd: number; priceChangePercentage: number } | null
+}) {
+  if (!priceStats) return null
+  
+  return (
+    <span className="text-nowrap">
+      <span className="text-xl font-bold">
+        {ticker}{" "}
+        <span className="text-muted-foreground">·{" "}</span>
+        <span suppressHydrationWarning>${priceStats.currentPrice.toFixed(2)}</span>{" "}
+      </span>
+      <PriceChange priceStats={priceStats} />
+    </span>
+  )
+})
+
+// Extract price change display to its own memoized component
+const PriceChange = memo(function PriceChange({ 
+  priceStats 
+}: { 
+  priceStats: { priceChangeUsd: number; priceChangePercentage: number }
+}) {
+  const isPositive = priceStats.priceChangePercentage > 0
+  const colorClass = isPositive ? "text-green-800 dark:text-green-400" : "text-red-800 dark:text-red-500"
+  
+  return (
+    <span className="font-semibold">
+      <span className="text-muted-foreground">·{" "}</span>
+      <span suppressHydrationWarning className={colorClass}>
+        {isPositive && "+"}
+        {priceStats.priceChangeUsd.toFixed(2)}{" "}
+        <span className="text-muted-foreground">
+          ({isPositive && "+"}
+          {priceStats.priceChangePercentage.toFixed(2)}%)
+        </span>
+      </span>
+    </span>
+  )
+})
+
+export default CoinChart
