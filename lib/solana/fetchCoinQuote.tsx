@@ -134,8 +134,35 @@ export interface PairDetails {
     };
     ds?: {
         socials: any[];
-        websites: string[];
+        websites: [
+            {
+                url: string;
+                label: string;
+            }
+        ];
     }
+    cmc?: {
+        urls: {
+            twitter: [
+                {
+                    url: string;
+                    type: string;
+                }
+            ];
+            website: [
+                {
+                    url: string;
+                    type: string;
+                }
+            ];
+            chat: [
+                {
+                    url: string;
+                    type: string;
+                }
+            ];
+        };
+    };
 }
 
 export interface DexScreenerTokenInfo {
@@ -216,7 +243,15 @@ export async function getPairDetails(pairAddress: string): Promise<PairDetails> 
     if (!response.ok) {
         throw new Error(`DexScreener pair details API error: ${response.status}`);
     }
-    return response.json();
+    const data = await response.json(); 
+    // console.log("dexscreener socials", data?.ds?.socials)
+    // console.log("dexscreener websites", data?.ds?.websites)
+    // console.log("tokeninfo socials", data.ti.socials)
+    // console.log("cmc urls", data?.cmc?.urls)
+    // console.log("cmc socials", data.cmc.urls.twitter)
+    // console.log("cmc socials", data.cmc.urls.website)
+    // console.log("cmc socials", data.cmc.urls.chat)
+    return data;
 }
 
 export interface KrakenOHLCResponse {

@@ -3,7 +3,7 @@ import { getDexScreenerData, getPairDetails, fetchKrakenTickerData } from "@/lib
 import { getSolanaTokenCA } from "@/lib/solana/getCaFromTicker"
 import { Card } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
-import { Twitter, Send, Globe } from "lucide-react"
+import { Twitter, Send, Globe, Search} from "lucide-react"
 
 function formatNumber(num: number) {
   if (num >= 1e12) return `${(num / 1e12).toFixed(2)}T`
@@ -102,6 +102,49 @@ type SocialIcon = {
 const socialIcons: Record<string, SocialIcon> = {
   twitter: { type: 'Twitter', component: Twitter },
   telegram: { type: 'Telegram', component: Send },
+  website: { type: 'Website', component: Globe },
+  chat: { type: 'Chat', component: Send },
+  explorer: { type: 'Explorer', component: Search },
+}
+
+const SocialLinks = ({ dexScreenerData, pairDetails, hasCmc }: { dexScreenerData: any, pairDetails: any, hasCmc: boolean }) => {
+  const renderSocialLink = (url: string, type: string) => {
+    const iconInfo = socialIcons[type.toLowerCase()] || { component: Globe }
+    const Icon = iconInfo.component
+
+    return (
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        key={url}
+        className="hover:text-primary transition-colors"
+      >
+        <Icon className="w-6 h-6" />
+      </a>
+    )
+  }
+
+  if (hasCmc && dexScreenerData?.cmc?.urls) {
+    return (
+      <div className="flex flex-row items-center gap-4 justify-center">
+        {Object.entries(dexScreenerData.cmc.urls).map(([type, urls]) => (
+          Array.isArray(urls) && urls.map((url: string) => renderSocialLink(url, type))
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-row items-center gap-4 justify-center">
+      {dexScreenerData?.ds?.socials?.map((social: { type: string, url: string }) => 
+        renderSocialLink(social.url, social.type)
+      )}
+      {dexScreenerData?.cg?.websites?.map((website: { url: string }) => 
+        renderSocialLink(website.url, 'website')
+      )}
+    </div>
+  )
 }
 
 export default async function DexSummary({ ticker }: { ticker: string }) {
@@ -111,6 +154,7 @@ export default async function DexSummary({ ticker }: { ticker: string }) {
   const datiledOfPair = await getPairDetails(tokenInfo.pairs[0].pairAddress)
   const krakenData = await fetchKrakenTickerData(ticker)
   const tokenPair = tokenInfo.pairs[0]
+  const hasCmc = datiledOfPair?.cmc ? true : false
 
   const getData = (key: typeof keysToDisplay[number]['key']) => {
     if (!tokenPair) return undefined
@@ -171,6 +215,7 @@ export default async function DexSummary({ ticker }: { ticker: string }) {
                 />
               </div>
             )}
+            <SocialLinks dexScreenerData={datiledOfPair} pairDetails={datiledOfPair} hasCmc={hasCmc} />
           </div>
 
           {datiledOfPair?.ti?.description && (
@@ -179,35 +224,6 @@ export default async function DexSummary({ ticker }: { ticker: string }) {
             </p>
           )}
           <br />
-          <div className="flex flex-row items-center gap-4 justify-center">
-            {datiledOfPair?.ti?.socials?.map((social) => {
-              const iconInfo = socialIcons[social.type.toLowerCase()]
-              const Icon = iconInfo?.component || Globe
-
-              return (
-                <a 
-                  href={social.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  key={social.url}
-                  className="hover:text-primary transition-colors"
-                >
-                  <Icon className="w-6 h-6" />
-                </a>
-              )
-            })}
-            {datiledOfPair?.cg?.websites?.map((website) => (
-              <a 
-                href={website.url} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                key={website.url}
-                className="hover:text-primary transition-colors"
-              >
-                <Globe className="w-6 h-6" />
-              </a>
-            ))}
-          </div>
         </div>
 
         {/* Stats Grid */}

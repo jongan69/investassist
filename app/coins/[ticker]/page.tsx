@@ -86,9 +86,9 @@ export default async function CoinsPage({ params, searchParams }: Props) {
   
   const allTimeframeData = await fetchAllTimeframes(ticker)
   
-  if (!allTimeframeData.data) {
-    return <div>Error loading data</div>
-  }
+  // if (!allTimeframeData.data) {
+  //   return <div>Error loading data</div>
+  // }
 
   return (
     <div suppressHydrationWarning>
@@ -97,12 +97,12 @@ export default async function CoinsPage({ params, searchParams }: Props) {
           <Suspense fallback={
             <LoadingChart />
           }>
-            <CoinChart 
+            {allTimeframeData.data && <CoinChart 
               ticker={ticker} 
               range={range} 
               interval={interval}
               timeframeData={allTimeframeData.data} 
-            />
+            />}
           </Suspense>
 
           <Suspense
