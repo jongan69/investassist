@@ -10,63 +10,24 @@ import { getProfileByWalletAddress } from '@/lib/users/getProfileByWallet';
 import { Profile, BaseInvestmentPlan, AllocationData } from '@/types/users';
 import { saveInvestmentPlan } from '@/lib/users/saveInvestmentPlan';
 import { checkUsername } from '@/lib/users/checkUsername';
+import { generateInvestmentPlan } from '@/lib/users/generateInvesmentPlan';
 
 interface InvestmentPlanProps {
-  initialData: any[]; // TODO: type this properly
-  fearGreedValue: any;
-  sectorPerformance: any;
+  initialData: {
+    symbol: string;
+    regularMarketPrice: number;
+  }[];
+  fearGreedValue: {
+    value: number;
+    classification: string;
+  };
+  sectorPerformance: {
+    sector: string;
+    changesPercentage: string;
+  }[];
 }
 
-const helioConfig = {
-    paylinkId: "67a111f8b67b34ded1dc0f19",
-    theme: {
-        themeMode: "light" as const
-    },
-    primaryColor: "#fa6ece", // Updated to match your existing pink color theme
-    neutralColor: "#2a302f", // Updated to match your dark background
-};
 
-
-const generateInvestmentPlan = async (fearGreedValue: any, sectorPerformance: any, marketData: any[], userPortfolio: any, username: string) => {
-    const formattedSectorPerformance = sectorPerformance.map((sector: any) => ({
-        sector: sector.sector,
-        performance: parseFloat(sector.changesPercentage.replace('%', ''))
-      }));
-    const response = await fetch('/api/generate-investment-plan', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            fearGreedValue,
-            sectorPerformance: formattedSectorPerformance,
-            marketData: {
-                cryptoMarket: {
-                    bitcoin: marketData.find(d => d.symbol === 'BTC-USD')?.regularMarketPrice,
-                    ethereum: marketData.find(d => d.symbol === 'ETH-USD')?.regularMarketPrice,
-                    solana: marketData.find(d => d.symbol === 'SOL-USD')?.regularMarketPrice,
-                },
-                indices: {
-                    sp500: marketData.find(d => d.symbol === 'ES=F')?.regularMarketPrice,
-                    nasdaq: marketData.find(d => d.symbol === 'NQ=F')?.regularMarketPrice,
-                    dowJones: marketData.find(d => d.symbol === 'YM=F')?.regularMarketPrice,
-                },
-                commodities: {
-                    gold: marketData.find(d => d.symbol === 'GC=F')?.regularMarketPrice,
-                    silver: marketData.find(d => d.symbol === 'SI=F')?.regularMarketPrice,
-                },
-                tenYearYield: marketData.find(d => d.symbol === '^TNX')?.regularMarketPrice,
-            },
-            userPortfolio: {
-                totalValue: userPortfolio.totalValue,
-                holdings: userPortfolio.holdings
-            }
-        }),
-    });
-    const data = await response.json();
-    saveInvestmentPlan(username, data);
-    return data;
-}
 
 const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedValue, sectorPerformance }) => {
     const { publicKey } = useWallet();
@@ -80,6 +41,19 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
     const [isLoading, setIsLoading] = useState(true);
     const [investmentPlan, setInvestmentPlan] = useState<BaseInvestmentPlan | null>(null);
     const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const helioConfig = {
+        paylinkId: "67a111f8b67b34ded1dc0f19",
+        theme: {
+            themeMode: resolvedTheme as "light" | "dark"
+        },
+        primaryColor: "#fa6ece", // Pink accent color
+        neutralColor: resolvedTheme === 'dark' ? "#1f2937" : "#f3f4f6", // Dark/light background
+        width: "300px",
+        height: "450px",
+        fontSize: "14px",
+    };
 
     // Update the COLORS array to use theme-based colors
     const COLORS = resolvedTheme === 'dark' 
@@ -111,15 +85,20 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
         setShowProfileForm(true);
     }
 
-
-
     const handleProfileSubmit = async (e: React.FormEvent, publicKey: PublicKey) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setError(null);
 
-        // Check username availability first
-        const isUsernameAvailable = await checkUsername(username);
-        if (!isUsernameAvailable) {
+        // Add input validation
+        if (username.length < 3) {
+            setUsernameError('Username must be at least 3 characters long');
+            setIsSubmitting(false);
+            return;
+        }
+
+        if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+            setUsernameError('Username can only contain letters, numbers, underscores, and hyphens');
             setIsSubmitting(false);
             return;
         }
@@ -181,9 +160,11 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
 
     // Add function to generate investment plan
     const generatePlan = async () => {
-        if (!profile || !username) return;
+        if (!profile || !username) {
+            console.error('Profile or username missing');
+            return;
+        }
         setIsGeneratingPlan(true);
-        console.log("username", username)
         try {
             const plan = await generateInvestmentPlan(
                 fearGreedValue, 
@@ -198,6 +179,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
             setInvestmentPlan(plan);
         } catch (error) {
             console.error('Error generating investment plan:', error);
+            // Add error state handling here
+            setError('Failed to generate investment plan. Please try again.');
         } finally {
             setIsGeneratingPlan(false);
         }
@@ -396,8 +379,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
     };
 
     return (
-        <main className='min-h-screen w-full dark:text-white text-gray-800 bg-gray-50 dark:bg-gray-900'>
-            <section className='grid grid-cols-1 sm:grid-cols-12 gap-4 p-4 max-w-[2000px] mx-auto'>
+        <main className='min-h-screen w-full dark:text-white text-gray-800 bg-gray-50 dark:bg-gray-900 flex justify-center items-center'>
+            <section className='flex justify-center items-center'>
                 <div className='rounded-xl shadow-lg p-6 dark:bg-gray-800 bg-white sm:col-span-12'>
                     <div className='flex justify-between items-center mb-6'>
                         <h2 className='font-bold text-2xl text-[#fa6ece] dark:text-[#fa6ece] text-pink-600'>
@@ -473,11 +456,12 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                             </button>
                         </form>
                     ) : (
-                        <div className="space-y-6 dark:bg-gray-800/50 bg-gray-100 p-4 sm:p-6 rounded-xl">
-                            <div className="flex flex-col items-center space-y-4">
-                                <h3 className="text-lg sm:text-xl text-center">Helio Pay with Crypto</h3>
-                                <div className="w-full max-w-sm">
-                                    <HelioCheckout config={cryptoConfig} />
+                        <div className='flex justify-center items-center'>
+                            <div>
+                                <div className="w-full max-w-sm overflow-hidden">
+                                    <div className="max-w-full overflow-x-auto">
+                                        <HelioCheckout config={cryptoConfig} />
+                                    </div>
                                 </div>
                                 {isDevelopment && (
                                     <button
