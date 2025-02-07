@@ -257,7 +257,7 @@ export const AllocationChart = ({ allocations }: { allocations: AllocationData[]
                             width: '100%',
                             fontSize: '10px',
                         }}
-                        iconSize={isMobile ? 8 : 12}
+                        iconSize={isMobile ? 6 : 12}
                     />
                 </PieChart>
             </ResponsiveContainer>
