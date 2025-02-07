@@ -17,7 +17,7 @@ export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerforma
     try {
         const tokenCategorizationPromise = categorizeTokens(filteredHoldings);
         const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Token categorization timed out')), 5000)
+            setTimeout(() => reject(new Error('Token categorization timed out')), 10000) // 10 seconds Or Timeout
         );
 
         categorizedTokens = await Promise.race([tokenCategorizationPromise, timeoutPromise]) as {
