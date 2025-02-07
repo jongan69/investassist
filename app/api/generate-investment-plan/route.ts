@@ -126,7 +126,7 @@ export async function POST(req: Request) {
           model: "gpt-4o",
           response_format: { type: "json_object" },
           temperature: 0.7,
-          max_tokens: 1000,
+          max_tokens: 4000,
         });
         console.log('Completion from OpenAI:', completion); // Debug log
         if (completion.choices[0].message.content) {
