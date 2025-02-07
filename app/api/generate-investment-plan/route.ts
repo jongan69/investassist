@@ -92,7 +92,7 @@ export async function POST(req: Request) {
 
   try {
     const { fearGreedValue, sectorPerformance, marketData, userPortfolio: portfolioData } = await req.json();
-    console.log(JSON.stringify(fearGreedValue));
+    // console.log(JSON.stringify(fearGreedValue));
     userPortfolio = portfolioData
     userPortfolio.holdings = userPortfolio.holdings.filter((position: any) => position.usdValue > 1).slice(0, 10);
     const updatedPortfolioValue = userPortfolio.holdings.reduce((sum: number, token: any) => sum + token.usdValue, 0);
