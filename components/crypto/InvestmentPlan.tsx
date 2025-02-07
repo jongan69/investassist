@@ -40,6 +40,16 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
     const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [freeAccess, setHasFreeAccess] = useState(false);
+    const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const helioConfig = {
         paylinkId: "67a111f8b67b34ded1dc0f19",
@@ -48,7 +58,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
         },
         primaryColor: "#fa6ece", // Pink accent color
         neutralColor: resolvedTheme === 'dark' ? "#1f2937" : "#f3f4f6", // Dark/light background
-        width: "300px",
+        width: windowWidth < 640 ? "240px" : "300px", // Dynamic width based on screen size
         height: "450px",
         fontSize: "14px",
     };
@@ -445,8 +455,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                     ) : (
                         <div className='flex justify-center items-center'>
                             <div>
-                                <div className="w-full max-w-sm overflow-hidden">
-                                    <div className="max-w-full overflow-x-auto">
+                                <div className="max-w-sm overflow-hidden">
+                                    <div className="overflow-x-auto">
                                         <HelioCheckout config={cryptoConfig} />
                                     </div>
                                 </div>
