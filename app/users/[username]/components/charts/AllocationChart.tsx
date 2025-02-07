@@ -15,7 +15,7 @@ const MIN_ANGLE = 10; // Minimum angle in degrees between sections for external 
 export const AllocationChart = ({ allocations }: { allocations: AllocationData[] }) => {
     const { resolvedTheme } = useTheme();
     const colors = resolvedTheme === 'dark' ? COLORS.dark : COLORS.light;
-    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+    const [dimensions, setDimensions] = useState({ width: 800, height: 600 }); // Set default dimensions
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -24,9 +24,14 @@ export const AllocationChart = ({ allocations }: { allocations: AllocationData[]
             updateDimensions();
         };
 
-        checkMobile();
+        // Initial check after a short delay to ensure DOM is ready
+        const timeoutId = setTimeout(checkMobile, 100);
         window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+        
+        return () => {
+            clearTimeout(timeoutId);
+            window.removeEventListener('resize', checkMobile);
+        };
     }, []);
 
     const updateDimensions = () => {
@@ -133,10 +138,20 @@ export const AllocationChart = ({ allocations }: { allocations: AllocationData[]
 
     // Custom label component with improved positioning
     const renderCustomLabel = ({ name, percent, cx, cy, midAngle, innerRadius, outerRadius, index, startAngle, endAngle }: any) => {
+        // Safety check for required values
+        if (!cx || !cy || !outerRadius || !innerRadius) {
+            return null;
+        }
+
         const radius = outerRadius + (isMobile ? 30 : 50);
         const positions = calculateLabelPositions(cx, cy, radius, allocations);
         const pos = positions[index];
-        
+
+        // Safety check for position
+        if (!pos || typeof pos.x !== 'number' || typeof pos.y !== 'number') {
+            return null;
+        }
+
         // Always use external labels for mobile or small percentages
         if (isMobile || pos.useExternalLabel) {
             const controlPoint = {
@@ -144,14 +159,18 @@ export const AllocationChart = ({ allocations }: { allocations: AllocationData[]
                 y: cy + (radius * 0.7 * Math.sin(-midAngle * RADIAN))
             };
 
+            // Safety check for path coordinates
+            const startX = cx + (outerRadius * Math.cos(-midAngle * RADIAN));
+            const startY = cy + (outerRadius * Math.sin(-midAngle * RADIAN));
+            
+            if (isNaN(startX) || isNaN(startY) || isNaN(controlPoint.x) || isNaN(controlPoint.y) || isNaN(pos.x) || isNaN(pos.y)) {
+                return null;
+            }
+
             return (
                 <>
                     <path
-                        d={`M ${cx + (outerRadius * Math.cos(-midAngle * RADIAN))},${
-                            cy + (outerRadius * Math.sin(-midAngle * RADIAN))
-                        } 
-                        Q ${controlPoint.x},${controlPoint.y}
-                        ${pos.x},${pos.y}`}
+                        d={`M ${startX},${startY} Q ${controlPoint.x},${controlPoint.y} ${pos.x},${pos.y}`}
                         stroke={colors[index % colors.length]}
                         fill="none"
                         strokeWidth={1}
@@ -199,7 +218,7 @@ export const AllocationChart = ({ allocations }: { allocations: AllocationData[]
     };
 
     return (
-        <div className="w-full h-full" style={{ height: `${dimensions.height}px` }}>
+        <div className="w-full h-full" style={{ height: `${dimensions.height}px`, minHeight: '400px' }}>
             <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                     <Pie
