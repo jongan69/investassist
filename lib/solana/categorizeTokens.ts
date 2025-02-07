@@ -8,11 +8,11 @@ interface JupiterToken {
 
 export async function categorizeTokens(holdings: any[]) {
     try {
-        console.log('Categorizing tokens for holdings:', holdings); // Debug log
+        // console.log('Categorizing tokens for holdings:', holdings); // Debug log
         // Fetch verified tokens from Jupiter API
         const response = await fetch('https://api.jup.ag/tokens/v1/all');
         const allTokens: JupiterToken[] = await response.json();
-        console.log('Fetched tokens from Jupiter API:', allTokens.length); // Debug log
+        // console.log('Fetched tokens from Jupiter API:', allTokens.length); // Debug log
         const categorized = {
             verified: [] as any[],
             memecoins: [] as any[],
@@ -23,7 +23,7 @@ export async function categorizeTokens(holdings: any[]) {
 
         for (const holding of holdings) {
             const jupiterToken = allTokens.find(t => t.address === holding.mintAddress);
-            console.log('Processing holding:', holding, 'Found token:', jupiterToken); // Debug log
+            // console.log('Processing holding:', holding, 'Found token:', jupiterToken); // Debug log
 
             if (!jupiterToken) {
                 categorized.other.push(holding);
