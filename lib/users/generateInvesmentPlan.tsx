@@ -36,6 +36,12 @@ export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerforma
             }
         }),
     });
+    console.log('Response from OpenAI:', response);
+
+    if (!response.ok) {
+        throw new Error(`Failed to generate investment plan: ${response}`);
+    }
+
     const data = await response.json();
     saveInvestmentPlan(username, data);
     return data;
