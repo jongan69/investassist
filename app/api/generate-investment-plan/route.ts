@@ -25,6 +25,14 @@ interface InvestmentPlanResponse {
   riskLevel?: string;
 }
 
+interface TokenCategories {
+  memecoins: any[];
+  verified: any[];
+  lst: any[];
+  defi: any[];
+  other: any[];
+}
+
 const MODEL = process.env.OPENAI_MODEL || "gpt-4o"; // Add fallback model
 
 export async function POST(req: Request) {
@@ -37,85 +45,75 @@ export async function POST(req: Request) {
 
   try {
     const { fearGreedValue, sectorPerformance, marketData, userPortfolio: portfolioData } = await req.json();
-    // console.log('Received request data:', { fearGreedValue, sectorPerformance, marketData, portfolioData }); // Debug log
     userPortfolio = portfolioData;
     if (!userPortfolio) {
       return NextResponse.json({ error: "User portfolio not found" }, { status: 404 });
     }
-    userPortfolio.holdings = userPortfolio.holdings.filter((position: any) => position.usdValue > 1).slice(0, 10);
-    // console.log('Filtered user portfolio holdings:', userPortfolio.holdings); // Debug log
-    const updatedPortfolioValue = userPortfolio.holdings.reduce((sum: number, token: any) => sum + token.usdValue, 0);
-    // console.log('Updated portfolio value:', updatedPortfolioValue); // Debug log
+    
+    // Filter and process portfolio data more efficiently
+    userPortfolio.holdings = userPortfolio.holdings
+      .filter((position: any) => position.usdValue > 1)
+      .slice(0, 10)
+      .map((h: any) => ({
+        symbol: h.symbol,
+        usdValue: h.usdValue
+      }));
 
-    // Try to categorize tokens with a timeout
+    const updatedPortfolioValue = userPortfolio.holdings.reduce((sum: number, token: any) => sum + token.usdValue, 0);
+
+    // Token categorization with memory optimization
     try {
       const tokenCategorizationPromise = categorizeTokens(userPortfolio.holdings);
       const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Token categorization timed out')), 5000)
       );
 
-      categorizedTokens = await Promise.race([tokenCategorizationPromise, timeoutPromise]) as {
-        memecoins: any[];
-        verified: any[];
-        lst: any[];
-        defi: any[];
-        other: any[];
-      } | null;
+      categorizedTokens = await Promise.race([tokenCategorizationPromise, timeoutPromise]) as TokenCategories | null;
       memecoins = categorizedTokens?.memecoins || [];
-      const memecoinValue = memecoins.reduce((sum, token) => sum + token.usdValue, 0);
-      memecoinPercentage = Math.min(20, (memecoinValue / updatedPortfolioValue) * 100);
-      console.log('Memecoin percentage:', memecoinPercentage); // Debug log
+      memecoinPercentage = Math.min(20, (memecoins.reduce((sum, token) => sum + token.usdValue, 0) / updatedPortfolioValue) * 100);
     } catch (error) {
       console.error('Error or timeout in token categorization:', error);
-      // Continue without categorization
       categorizedTokens = null;
       memecoins = [];
       memecoinPercentage = 0;
     }
 
+    // Construct prompt more efficiently
+    const portfolioSection = `Current Portfolio:\nTotal Value: $${updatedPortfolioValue}\nHoldings: ${
+      userPortfolio.holdings.map((h: any) => `${h.symbol}: $${h.usdValue.toFixed(2)}`).join(', ')
+    }`;
+
+    const sentimentSection = `Market Sentiment:\nCurrent: ${fearGreedValue.fgi.now.value} (${fearGreedValue.fgi.now.valueText})\nTrend: ${fearGreedValue.fgi.previousClose.valueText}`;
+
+    const sectorSection = `Sector Performance:\n${
+      sectorPerformance.slice(0, 5).map((sector: any) => `${sector.sector}: ${sector.performance}%`).join('\n')
+    }`;
+
+    const categoriesSection = categorizedTokens ? `
+      Portfolio Categories:
+      Verified: ${categorizedTokens.verified.map((t: any) => t.symbol).join(', ')}
+      LST: ${categorizedTokens.lst.map((t: any) => t.symbol).join(', ')}
+      DeFi: ${categorizedTokens.defi.map((t: any) => t.symbol).join(', ')}
+      Memecoins: ${categorizedTokens.memecoins.map((t: any) => t.symbol).join(', ')}` : '';
+
     const prompt = `
       As a financial advisor, analyze the following data and provide an investment allocation plan:
       
-      Current Portfolio:
-      Total Value: $${updatedPortfolioValue}
-      Holdings: ${userPortfolio.holdings.map((h: any) => `${h.symbol}: $${h.usdValue.toFixed(2)}`).join(', ')}
-      
-      Market Sentiment (Fear & Greed Index):
-      Current: ${fearGreedValue.fgi.now.value} (${fearGreedValue.fgi.now.valueText})
-      Previous Close: ${fearGreedValue.fgi.previousClose.value} (${fearGreedValue.fgi.previousClose.valueText})
-      One Week Ago: ${fearGreedValue.fgi.oneWeekAgo.value} (${fearGreedValue.fgi.oneWeekAgo.valueText})
-      One Month Ago: ${fearGreedValue.fgi.oneMonthAgo.value} (${fearGreedValue.fgi.oneMonthAgo.valueText})
-      One Year Ago: ${fearGreedValue.fgi.oneYearAgo.value} (${fearGreedValue.fgi.oneYearAgo.valueText})
-      Last Updated: ${new Date(fearGreedValue.lastUpdated.humanDate).toLocaleString()}
-      
-      Sector Performance:
-      ${sectorPerformance.map((sector: any) => `${sector.sector}: ${sector.performance}%`).join('\n')}
+      ${portfolioSection}
+      ${sentimentSection}
+      ${sectorSection}
+      ${categoriesSection}
+      ${memecoins.length ? `Current memecoin allocation: ${memecoinPercentage.toFixed(1)}%` : ''}
 
-      Market Data:
-      ${JSON.stringify(marketData, null, 2)}
-      ${categorizedTokens ? `
-      Portfolio Categories:
-      - Verified Tokens: ${categorizedTokens.verified.map((t: any) => t.symbol).join(', ')}
-      - Liquid Staked Tokens: ${categorizedTokens.lst.map((t: any) => t.symbol).join(', ')}
-      - DeFi Tokens: ${categorizedTokens.defi.map((t: any) => t.symbol).join(', ')}
-      - Memecoins: ${categorizedTokens.memecoins.map((t: any) => t.symbol).join(', ')}
-      - Other: ${categorizedTokens.other.map((t: any) => t.symbol).join(', ')}
-      
-      Current Portfolio includes ${memecoins.length} memecoins worth $${memecoins.reduce((sum, m) => sum + m.usdValue, 0).toFixed(2)}.
-      Include these memecoins in the allocation, but limit their total allocation to max 20%.
-      ` : ''}
+      Provide a JSON response with:
+      1. "marketAnalysis": { "overview": string }
+      2. "allocations": Array of { "asset": string, "percentage": number, "reasoning": string }
+      3. "summary": string
+      4. "riskLevel": string
 
-      Provide a response in JSON format that MUST include:
-      1. A "marketAnalysis" object with an "overview" of current market conditions
-      2. An "allocations" array where each item has:
-         - "asset": The asset name (string)
-         - "percentage": The recommended allocation (number between 0-100)
-         - "reasoning": Why this allocation is recommended (string)
-      3. A "summary" string explaining the overall strategy
-      4. A "riskLevel" string indicating portfolio risk level
-
-      The sum of all allocation percentages must equal 100.
+      Total allocation must be 100%.
     `;
+
     console.log('Generated prompt for OpenAI:', prompt); // Debug log
     let attempt = 0;
     let responseGenerated = false;
