@@ -8,6 +8,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import { useTheme } from 'next-themes';
 import { getProfileByWalletAddress } from '@/lib/users/getProfileByWallet';
 import { Profile, BaseInvestmentPlan, AllocationData } from '@/types/users';
+
 import { generateInvestmentPlan } from '@/lib/users/generateInvesmentPlan';
 
 interface InvestmentPlanProps {
@@ -454,30 +455,21 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                             </button>
                         </form>
                     ) : (
-                        <div className='space-y-6'>
-                            <div className='bg-gray-700/30 p-4 rounded-lg text-center'>
-                                <h3 className='text-lg font-medium mb-2'>One-Time Account Creation</h3>
-                                <p className='text-sm text-gray-300 mb-4'>
-                                    Pay once to create your account and unlock unlimited AI-generated investment plans. Our AI analyzes market conditions, 
-                                    your portfolio, and global trends to provide personalized investment strategies whenever you need them.
-                                </p>
-                            </div>
-                            <div className='flex justify-center items-center'>
-                                <div>
-                                    <div className="w-full max-w-sm overflow-hidden">
-                                        <div className="max-w-full overflow-x-auto">
-                                            <HelioCheckout config={cryptoConfig} />
-                                        </div>
+                        <div className='flex justify-center items-center'>
+                            <div>
+                                <div className="w-full max-w-sm overflow-hidden">
+                                    <div className="max-w-full overflow-x-auto">
+                                        <HelioCheckout config={cryptoConfig} />
                                     </div>
-                                    {isDevelopment && (
-                                        <button
-                                            onClick={() => paymentSuccessful()}
-                                            className="w-full max-w-sm bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 text-sm sm:text-base"
-                                        >
-                                            Test Mode: Skip Payment
-                                        </button>
-                                    )}
                                 </div>
+                                {isDevelopment && (
+                                    <button
+                                        onClick={() => paymentSuccessful()}
+                                        className="w-full max-w-sm bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 text-sm sm:text-base"
+                                    >
+                                        Test Mode: Skip Payment
+                                    </button>
+                                )}
                             </div>
                         </div>
                     )}
