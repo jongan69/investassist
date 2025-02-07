@@ -1,6 +1,5 @@
 import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
-import { categorizeTokens } from '@/lib/solana/categorizeTokens';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -30,43 +29,28 @@ const MODEL = process.env.OPENAI_MODEL || "gpt-4o"; // Add fallback model
 export async function POST(req: Request) {
   const maxRetries = 2;
   const retryDelay = 1000;
-  let userPortfolio;
+  let responseGenerated = false;
+  let userPortfolio: any;
   let memecoinPercentage = 0;
   let memecoins: any[] = [];
-  let categorizedTokens = null;
 
   try {
-    const { fearGreedValue, sectorPerformance, marketData, userPortfolio: portfolioData } = await req.json();
-    // console.log('Received request data:', { fearGreedValue, sectorPerformance, marketData, portfolioData }); // Debug log
-    userPortfolio = portfolioData;
+    const { 
+      fearGreedValue, 
+      sectorPerformance, 
+      marketData, 
+      userPortfolio: receivedPortfolio,
+      tokenCategories,
+      memecoinPercentage: receivedMemecoinPercentage,
+      memecoins: receivedMemecoins 
+    } = await req.json();
+    
+    userPortfolio = receivedPortfolio;
+    memecoinPercentage = receivedMemecoinPercentage;
+    memecoins = receivedMemecoins;
+
     if (!userPortfolio) {
       return NextResponse.json({ error: "User portfolio not found" }, { status: 404 });
-    }
-
-    // Try to categorize tokens with a timeout
-    try {
-      const tokenCategorizationPromise = categorizeTokens(userPortfolio.holdings);
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error('Token categorization timed out')), 5000)
-      );
-
-      categorizedTokens = await Promise.race([tokenCategorizationPromise, timeoutPromise]) as {
-        memecoins: any[];
-        verified: any[];
-        lst: any[];
-        defi: any[];
-        other: any[];
-      } | null;
-      memecoins = categorizedTokens?.memecoins || [];
-      const memecoinValue = memecoins.reduce((sum, token) => sum + token.usdValue, 0);
-      memecoinPercentage = Math.min(20, (memecoinValue / userPortfolio.totalValue) * 100);
-      console.log('Memecoin percentage:', memecoinPercentage); // Debug log
-    } catch (error) {
-      console.error('Error or timeout in token categorization:', error);
-      // Continue without categorization
-      categorizedTokens = null;
-      memecoins = [];
-      memecoinPercentage = 0;
     }
 
     const prompt = `
@@ -89,15 +73,15 @@ export async function POST(req: Request) {
 
       Market Data:
       ${JSON.stringify(marketData, null, 2)}
-      ${categorizedTokens ? `
+      ${tokenCategories ? `
       Portfolio Categories:
-      - Verified Tokens: ${categorizedTokens.verified.map((t: any) => t.symbol).join(', ')}
-      - Liquid Staked Tokens: ${categorizedTokens.lst.map((t: any) => t.symbol).join(', ')}
-      - DeFi Tokens: ${categorizedTokens.defi.map((t: any) => t.symbol).join(', ')}
-      - Memecoins: ${categorizedTokens.memecoins.map((t: any) => t.symbol).join(', ')}
-      - Other: ${categorizedTokens.other.map((t: any) => t.symbol).join(', ')}
+      - Verified Tokens: ${tokenCategories.verified.map((t: any) => t.symbol).join(', ')}
+      - Liquid Staked Tokens: ${tokenCategories.lst.map((t: any) => t.symbol).join(', ')}
+      - DeFi Tokens: ${tokenCategories.defi.map((t: any) => t.symbol).join(', ')}
+      - Memecoins: ${tokenCategories.memecoins.map((t: any) => t.symbol).join(', ')}
+      - Other: ${tokenCategories.other.map((t: any) => t.symbol).join(', ')}
       
-      Current Portfolio includes ${memecoins.length} memecoins worth $${memecoins.reduce((sum, m) => sum + m.usdValue, 0).toFixed(2)}.
+      Current Portfolio includes ${memecoins.length} memecoins worth $${memecoins.reduce((sum: number, m: any) => sum + m.usdValue, 0).toFixed(2)}.
       Include these memecoins in the allocation, but limit their total allocation to max 20%.
       ` : ''}
 
@@ -114,7 +98,6 @@ export async function POST(req: Request) {
     `;
     console.log('Generated prompt for OpenAI:', prompt); // Debug log
     let attempt = 0;
-    let responseGenerated = false;
 
     while (attempt < maxRetries && !responseGenerated) {
       try {
@@ -206,7 +189,7 @@ export async function POST(req: Request) {
           ...(memecoinPercentage > 0 ? [{
             asset: "Memecoins",
             percentage: memecoinPercentage,
-            reasoning: `Existing memecoin holdings: ${memecoins.map(m => m.symbol).join(', ')}`
+            reasoning: `Existing memecoin holdings: ${memecoins.map((m: any) => m.symbol).join(', ')}`
           }] : []),
           {
             asset: "Cryptocurrencies",

@@ -1,4 +1,5 @@
 import { saveInvestmentPlan } from "./saveInvestmentPlan";
+import { categorizeTokens } from '@/lib/solana/categorizeTokens';
 
 export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerformance: any, marketData: any[], userPortfolio: any, username: string) => {
     const formattedSectorPerformance = sectorPerformance.map((sector: any) => ({
@@ -7,6 +8,35 @@ export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerforma
     }));
     const filteredHoldings = userPortfolio.holdings.filter((position: any) => position.usdValue > 1).slice(0, 10);
     const updatedPortfolioValue = filteredHoldings.reduce((sum: number, token: any) => sum + token.usdValue, 0);
+
+    // Add token categorization here
+    let categorizedTokens = null;
+    let memecoins: any[] = [];
+    let memecoinPercentage = 0;
+
+    try {
+        const tokenCategorizationPromise = categorizeTokens(filteredHoldings);
+        const timeoutPromise = new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Token categorization timed out')), 5000)
+        );
+
+        categorizedTokens = await Promise.race([tokenCategorizationPromise, timeoutPromise]) as {
+            memecoins: any[];
+            verified: any[];
+            lst: any[];
+            defi: any[];
+            other: any[];
+        } | null;
+
+        memecoins = categorizedTokens?.memecoins || [];
+        const memecoinValue = memecoins.reduce((sum: number, token) => sum + token.usdValue, 0);
+        memecoinPercentage = Math.min(20, (memecoinValue / updatedPortfolioValue) * 100);
+    } catch (error) {
+        console.error('Error or timeout in token categorization:', error);
+        categorizedTokens = null;
+        memecoins = [];
+        memecoinPercentage = 0;
+    }
 
     try {
         const response = await fetch('/api/generate-investment-plan', {
@@ -37,7 +67,11 @@ export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerforma
                 userPortfolio: {
                     totalValue: updatedPortfolioValue,
                     holdings: filteredHoldings
-                }
+                },
+                // Add categorization data
+                tokenCategories: categorizedTokens,
+                memecoinPercentage,
+                memecoins
             }),
         });
 
