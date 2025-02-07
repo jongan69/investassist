@@ -16,12 +16,12 @@ import { extractCidFromUrl } from "./extractCidUrl";
 import { processTokenMetadata } from "./processMetadata";
 import { withRetry } from "./withRetry";
 import { HELIUS } from "./constants";
-import { getPairDetails } from "./fetchDexData";
-import { getPairFromCa } from "./getPairFromCa";
+import { getDefaultTokenMetadata } from "./getDefaultTokenData";
+import { DEFAULT_IMAGE_URL } from "./constants";
 
+// Initialize connection and metaplex
 const connection = new Connection(HELIUS as string);
 const metaplexUmi = createUmi(HELIUS as string).use(mplTokenMetadata());
-const DEFAULT_IMAGE_URL = process.env.UNKNOWN_IMAGE_URL || "https://s3.coinmarketcap.com/static-gravity/image/5cc0b99a8dd84fbfa4e150d84b5531f2.png";
 
 // Rate limiters
 const rpcLimiter = new Bottleneck({ maxConcurrent: 10, minTime: 100 });
@@ -38,8 +38,8 @@ export interface TokenData {
   logo: string;
   cid: null;
   isNft: boolean;
-  collectionName: string;
-  collectionLogo: string;
+  collectionName?: string;
+  collectionLogo?: string;
   description?: string;
 }
 
@@ -53,14 +53,11 @@ export async function fetchTokenMetadata(mintAddress: PublicKey, mint: string) {
     // console.log(`[fetchTokenMetadata] Found metadata PDA: ${metadataPda}`);
     
     const metadataAccountInfo = await fetchDigitalAssetByMetadata(metaplexUmi, metadataPda);
-    // console.log(`[fetchTokenMetadata] Fetched digital asset metadata:`, metadataAccountInfo);
+    console.log(`[fetchTokenMetadata] Fetched digital asset metadata:`, metadataAccountInfo);
     
     if (!metadataAccountInfo) {
-      const pair = await getPairFromCa(mint);
-      // console.log(`[fetchTokenMetadata] Pair from CA:`, pair);
-      const pairDetails = await getPairDetails(pair);
-      // console.log(`[fetchTokenMetadata] Pair details:`, pairDetails);
-      return pairDetails;
+      console.log(`[fetchTokenMetadata] No metadata found for mint: ${mint}`);
+      return getDefaultTokenMetadata(mint);
     }
     
     const collectionMetadata = await fetchMetadata(metaplexUmi, metadataPda);
@@ -72,7 +69,7 @@ export async function fetchTokenMetadata(mintAddress: PublicKey, mint: string) {
     const cid = collectionMetadata.uri ? extractCidFromUrl(collectionMetadata.uri) : null;
     // console.log(`[fetchTokenMetadata] Extracted CID:`, cid);
     
-    const logo = cid ? await fetchIpfsMetadata(cid) : null;
+    const logo = cid ? await fetchIpfsMetadata(cid) : DEFAULT_IMAGE_URL;
     // console.log(`[fetchTokenMetadata] Fetched IPFS metadata:`, logo);
 
     const token = await withRetry(() =>
@@ -80,6 +77,7 @@ export async function fetchTokenMetadata(mintAddress: PublicKey, mint: string) {
     );
 
     let metadata = await processTokenMetadata(token, logo?.imageUrl ?? '', cid ?? '', mint);
+    console.log(`[fetchTokenMetadata] Processed metadata:`, metadata);
     // Handle collection metadata separately to prevent failures
     const tokenStandard = metadataAccountInfo?.metadata?.tokenStandard?.valueOf();
     // console.log(`[fetchTokenMetadata] Token standard:`, tokenStandard);
@@ -111,9 +109,10 @@ export async function fetchTokenMetadata(mintAddress: PublicKey, mint: string) {
   } catch (error) {
     console.error("[fetchTokenMetadata] Error fetching metadata:", {
       mint,
-      error: error instanceof Error ? error.message : error
+      error: error instanceof Error ? error.message : error,
+      
     });
-    return null;
+    return getDefaultTokenMetadata(mint);
   }
 }
 
@@ -158,7 +157,7 @@ export async function handleTokenData(publicKey: PublicKey, tokenAccount: any, a
   // console.log(`[handleTokenData] Jupiter price data:`, jupiterPrice.data[mintAddress]);
 
   const metadata = await fetchTokenMetadata(new PublicKey(mintAddress), mintAddress);
-  // console.log(`[handleTokenData] Processed metadata:`, metadata);
+  console.log(`[handleTokenData] Processed metadata:`, metadata);
 
   if (!metadata?.isNft) {
     const price = jupiterPrice.data[mintAddress]?.price || 0;
@@ -188,4 +187,33 @@ export async function handleTokenData(publicKey: PublicKey, tokenAccount: any, a
       ...metadata,
     };
   }
+}
+
+export async function fetchTokenDatafromPublicKey(publicKey: PublicKey) {
+  const tokenAccounts = await fetchTokenAccounts(publicKey);
+  let calculatedTotalValue = 0;
+  let processedTokens = 0;
+
+  const tokenDataPromises = tokenAccounts.value.map(async (tokenAccount) => {
+    try {
+      const tokenData = await handleTokenData(publicKey, tokenAccount, apiLimiter);
+      processedTokens++;
+      calculatedTotalValue += tokenData.usdValue;
+      return tokenData;
+    } catch (error) {
+      console.error("Error processing token data:", error);
+      return null;
+    }
+  });
+  const settledResults = await Promise.allSettled(tokenDataPromises);
+  const tokens = settledResults
+    .filter((result): result is PromiseFulfilledResult<Exclude<Awaited<ReturnType<typeof handleTokenData>>, null>> =>
+      result.status === 'fulfilled' && result.value !== null
+    )
+    .map(result => result.value).filter(token => token.name !== token.mintAddress);
+  
+  return {
+    tokens,
+    totalValue: calculatedTotalValue
+  };
 }

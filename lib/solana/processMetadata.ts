@@ -1,17 +1,44 @@
 import { DEXSCREENER } from "./constants";
 import { getDexScreenerData } from "./fetchDexData";
-const DEFAULT_IMAGE_URL = process.env.UNKNOWN_IMAGE_URL || "https://s3.coinmarketcap.com/static-gravity/image/5cc0b99a8dd84fbfa4e150d84b5531f2.png";
+import { DEFAULT_IMAGE_URL } from "./constants";
 
-// Helper function to fetch token info from contract address
-export async function getTokenInfo(address: string) {
+interface TokenInfo {
+    name: string;
+    contractAddress: string;
+    symbol: string;
+    decimals: number;
+    marketCap?: number;
+    price: number;
+    priceNative: number;
+    image?: string;
+    website?: string[];
+}
+
+interface TokenMetadata {
+    name: string;
+    symbol: string;
+    logo: string;
+    cid: string;
+    collectionName: string;
+    collectionLogo: string;
+    isNft: boolean;
+}
+
+/**
+ * Fetches token information from DexScreener API
+ * @param address - Token contract address
+ * @returns TokenInfo object or null if fetch fails
+ */
+export async function getTokenInfo(address: string): Promise<TokenInfo | null> {
     try {
         const response = await fetch(`${DEXSCREENER}/latest/dex/tokens/${address}`);
         if (!response.ok) return null;
 
         const data = await response.json();
-        const pair = data.pairs?.[0]; // Get first pair's information
+        const pair = data.pairs?.[0];
 
         if (!pair?.baseToken) return null;
+
         return {
             name: pair.baseToken.name,
             contractAddress: address,
@@ -29,43 +56,56 @@ export async function getTokenInfo(address: string) {
     }
 }
 
-// Helper function to process token metadata
-export async function processTokenMetadata(token: any, logo: string, cid: string, mint: string) {
+/**
+ * Processes token metadata, attempting to fetch missing information from various sources
+ * @param token - Token object containing metadata
+ * @param logo - Logo URL
+ * @param cid - Content identifier
+ * @param mint - Token mint address
+ * @returns Processed TokenMetadata object
+ */
+export async function processTokenMetadata(
+    token: any,
+    logo: string,
+    cid: string,
+    mint: string
+): Promise<TokenMetadata> {
     try {
         let tokenName = mint;
         let symbol = mint;
-        if (logo.length > 0) {
-            logo = logo;
-        } else {
+        let finalLogo = logo;
+
+        if (!logo) {
             const tokenInfo = await getTokenInfo(mint);
-            // If getTokenInfo fails, try getDexScreenerData as fallback
-            if (!tokenInfo) {
-                const dexScreenerData = await getDexScreenerData(mint);
-                if (dexScreenerData) {
-                    tokenName = dexScreenerData?.pairs?.[0]?.baseToken?.name ?? mint;
-                    symbol = dexScreenerData?.pairs?.[0]?.baseToken?.symbol ?? mint;
-                    logo = dexScreenerData?.cg?.imageUrl ?? DEFAULT_IMAGE_URL;
-                }
-            } else {
+            
+            if (tokenInfo) {
                 tokenName = tokenInfo.name ?? mint;
                 symbol = tokenInfo.symbol ?? mint;
-                logo = tokenInfo.image ?? DEFAULT_IMAGE_URL;
+                finalLogo = tokenInfo.image ?? DEFAULT_IMAGE_URL;
+            } else {
+                // Fallback to DexScreener data
+                const dexScreenerData = await getDexScreenerData(mint);
+                const baseToken = dexScreenerData?.pairs?.[0]?.baseToken;
+                
+                if (baseToken) {
+                    tokenName = baseToken.name ?? mint;
+                    symbol = baseToken.symbol ?? mint;
+                    finalLogo = dexScreenerData?.cg?.imageUrl ?? DEFAULT_IMAGE_URL;
+                }
             }
         }
 
-        let metadata = {
+        return {
             name: token?.metadata?.name || tokenName,
             symbol: token?.metadata?.symbol || symbol,
-            logo: logo,
+            logo: finalLogo,
             cid: cid,
             collectionName: token?.metadata?.name || tokenName,
-            collectionLogo: logo ?? DEFAULT_IMAGE_URL,
+            collectionLogo: finalLogo ?? DEFAULT_IMAGE_URL,
             isNft: false
         };
-        return metadata;
     } catch (error) {
         console.error("Error processing token metadata for", mint, ":", error);
-        // Return basic metadata with mint address if all else fails
         return {
             name: mint,
             symbol: mint,

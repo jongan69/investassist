@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
-// import { MongoClient } from "mongodb"
 import clientPromise from "@/lib/mongo/connect"
+
 export async function POST(req: Request) {
     try {
         const { username, walletAddress, holdings, totalValue } = await req.json();
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
 
         await collection.insertOne({ username, walletAddress, holdings, totalValue, createdAt: new Date() });
 
-        return NextResponse.json({ message: "Profile created successfully" }, { status: 200 });
+        return NextResponse.json({ profile: { username, walletAddress, holdings, totalValue, createdAt: new Date() }, message: "Profile created successfully" }, { status: 200 });
     } catch (error) {
         console.error("Error creating profile:", error)
         return NextResponse.json({ error: "Failed to create profile" }, { status: 500 });

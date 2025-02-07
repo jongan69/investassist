@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { HelioCheckout } from '@heliofi/checkout-react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
-import { apiLimiter, fetchTokenAccounts, handleTokenData } from '@/lib/solana/fetchTokens';
+import { fetchTokenDatafromPublicKey } from '@/lib/solana/fetchTokens';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { useTheme } from 'next-themes';
 import { getProfileByWalletAddress } from '@/lib/users/getProfileByWallet';
@@ -25,7 +25,6 @@ interface InvestmentPlanProps {
     changesPercentage: string;
   }[];
 }
-
 
 
 const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedValue, sectorPerformance }) => {
@@ -102,27 +101,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
             return;
         }
 
-        const tokenAccounts = await fetchTokenAccounts(publicKey);
-        let calculatedTotalValue = 0;
-        let processedTokens = 0;
-
-        const tokenDataPromises = tokenAccounts.value.map(async (tokenAccount) => {
-          try {
-            const tokenData = await handleTokenData(publicKey, tokenAccount, apiLimiter);
-            processedTokens++;
-            calculatedTotalValue += tokenData.usdValue;
-            return tokenData;
-          } catch (error) {
-            console.error("Error processing token data:", error);
-            return null;
-          }
-        });
-        const settledResults = await Promise.allSettled(tokenDataPromises);
-        const tokens = settledResults
-          .filter((result): result is PromiseFulfilledResult<Exclude<Awaited<ReturnType<typeof handleTokenData>>, null>> =>
-            result.status === 'fulfilled' && result.value !== null
-          )
-          .map(result => result.value);
+        const { tokens, totalValue } = await fetchTokenDatafromPublicKey(publicKey);
         try {
             const response = await fetch('/api/create-profile', {
                 method: 'POST',
@@ -133,7 +112,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                     username,
                     walletAddress: publicKey?.toString(),
                     holdings: tokens,
-                    totalValue: calculatedTotalValue,
+                    totalValue,
                 }),
             });
 
@@ -141,7 +120,10 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                 throw new Error('Failed to create profile');
             }
 
+            const data = await response.json();
             setShowProfileForm(false);
+            setProfile(data.profile);
+            setUsername(data.profile.username);
         } catch (error) {
             console.error('Error creating profile:', error);
         } finally {
@@ -383,7 +365,11 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                 <div className='rounded-xl shadow-lg p-6 dark:bg-gray-800 bg-white sm:col-span-12'>
                     <div className='flex justify-between items-center mb-6'>
                         <h2 className='font-bold text-2xl text-[#fa6ece] dark:text-[#fa6ece] text-pink-600'>
-                            {profile ? 'Your Profile' : showProfileForm ? 'Create Your Profile' : 'Purchase Investment Plan'}
+                            {profile ? 
+                            <a href={`/users/${profile.username}`} className='text-pink-600 dark:text-pink-400'>Your Profile</a>
+                            : showProfileForm 
+                                ? 'Create Your Profile' 
+                                : 'Purchase Investment Plan'}
                         </h2>
                     </div>
 

@@ -4,7 +4,7 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui"
 import * as walletAdapterWallets from '@solana/wallet-adapter-wallets'
 import * as web3 from '@solana/web3.js';
 import React, { createContext, useContext, useState } from 'react';
-import { HELIUS, NETWORK } from '@/lib/solana/constants';
+import { HELIUS } from '@/lib/solana/constants';
 // require('@solana/wallet-adapter-react-ui/styles.css');
 import '../../styles/custom-wallet-styles.css'; // Custom wallet Button styles
 
@@ -19,7 +19,7 @@ const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 const WalletContextProvider = ({ children }: { children: React.ReactNode }) => {
 
-    const endpoint = NETWORK ?? web3.clusterApiUrl('mainnet-beta');
+    const endpoint = HELIUS ?? web3.clusterApiUrl('mainnet-beta');
     const wallets = [
         new walletAdapterWallets.PhantomWalletAdapter(),
         new walletAdapterWallets.CoinbaseWalletAdapter(),

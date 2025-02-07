@@ -10,12 +10,13 @@ export const SERUM = "https://solana-api.projectserum.com";
 export const HELIUS = process.env.NEXT_PUBLIC_SOLANA_RPC_ENDPOINT;
 export const DEXSCREENER = "https://api.dexscreener.com";
 export const JUPITER = "https://api.jup.ag";
+export const DEFAULT_IMAGE_URL = process.env.UNKNOWN_IMAGE_URL || "https://s3.coinmarketcap.com/static-gravity/image/5cc0b99a8dd84fbfa4e150d84b5531f2.png";
 
 export const JUPITER_QUOTE = "https://quote-api.jup.ag/v6";
 
 export const BLOCKENGINE = `mainnet.block-engine.jito.wtf`
 
 // You can use any of the other enpoints here
-export const NETWORK = "https://api.devnet.solana.com"; // for devnet
+// export const NETWORK = "https://api.devnet.solana.com"; // for devnet
 // or
 // export const NETWORK = "https://api.mainnet-beta.solana.com"; // for mainnet

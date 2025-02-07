@@ -58,7 +58,7 @@ export default async function UserProfilePage({ params }: Props) {
   }
   
   return (
-    <div className="w-full" suppressHydrationWarning>
+    <div className="min-w-full" suppressHydrationWarning>
           <Suspense fallback={<LoadingProfile />}>
             <UserInvestmentPlan profile={profileData.profile} />
           </Suspense>

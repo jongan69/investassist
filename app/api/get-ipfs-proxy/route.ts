@@ -1,7 +1,4 @@
-// app/api/get-ipfs-proxy/route.ts
-const DEFAULT_IMAGE_URL =
-  process.env.UNKNOWN_IMAGE_URL ||
-  "https://s3.coinmarketcap.com/static-gravity/image/5cc0b99a8dd84fbfa4e150d84b5531f2.png";
+import { DEFAULT_IMAGE_URL } from "@/lib/solana/constants";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
