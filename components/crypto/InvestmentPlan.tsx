@@ -218,7 +218,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
 
         return (
             <div className="space-y-4 mt-6">
-                <div className="bg-gray-700/30 p-4 rounded-lg">
+                <div className="bg-black-700/30 p-4 rounded-lg">
                     <h3 className="text-xl mb-2 text-[#fa6ece]">Market Analysis</h3>
                     <p className="text-sm mb-4">
                         {marketAnalysis.overview || marketAnalysis.summary || plan.summary}
@@ -229,7 +229,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                             {/* Handle both sector formats */}
                             {Array.isArray(marketAnalysis.sectors.positive) ? (
                                 <>
-                                    <div className="bg-gray-800/30 p-3 rounded-lg">
+                                    <div className="bg-black-800/30 p-3 rounded-lg">
                                         <h4 className="font-medium mb-2 text-green-400">Positive Sectors</h4>
                                         <ul className="text-sm space-y-1">
                                             {marketAnalysis.sectors.positive?.map(sector => (
@@ -237,7 +237,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                                             ))}
                                         </ul>
                                     </div>
-                                    <div className="bg-gray-800/30 p-3 rounded-lg">
+                                    <div className="bg-black-800/30 p-3 rounded-lg">
                                         <h4 className="font-medium mb-2 text-red-400">Negative Sectors</h4>
                                         <ul className="text-sm space-y-1">
                                             {Object.values(marketAnalysis.sectors.negative as string[]).map(sector => (
@@ -245,7 +245,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                                             ))}
                                         </ul>
                                     </div>
-                                    <div className="bg-gray-800/30 p-3 rounded-lg">
+                                    <div className="bg-black-800/30 p-3 rounded-lg">
                                         <h4 className="font-medium mb-2 text-gray-400">Neutral Sectors</h4>
                                         <ul className="text-sm space-y-1">
                                             {Object.values(marketAnalysis.sectors.neutral as string[]).map(sector => (
@@ -259,7 +259,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                                     <h4 className="font-medium mb-2">Sector Performance</h4>
                                     <div className="grid grid-cols-2 gap-2">
                                         {Object.entries(marketAnalysis.sectors as Record<string, number>).map(([sector, performance]: [string, number]) => (
-                                            <div key={sector} className="bg-gray-800/30 p-2 rounded-lg">
+                                            <div key={sector} className="bg-black-800/30 p-2 rounded-lg">
                                                 <span>{sector}: </span>
                                                 <span className={performance > 0 ? 'text-green-400' : 'text-red-400'}>
                                                     {typeof performance === 'number' ? `${performance.toFixed(2)}%` : performance}
@@ -273,7 +273,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                     )}
                 </div>
 
-                <div className="bg-gray-700/30 p-4 rounded-lg">
+                <div className="bg-black-700/30 p-4 rounded-lg">
                     <h3 className="text-xl mb-2 text-[#fa6ece]">Portfolio Recommendation</h3>
                     {(recommendation as any).diversification && (
                         <p className="text-sm mb-4">{(recommendation as any).diversification}</p>
@@ -286,7 +286,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                     )}
                 </div>
 
-                <div className="dark:bg-gray-700/50 bg-gray-100 p-6 rounded-xl">
+                <div className="dark:bg-black-700/50 bg-black-100 p-6 rounded-xl">
                     <h3 className="text-xl font-semibold text-center mb-6 text-pink-600 dark:text-pink-400">
                         Recommended Portfolio Allocation
                     </h3>
@@ -372,11 +372,11 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
     };
 
     return (
-        <main className='min-h-screen w-full max-w-screen-lg dark:text-white text-gray-800 bg-gray-50 dark:bg-gray-900 flex justify-center items-center'>
-            <section className='flex justify-center items-center'>
-                <div className='rounded-xl shadow-lg p-6 dark:bg-gray-800 bg-white sm:col-span-12'>
+        <div className='min-h-screen w-full p-4 text-gray-900 dark:text-gray-100 bg-black-50 dark:bg-black-900'>
+            <div className='max-w-4xl mx-auto'>
+                <div className='rounded-xl shadow-lg p-6 bg-black-50 dark:bg-black-800'>
                     <div className='flex justify-between items-center mb-6'>
-                        <h2 className='font-bold text-2xl text-[#fa6ece] dark:text-[#fa6ece] text-pink-600'>
+                        <h2 className='font-bold text-2xl text-pink-600 dark:text-pink-400'>
                             {profile ?
                                 <a href={`/users/${profile.username}`} className='text-pink-600 dark:text-pink-400'>Your Profile</a>
                                 : showProfileForm
@@ -386,7 +386,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                     </div>
 
                     {!publicKey ? (
-                        <div className='text-center p-4 dark:bg-yellow-900/30 bg-yellow-100 dark:text-yellow-100 text-yellow-800 dark:border-yellow-500/30 border-yellow-400 rounded-lg'>
+                        <div className='text-center p-4 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-100 border border-yellow-200 dark:border-yellow-800 rounded-lg'>
                             Please connect your wallet to continue
                         </div>
                     ) : isLoading ? (
@@ -395,17 +395,17 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                         </div>
                     ) : profile ? (
                         <div className="space-y-6">
-                            <div className="dark:bg-gray-700/50 bg-gray-100 p-6 rounded-xl">
+                            <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-xl">
                                 <p className="text-lg mb-3">Username: <span className="text-pink-600 dark:text-pink-400 font-semibold">{profile.username}</span></p>
-                                <p className="text-sm dark:text-gray-300 text-gray-600">Wallet: {profile.walletAddress}</p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">Wallet: {profile.walletAddress}</p>
                                 <p className="text-lg mt-4 font-medium">Total Portfolio Value: ${profile.totalValue.toFixed(2)}</p>
                             </div>
                             <div className="space-y-3">
                                 <h3 className="text-xl font-semibold">Your Holdings</h3>
                                 {profile?.holdings.map((token, index) => (
-                                    <div key={index} className="dark:bg-gray-700/50 bg-gray-100 p-4 rounded-xl flex justify-between items-center">
+                                    <div key={index} className="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl flex justify-between items-center">
                                         <span className="font-medium">{token.symbol}</span>
-                                        <span className="text-gray-600 dark:text-gray-300">
+                                        <span className="text-gray-600 dark:text-gray-400">
                                             ({token.amount.toFixed(2)} {token.symbol}) ${token.usdValue.toFixed(2)}
                                         </span>
                                     </div>
@@ -415,7 +415,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                             <button
                                 onClick={generatePlan}
                                 disabled={isGeneratingPlan}
-                                className="w-full bg-[#fa6ece] text-white py-2 px-4 rounded-lg hover:bg-[#e55eb7]"
+                                className="w-full bg-pink-600 dark:bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-700 dark:hover:bg-pink-600 disabled:opacity-50 transition-colors"
                             >
                                 {isGeneratingPlan ? 'Generating Investment Plan...' : error ? 'Error Generating Investment Plan' : 'Generate Investment Plan'}
                             </button>
@@ -432,20 +432,21 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                                     value={username}
                                     onChange={(e) => {
                                         setUsername(e.target.value);
-                                        setUsernameError(null); // Clear error when user types
+                                        setUsernameError(null);
                                     }}
-                                    className={`w-full p-2 rounded-lg bg-gray-700 text-white ${usernameError ? 'border-red-500 border-2' : ''
-                                        }`}
+                                    className={`w-full p-2 rounded-lg bg-black-50 dark:bg-black-700 border border-black-300 dark:border-gray-600 ${
+                                        usernameError ? 'border-red-500 dark:border-red-500' : ''
+                                    }`}
                                     required
                                 />
                                 {usernameError && (
-                                    <p className="text-red-500 text-sm mt-1">{usernameError}</p>
+                                    <p className="text-red-500 dark:text-red-400 text-sm mt-1">{usernameError}</p>
                                 )}
                             </div>
                             <button
                                 type="submit"
                                 disabled={isSubmitting || !!usernameError}
-                                className="w-full bg-[#fa6ece] text-white py-2 px-4 rounded-lg hover:bg-[#e55eb7] disabled:opacity-50"
+                                className="w-full bg-pink-600 dark:bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-700 dark:hover:bg-pink-600 disabled:opacity-50 transition-colors"
                             >
                                 {isSubmitting ? 'Creating Profile...' : 'Create Profile'}
                             </button>
@@ -458,10 +459,10 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                                         <HelioCheckout config={cryptoConfig} />
                                     </div>
                                 </div>
-                                {isDevelopment || freeAccess && (
+                                {(isDevelopment || freeAccess) && (
                                     <button
                                         onClick={() => paymentSuccessful()}
-                                        className="w-full max-w-sm bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 text-sm sm:text-base mt-4"
+                                        className="w-full max-w-sm bg-yellow-600 dark:bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 dark:hover:bg-yellow-600 text-sm sm:text-base mt-4 transition-colors"
                                     >
                                         Free Access: Skip Payment
                                     </button>
@@ -470,8 +471,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                         </div>
                     )}
                 </div>
-            </section>
-        </main>
+            </div>
+        </div>
     );
 };
 
