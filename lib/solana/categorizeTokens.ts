@@ -4,6 +4,7 @@ interface JupiterToken {
     symbol: string;
     tags: string[];
     daily_volume: number;
+    logoURI?: string;
 }
 
 // Add this cache object at the top of the file, outside the function
@@ -26,8 +27,9 @@ export async function categorizeTokens(holdings: any[]) {
         if (tokenCache.data && (now - tokenCache.timestamp) < ONE_HOUR) {
             allTokens = tokenCache.data;
         } else {
-            // Fetch from our Next.js API route instead of directly from Jupiter
-            const response = await fetch('/api/jupiter-tokens');
+            // Use absolute URL to work in both client and server environments
+            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+            const response = await fetch(`${baseUrl}/api/jupiter-tokens`);
             
             if (!response.ok) {
                 throw new Error('Failed to fetch tokens');
