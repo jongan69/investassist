@@ -34,9 +34,11 @@ interface JupiterToken {
 
 async function categorizeTokens(holdings: any[]) {
   try {
+    console.log('Categorizing tokens for holdings:', holdings); // Debug log
     // Fetch verified tokens from Jupiter API
     const response = await fetch('https://api.jup.ag/tokens/v1/all');
     const allTokens: JupiterToken[] = await response.json();
+    console.log('Fetched tokens from Jupiter API:', allTokens.length); // Debug log
     const categorized = {
       verified: [] as any[],
       memecoins: [] as any[],
@@ -47,6 +49,7 @@ async function categorizeTokens(holdings: any[]) {
 
     for (const holding of holdings) {
       const jupiterToken = allTokens.find(t => t.address === holding.mintAddress);
+      console.log('Processing holding:', holding, 'Found token:', jupiterToken); // Debug log
 
       if (!jupiterToken) {
         categorized.other.push(holding);
@@ -76,6 +79,7 @@ async function categorizeTokens(holdings: any[]) {
       }
     }
 
+    console.log('Categorized tokens:', categorized); // Debug log
     return categorized;
   } catch (error) {
     console.error('Error categorizing tokens:', error);
@@ -92,15 +96,21 @@ export async function POST(req: Request) {
 
   try {
     const { fearGreedValue, sectorPerformance, marketData, userPortfolio: portfolioData } = await req.json();
-    // console.log(JSON.stringify(fearGreedValue));
-    userPortfolio = portfolioData
+    console.log('Received request data:', { fearGreedValue, sectorPerformance, marketData, portfolioData }); // Debug log
+    userPortfolio = portfolioData;
+    if (!userPortfolio) {
+      return NextResponse.json({ error: "User portfolio not found" }, { status: 404 });
+    }
     userPortfolio.holdings = userPortfolio.holdings.filter((position: any) => position.usdValue > 1).slice(0, 10);
+    console.log('Filtered user portfolio holdings:', userPortfolio.holdings); // Debug log
     const updatedPortfolioValue = userPortfolio.holdings.reduce((sum: number, token: any) => sum + token.usdValue, 0);
+    console.log('Updated portfolio value:', updatedPortfolioValue); // Debug log
     // Replace detectMemecoins with new categorization
     const categorizedTokens = await categorizeTokens(userPortfolio.holdings);
     const memecoins = categorizedTokens?.memecoins || [];
     const memecoinValue = memecoins.reduce((sum, token) => sum + token.usdValue, 0);
     memecoinPercentage = Math.min(20, (memecoinValue / userPortfolio.totalValue) * 100);
+    console.log('Memecoin percentage:', memecoinPercentage); // Debug log
 
     const prompt = `
       As a financial advisor, analyze the following data and provide an investment allocation plan:
@@ -146,12 +156,13 @@ export async function POST(req: Request) {
 
       The sum of all allocation percentages must equal 100.
     `;
-    console.log(prompt);
+    console.log('Generated prompt for OpenAI:', prompt); // Debug log
     let attempt = 0;
     let responseGenerated = false;
 
     while (attempt < maxRetries && !responseGenerated) {
       try {
+        console.log(`Attempt ${attempt + 1} to generate response`); // Debug log
         const completion = await openai.chat.completions.create({
           messages: [{ role: "user", content: prompt }],
           model: "gpt-4o",
@@ -163,6 +174,7 @@ export async function POST(req: Request) {
         if (completion.choices[0].message.content) {
           responseGenerated = true;
           const response = JSON.parse(completion.choices[0].message.content);
+          console.log('Received response from OpenAI:', response); // Debug log
 
           // Validate the response has the required structure
           if (!response.allocations || !Array.isArray(response.allocations)) {
@@ -186,12 +198,14 @@ export async function POST(req: Request) {
       }
 
       if (!responseGenerated && attempt < maxRetries - 1) {
+        console.log(`Retrying after ${retryDelay}ms delay`); // Debug log
         await new Promise(resolve => setTimeout(resolve, retryDelay));
       }
       attempt++;
     }
 
     if (!responseGenerated) {
+      console.log('Generating fallback response'); // Debug log
       // Update the fallback response to include memecoins if present
       const fallbackResponse: InvestmentPlanResponse = {
         marketAnalysis: {
