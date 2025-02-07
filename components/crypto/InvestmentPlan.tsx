@@ -8,9 +8,8 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recha
 import { useTheme } from 'next-themes';
 import { getProfileByWalletAddress } from '@/lib/users/getProfileByWallet';
 import { Profile, BaseInvestmentPlan, AllocationData } from '@/types/users';
-
 import { generateInvestmentPlan } from '@/lib/users/generateInvesmentPlan';
-
+import { hasFreeAccess } from '@/lib/users/hasFreeAccess';
 interface InvestmentPlanProps {
   initialData: {
     symbol: string;
@@ -40,6 +39,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
     const [investmentPlan, setInvestmentPlan] = useState<BaseInvestmentPlan | null>(null);
     const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [freeAccess, setHasFreeAccess] = useState(false);
 
     const helioConfig = {
         paylinkId: "67a111f8b67b34ded1dc0f19",
@@ -61,6 +61,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
     useEffect(() => {
         const checkProfile = async () => {
             if (publicKey) {
+                const freeAccessResponse = await hasFreeAccess(publicKey.toString());
+                setHasFreeAccess(freeAccessResponse);
                 setIsLoading(true);
                 try {
                     const profileData = await getProfileByWalletAddress(publicKey.toString());
@@ -448,12 +450,12 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                                         <HelioCheckout config={cryptoConfig} />
                                     </div>
                                 </div>
-                                {isDevelopment && (
+                                {isDevelopment || freeAccess && (
                                     <button
                                         onClick={() => paymentSuccessful()}
-                                        className="w-full max-w-sm bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 text-sm sm:text-base"
+                                        className="w-full max-w-sm bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 text-sm sm:text-base mt-4"
                                     >
-                                        Test Mode: Skip Payment
+                                        Free Access: Skip Payment
                                     </button>
                                 )}
                             </div>
