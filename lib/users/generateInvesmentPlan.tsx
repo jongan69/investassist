@@ -5,6 +5,9 @@ export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerforma
         sector: sector.sector,
         performance: parseFloat(sector.changesPercentage.replace('%', ''))
     }));
+    const filteredHoldings = userPortfolio.holdings.filter((position: any) => position.usdValue > 1).slice(0, 10);
+    const updatedPortfolioValue = filteredHoldings.reduce((sum: number, token: any) => sum + token.usdValue, 0);
+
     try {
         const response = await fetch('/api/generate-investment-plan', {
             method: 'POST',
@@ -32,8 +35,8 @@ export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerforma
                     tenYearYield: marketData.find(d => d.symbol === '^TNX')?.regularMarketPrice,
                 },
                 userPortfolio: {
-                    totalValue: userPortfolio.totalValue,
-                    holdings: userPortfolio.holdings
+                    totalValue: updatedPortfolioValue,
+                    holdings: filteredHoldings
                 }
             }),
         });
