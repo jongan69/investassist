@@ -253,7 +253,7 @@ export const AllocationChart = ({ allocations }: { allocations: AllocationData[]
                         wrapperStyle={{
                             paddingTop: '4rem',
                             paddingBottom: '4rem',
-                            marginBottom: '4rem',
+                            marginBottom: '4.5rem',
                             width: '100%',
                             fontSize: '10px',
                         }}
