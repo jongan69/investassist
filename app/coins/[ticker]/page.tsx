@@ -2,12 +2,11 @@ import News from "@/app/stocks/[ticker]/components/News"
 import { Card, CardContent } from "@/components/ui/card"
 import { Suspense } from "react"
 import type { Metadata } from "next"
-// import { fetchQuote } from "@/lib/yahoo-finance/fetchQuote"
-import { type KrakenRange, type KrakenInterval, fetchAllTimeframes, getDexScreenerData } from "@/lib/solana/fetchCoinQuote"
+import { type KrakenRange, type KrakenInterval, fetchAllTimeframes } from "@/lib/solana/fetchCoinQuote"
+import { getDexScreenerData } from "@/lib/solana/fetchDexData"
 import CoinChart from "@/app/coins/[ticker]/components/CoinChart"
 import { Skeleton } from "@/components/ui/skeleton"
 import DexSummary from "./components/DexSummary"
-// import { DelayedFallback } from "@/components/DelayedFallback"
 import { getTokenInfoFromTicker } from "@/lib/solana/getTokenInfoFromTicker"
 type Props = {
   params: Promise<any>
@@ -25,15 +24,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const hasCa = ca ? true : false
   const decodedTicker = decodeURIComponent(ticker)
   const price = hasCa ? await getDexScreenerData(ca) : await getTokenInfoFromTicker(decodedTicker)
-  // console.log("price", price)
-  // const allData = await fetchAllTimeframes(decodedTicker)
-
-  // Get the latest price from 1d timeframe data
-  // const dayData = allData.data?.["1d"]?.data?.result?.[`${decodedTicker}USD`]
-  // // console.log("dayData", dayData)
-  // const latestPrice = Array.isArray(dayData)
-  //   ? Number(dayData[0]?.[4] || 0).toLocaleString("en-US", { style: "currency", currency: "USD" })
-  //   : "N/A"
   const latestPrice = price?.pairs[0]?.priceUsd || 'N/A'
   return {
     title: `${decodedTicker} Price: $${latestPrice}`,

@@ -20,7 +20,7 @@ export async function GET(req: NextRequest) {
     );
 
     // This is the internal Helio ID of the transaction, if it matches the one recieved in onSuccess callback from the Helio Checkout, the transaction is valid!
-    console.log(result.data.meta.id);
+    // console.log(result.data.meta.id);
 
     return NextResponse.json(result.data, {
       status: 200,

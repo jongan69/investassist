@@ -10,9 +10,11 @@ import { usePathname } from "next/navigation"
 import CommandMenu from "./command-menu"
 import dynamic from 'next/dynamic'
 import { useTheme } from 'next-themes'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import '../../styles/navbar-styles.css'
+import { useWallet } from "@solana/wallet-adapter-react"
+import { getProfileByWalletAddress } from "@/lib/users/getProfileByWallet"
 // Dynamically import WalletMultiButton with no SSR
 const WalletMultiButton = dynamic(
   () => import('@solana/wallet-adapter-react-ui').then(mod => mod.WalletMultiButton),
@@ -29,6 +31,20 @@ export default function Navigation() {
   const pathname = usePathname()
   const { resolvedTheme } = useTheme()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { publicKey } = useWallet();
+  const [username, setUsername] = useState('');
+  
+  useEffect(() => {
+    const getUsername = async () => {
+      if (publicKey) {
+        const profile = await getProfileByWalletAddress(publicKey.toBase58());
+        if (profile.exists) {
+          setUsername(profile.profile.username);
+        }
+      }
+    }
+    getUsername();
+  }, [publicKey]);
 
   return (
     <header className="sticky top-0 z-40 w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -57,6 +73,11 @@ export default function Navigation() {
                   {item.title}
                 </Link>
               ))}
+              {username && (
+                <Link href={`/users/${username}`} className={`${navigationMenuTriggerStyle()} whitespace-nowrap`}>
+                  Profile
+                </Link>
+              )}
             </div>
           </div>
 

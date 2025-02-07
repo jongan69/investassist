@@ -23,7 +23,6 @@ export async function getSolanaTokenCA(ticker: string) {
       // Send GET request to the API
       const response = await fetch(url);
       const data = await response.json();
-      // console.log("data", data)
       // Filter for Solana pairs and valid quote tokens (SOL or USDC)
       const validPairs = ((data.pairs || []) as any[]).filter((pair: any) => 
         pair.chainId === 'solana' && 
@@ -31,20 +30,6 @@ export async function getSolanaTokenCA(ticker: string) {
          pair.quoteToken?.address === 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v') && // USDC
         pair.liquidity?.usd > 5000 // Minimum liquidity threshold
       );
-
-      // Log all pairs for this specific token
-      // validPairs.forEach((pair: { baseToken: { address: string; symbol: any; }; quoteToken: { symbol: any; }; liquidity: { usd: any; }; volume: { h24: any; }; marketCap: any; pairAddress: any; }) => {
-      //   if (pair.baseToken?.address === '7XJiwLDrjzxDYdZipnJXzpr1iDTmK55XixSFAa7JgNEL') {
-      //     console.log('Found target token pair:', {
-      //       baseToken: pair.baseToken?.symbol,
-      //       quoteToken: pair.quoteToken?.symbol,
-      //       liquidity: pair.liquidity?.usd,
-      //       volume24h: pair.volume?.h24,
-      //       marketCap: pair.marketCap,
-      //       pairAddress: pair.pairAddress
-      //     });
-      //   }
-      // });
   
       // Group pairs by base token address
       const groupedPairs = validPairs.reduce((acc: { [key: string]: any[] }, pair: any) => {
@@ -55,16 +40,6 @@ export async function getSolanaTokenCA(ticker: string) {
         }
         return acc;
       }, {});
-
-      // Log grouped pairs for this specific token
-      // if (groupedPairs['7XJiwLDrjzxDYdZipnJXzpr1iDTmK55XixSFAa7JgNEL']) {
-      //   console.log('Grouped pairs for target token:', 
-      //     groupedPairs['7XJiwLDrjzxDYdZipnJXzpr1iDTmK55XixSFAa7JgNEL'].map((p: { quoteToken: { symbol: any; }; volume: { h24: any; }; }) => ({
-      //       quoteToken: p.quoteToken?.symbol,
-      //       volume24h: p.volume?.h24
-      //     }))
-      //   );
-      // }
   
       // For each token, select the SOL pair with highest market cap
       const bestPairs = Object.values(groupedPairs).map(pairs => {
@@ -93,7 +68,6 @@ export async function getSolanaTokenCA(ticker: string) {
         return marketCapB - marketCapA;
       });
   
-      // console.log("bestPairs", bestPairs)
       // Sort by market cap, holder count, and liquidity
       bestPairs.sort((a: any, b: any) => {
         const marketCapA = a.baseToken?.fdv || 0;
@@ -116,15 +90,6 @@ export async function getSolanaTokenCA(ticker: string) {
         // Finally by liquidity
         return liquidityB - liquidityA;
       });
-
-      // console.log("Top 3 pairs by ranking:", bestPairs.slice(0, 3).map(p => ({
-      //   symbol: p.baseToken?.symbol,
-      //   marketCap: p.marketCap,
-      //   liquidity: p.liquidity?.usd,
-      //   quoteToken: p.quoteToken?.symbol,
-      //   holders: p.holders?.holders?.length || 0,
-      //   volume24h: p.volume?.h24
-      // })));
   
       // Find the highest market cap pair that matches the ticker
       for (const pair of bestPairs) {
@@ -146,12 +111,10 @@ export async function getSolanaTokenCA(ticker: string) {
   
       // If no exact match found but we have valid pairs, return the highest market cap one
       if (bestPairs.length > 0) {
-        console.log(`No exact match found. Returning highest market cap token: ${bestPairs[0].baseToken.symbol}`);
         return bestPairs[0].baseToken.address;
       }
   
       // Return null if no valid pairs found
-      console.log(`Token ${ticker} not found on Solana with sufficient liquidity.`);
       return null;
   
     } catch (error: any) {

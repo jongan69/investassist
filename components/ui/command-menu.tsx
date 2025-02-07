@@ -47,13 +47,11 @@ export default function CommandMenu() {
   const [topTweetedTickers, setTopTweetedTickers] = useState<TopTweetedTickers[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  // console.log(data)
   useEffect(() => {
     if (open) {
       fetchCryptoTrends(setTrends, setIsLoading, setError);
     }
     if (trends) {
-      console.log('trends', trends)
       const topTweetedTickers = trends.topTweetedTickers
       const whaleTickers = trends.whaleActivity
       const bullishTickers = whaleTickers.bullish.map((ticker) => ({
@@ -66,8 +64,6 @@ export default function CommandMenu() {
         count: ticker.bearishScore || 0,
         ca: ticker.token_address
       }))
-      console.log('bullishTickers', bullishTickers)
-      console.log('bearishTickers', bearishTickers)
       const combinedTickers = [...topTweetedTickers, ...bullishTickers, ...bearishTickers]
       setTopTweetedTickers(combinedTickers);
     }
@@ -85,7 +81,7 @@ export default function CommandMenu() {
   }, [])
 
   return (
-    <div>
+    <>
       <Button
         onClick={() => setOpen(true)}
         variant="outline"
@@ -99,8 +95,8 @@ export default function CommandMenu() {
           </kbd>
         </p>
       </Button>
-      <Command>
-        <CommandDialog open={open} onOpenChange={setOpen} >
+      <CommandDialog open={open} onOpenChange={setOpen}>
+        <Command>
           <CommandInput
             title="Search"
             placeholder="Search by symbols or companies..."
@@ -196,8 +192,8 @@ export default function CommandMenu() {
                   </CommandItem>
                 ))}
           </CommandList>
-        </CommandDialog>
-      </Command>
-    </div>
+        </Command>
+      </CommandDialog>
+    </>
   )
 }

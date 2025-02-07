@@ -1,13 +1,9 @@
 import { cn } from "@/lib/utils"
-// import { fetchChartData } from "@/lib/yahoo-finance/fetchChartData"
-// import type { Interval, Range } from "@/types/yahoo-finance"
+
 import AreaClosedCoinChart from "./AreaClosedCoinChart"
-// import yahooFinance from "yahoo-finance2"
-// import { fetchCoinQuote } from "@/lib/solana/fetchCoinQuote"
 import { type KrakenRange, type KrakenInterval, type KrakenOHLCResponse, type QuoteError } from "@/lib/solana/fetchCoinQuote"
-import { useMemo, memo, Suspense } from "react"
+import { useMemo, memo } from "react"
 import { Skeleton } from "@/components/ui/skeleton"
-// import { fetchQuote } from "@/lib/yahoo-finance/fetchQuote"
 
 interface CoinChartProps {
   ticker: string

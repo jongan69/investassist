@@ -17,7 +17,6 @@ export async function fetchFearGreedIndex() {
       throw new Error("Failed to fetch fear and greed index")
     }
     const data = await res.json()
-    // console.log("Fetched fear and greed index", data)
     return data
   } catch (error) {
     console.error("Error fetching fear and greed index", error)

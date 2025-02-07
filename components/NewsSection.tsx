@@ -20,38 +20,26 @@ const NewsSection: React.FC<NewsSectionProps> = ({ news }) => {
   const articlesPerPage = 5
 
   useEffect(() => {
-    // console.log('useEffect triggered')
-    // console.log('newsItems length:', newsItems.length)
-    // console.log('currentPage:', currentPage)
+
     const indexOfLastArticle = currentPage * articlesPerPage
     const indexOfFirstArticle = indexOfLastArticle - articlesPerPage
-    // console.log('indexOfFirstArticle:', indexOfFirstArticle)
-    // console.log('indexOfLastArticle:', indexOfLastArticle)
+
     const newCurrentNews = newsItems.slice(indexOfFirstArticle, indexOfLastArticle)
-    // console.log('new currentNews:', newCurrentNews)
     setCurrentNews(newCurrentNews)
   }, [currentPage, newsItems])
 
   const totalPages = Math.ceil(newsItems.length / articlesPerPage)
-//   console.log('totalPages:', totalPages)
 
   const handleNextPage = () => {
-    // console.log('handleNextPage clicked')
-    // console.log('current page before:', currentPage)
-    // console.log('totalPages:', totalPages)
     if (currentPage < totalPages) {
       const nextPage = currentPage + 1
-      console.log('setting page to:', nextPage)
       setCurrentPage(nextPage)
     }
   }
 
   const handlePreviousPage = () => {
-    // console.log('handlePreviousPage clicked')
-    // console.log('current page before:', currentPage)
     if (currentPage > 1) {
       const prevPage = currentPage - 1
-    //   console.log('setting page to:', prevPage)
       setCurrentPage(prevPage)
     }
   }
@@ -77,7 +65,6 @@ const NewsSection: React.FC<NewsSectionProps> = ({ news }) => {
       <div className="flex justify-between p-4">
         <button
           onClick={() => {
-            console.log("Previous button clicked")
             handlePreviousPage()
           }}
           disabled={currentPage === 1}
@@ -87,7 +74,6 @@ const NewsSection: React.FC<NewsSectionProps> = ({ news }) => {
         </button>
         <button
           onClick={() => {
-            console.log("Next button clicked")
             handleNextPage()
           }}
           disabled={currentPage === totalPages}

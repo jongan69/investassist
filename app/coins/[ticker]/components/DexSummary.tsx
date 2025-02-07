@@ -1,6 +1,6 @@
 import Image from "next/image"
-import { getDexScreenerData, getPairDetails, fetchKrakenTickerData } from "@/lib/solana/fetchCoinQuote"
-import { getSolanaTokenCA } from "@/lib/solana/getCaFromTicker"
+import { fetchKrakenTickerData } from "@/lib/solana/fetchCoinQuote"
+import { getPairDetails, getDexScreenerData } from "@/lib/solana/fetchDexData"
 import { Card } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
 import { Twitter, Send, Globe, Search } from "lucide-react"
@@ -155,7 +155,6 @@ export default async function DexSummary({ ticker, ca, hasCa }: { ticker: string
   }
   const detailsPair = tokenInfo.pairs[0]
   if (!ca) ca = tokenInfo.pairs[0].pairAddress
-  // console.log("ca", ca)
   const datiledOfPair = await getPairDetails(tokenInfo.pairs[0].pairAddress)
   const krakenData = await fetchKrakenTickerData(ticker)
   const tokenPair = tokenInfo.pairs[0]

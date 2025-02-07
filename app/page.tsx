@@ -96,8 +96,6 @@ export default async function Page() {
 
   const fearGreedValue = await fetchFearGreedIndex()
   const sectorPerformance = await fetchSectorPerformance()
-  // console.log('sectorPerformance', sectorPerformance)
-  // console.log('fearGreedValue', fearGreedValue)
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Invest Assist</h1>
@@ -157,7 +155,13 @@ export default async function Page() {
       </div>
       <div>
         <h2 className="py-4 text-xl font-medium">Investment Plan</h2>
-        <InvestmentPlan initialData={resultsWithTitles} />
+        <Suspense fallback={<div>Loading...</div>}>
+          <InvestmentPlan 
+            initialData={resultsWithTitles}
+            fearGreedValue={fearGreedValue}
+            sectorPerformance={sectorPerformance}
+          />
+        </Suspense>
       </div>
     </div>
   )

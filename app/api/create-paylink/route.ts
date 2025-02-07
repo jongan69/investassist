@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       },
     );
 
-    console.log(`https://hel.io/pay/${result.data.id}`);
+    // console.log(`https://hel.io/pay/${result.data.id}`);
 
     return NextResponse.json(`https://hel.io/pay/${result.data.id}`, {
       status: 200,

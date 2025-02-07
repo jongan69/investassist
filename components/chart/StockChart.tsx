@@ -56,7 +56,6 @@ export default async function StockChart({
     }))
     .filter((quote) => quote.close !== undefined && quote.date !== null)
 
-  // console.log("ChartQuotes", ChartQuotes)
   return (
     <div className="h-[27.5rem] w-full">
       <div>

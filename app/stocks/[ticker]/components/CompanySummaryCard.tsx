@@ -14,10 +14,9 @@ export default async function CompanySummaryCard({
       modules: ["summaryProfile"],
     })
   } catch (error) {
-    console.log(error)
+    console.error(error)
     return null
   }
-  // console.log(data)
   if (!data.summaryProfile) {
     return null
   }

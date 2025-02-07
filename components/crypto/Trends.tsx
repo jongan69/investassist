@@ -14,9 +14,7 @@ export default function CryptoTrends({ data }: { data: any }) {
     const [trends, setTrends] = useState<TrendData | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    // console.log(data)
     useEffect(() => {
-
         fetchCryptoTrends(setTrends, setIsLoading, setError);
     }, []);
 
@@ -80,14 +78,8 @@ export default function CryptoTrends({ data }: { data: any }) {
                                                     try {
                                                         const price = trends[`${crypto.toLowerCase()}Price` as keyof TrendData] as string;
                                                         const formattedPrice = Number(price.replace(",", "")).toFixed(2);
-
-                                                        // Find the correct object in the data array
                                                         const cryptoData = data.find((item: any) => item.shortName.toLowerCase() === crypto.toLowerCase());
-
-                                                        // Use yfinance price if available, otherwise use formattedPrice
                                                         const yfianncePrice = cryptoData ? cryptoData.regularMarketPrice : Number(formattedPrice);
-                                                        // console.log(yfianncePrice);
-
                                                         const averagePrice = (Number(formattedPrice) + yfianncePrice) / 2;
                                                         return averagePrice.toFixed(2);
                                                     } catch (e) {

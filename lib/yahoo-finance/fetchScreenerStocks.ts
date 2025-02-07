@@ -27,7 +27,7 @@ export async function fetchScreenerStocks(query: string, count?: number) {
 
     return response
   } catch (error) {
-    console.log("Failed to fetch screener stocks", error)
+    console.error("Failed to fetch screener stocks", error)
     throw new Error("Failed to fetch screener stocks.")
   }
 }

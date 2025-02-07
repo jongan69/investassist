@@ -1375,6 +1375,11 @@
     "@json-rpc-tools/types" "^1.7.6"
     "@pedrouid/environment" "^1.0.1"
 
+"@jup-ag/api@^6.0.38":
+  version "6.0.38"
+  resolved "https://registry.npmjs.org/@jup-ag/api/-/api-6.0.38.tgz"
+  integrity sha512-HSTYVzWtxs3Krd0nfRnTf0ahtbZRW7h1H7F/pDvDLFWZguCyQhAYyK7X5TW74zQQLhpdiL0zNtWLSGxGtqy8Hg==
+
 "@keystonehq/alias-sampling@^0.1.1":
   version "0.1.2"
   resolved "https://registry.npmjs.org/@keystonehq/alias-sampling/-/alias-sampling-0.1.2.tgz"
@@ -1482,6 +1487,147 @@
     semver "^7.3.8"
     superstruct "^1.0.3"
 
+"@metaplex-foundation/mpl-token-metadata@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/mpl-token-metadata/-/mpl-token-metadata-3.4.0.tgz"
+  integrity sha512-AxBAYCK73JWxY3g9//z/C9krkR0t1orXZDknUPS4+GjwGH2vgPfsk04yfZ31Htka2AdS9YE/3wH7sMUBHKn9Rg==
+  dependencies:
+    "@metaplex-foundation/mpl-toolbox" "^0.10.0"
+
+"@metaplex-foundation/mpl-toolbox@^0.10.0":
+  version "0.10.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/mpl-toolbox/-/mpl-toolbox-0.10.0.tgz"
+  integrity sha512-84KD1L5cFyw5xnntHwL4uPwfcrkKSiwuDeypiVr92qCUFuF3ZENa2zlFVPu+pQcjTlod2LmEX3MhBmNjRMpdKg==
+
+"@metaplex-foundation/umi-bundle-defaults@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-bundle-defaults/-/umi-bundle-defaults-1.0.0.tgz"
+  integrity sha512-Z8Ah4vJNkO5/sDvtG49kULNdGskaGYfJSygA9p061zG8BztML1okBkx0QZG/TM0fB0cMI8w5cwTd1O5gT64+Kg==
+  dependencies:
+    "@metaplex-foundation/umi-downloader-http" "^1.0.0"
+    "@metaplex-foundation/umi-eddsa-web3js" "^1.0.0"
+    "@metaplex-foundation/umi-http-fetch" "^1.0.0"
+    "@metaplex-foundation/umi-program-repository" "^1.0.0"
+    "@metaplex-foundation/umi-rpc-chunk-get-accounts" "^1.0.0"
+    "@metaplex-foundation/umi-rpc-web3js" "^1.0.0"
+    "@metaplex-foundation/umi-serializer-data-view" "^1.0.0"
+    "@metaplex-foundation/umi-transaction-factory-web3js" "^1.0.0"
+
+"@metaplex-foundation/umi-downloader-http@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-downloader-http/-/umi-downloader-http-1.0.0.tgz"
+  integrity sha512-qBG3A6SG8cgOwu+DVeGIDyakKw1oZsoi+ta6jPQYredeISDJwbysepg7O6ickvGmdjPA6WLeoVRjiZWmt2LgDg==
+
+"@metaplex-foundation/umi-eddsa-web3js@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-eddsa-web3js/-/umi-eddsa-web3js-1.0.0.tgz"
+  integrity sha512-mIdp65Fsi7bhFcDUFZxcThGQaMXQahMNGR46HkXUHglQtRxxYGLduT3XEq/aLPVZCW9mWfyK/M03AInwIAcJTw==
+  dependencies:
+    "@metaplex-foundation/umi-web3js-adapters" "^1.0.0"
+    "@noble/curves" "^1.0.0"
+    "@soceanfi/solana-cli-config" "0.2.0"
+
+"@metaplex-foundation/umi-http-fetch@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-http-fetch/-/umi-http-fetch-1.0.0.tgz"
+  integrity sha512-yZbAcuxMOdSSFhvltWIMescBAuf4ddeYjK4LABbTXWKhZFTliYdSSMmViLArbO6lBJAekKhyNbIdM/uH6KhE/w==
+  dependencies:
+    node-fetch "^2.6.7"
+
+"@metaplex-foundation/umi-options@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-options/-/umi-options-1.0.0.tgz"
+  integrity sha512-DhfwrXTsvOrDwPGT5FpzC7VooLGMRjUSBV8W9xkp+WMxkzbNXeUV+bFmoTNx+0ynLhINp6Ij76W/Rl+4dIwU0w==
+
+"@metaplex-foundation/umi-program-repository@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-program-repository/-/umi-program-repository-1.0.0.tgz"
+  integrity sha512-kw1u/Dv7p4olyM1am0FbPvjPWbgoHDBI/cS7Dl0h0PFqlBq9I4JHZmpd53+C4P7lFZtWEcDWKEgmdqAsCja40Q==
+
+"@metaplex-foundation/umi-public-keys@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-public-keys/-/umi-public-keys-1.0.0.tgz"
+  integrity sha512-irTc5QGOCgV0mGLY/SU3YOrXVmvEEOrqb1gDvtBtr714X4EtwSv5Aqner9L1/s4PzaXmeN4f86FWFWM3knrlEw==
+  dependencies:
+    "@metaplex-foundation/umi-serializers-encodings" "^1.0.0"
+
+"@metaplex-foundation/umi-rpc-chunk-get-accounts@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-rpc-chunk-get-accounts/-/umi-rpc-chunk-get-accounts-1.0.0.tgz"
+  integrity sha512-srFzEAGh9rOfAclBSFE947SSNHcpq4SH8mThSt7EiDf59iPe/r1n5IPyZp1sHogEQJ4KKXst7vBV03qC7ASuDg==
+
+"@metaplex-foundation/umi-rpc-web3js@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-rpc-web3js/-/umi-rpc-web3js-1.0.0.tgz"
+  integrity sha512-SANWIFaMfOVZCxecD9ycd1tzhKiJrkwRqHotEcM+LMb5EKMagTsqEHh3VAsCg3XfjKOG8m3XMeBJ534aySfEHw==
+  dependencies:
+    "@metaplex-foundation/umi-web3js-adapters" "^1.0.0"
+
+"@metaplex-foundation/umi-serializer-data-view@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-serializer-data-view/-/umi-serializer-data-view-1.0.0.tgz"
+  integrity sha512-LSn0uZiBC+qJrsaY98lIPFnMLDqlXlcJt0TZJhBKZNPIBLdSwvcU60ABloycxafR+dzpM0vzne0JXNVaKf3Cug==
+
+"@metaplex-foundation/umi-serializers-core@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-serializers-core/-/umi-serializers-core-1.0.0.tgz"
+  integrity sha512-Ov95ARxh179EX6elN6LoHeC+TczirYvzFeIA4gGZKTISpP3sqwRrej6ppnY6qQFk2bFKCKJyvVGiyP2jjuqjJg==
+
+"@metaplex-foundation/umi-serializers-encodings@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-serializers-encodings/-/umi-serializers-encodings-1.0.0.tgz"
+  integrity sha512-1278rWbkA9ZAPaq+EXmOwM9pi1LC8eaHsgm0XVFebxsZFkaHbCYPXmB9vkO2jTFFFy4uy5hsYGPRValFl4GdWg==
+  dependencies:
+    "@metaplex-foundation/umi-serializers-core" "^1.0.0"
+
+"@metaplex-foundation/umi-serializers-numbers@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-serializers-numbers/-/umi-serializers-numbers-1.0.0.tgz"
+  integrity sha512-OXKX/hQbbc16X7PvpmM2hZ9WrhDBTPJsEcEbRSN4kQewNdmpyMnfXhaqW84Tfc99Ipvyl6Lpe3Dbl/oOTHqong==
+  dependencies:
+    "@metaplex-foundation/umi-serializers-core" "^1.0.0"
+
+"@metaplex-foundation/umi-serializers@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-serializers/-/umi-serializers-1.0.0.tgz"
+  integrity sha512-9lbVzH2cHjAfhrTm7oJ7+5xnfNz+/J3YY554JZUh+Dw7WxiQUvhs0v5DxrNNGbEZQENjm+gORnZ8WX3a3gW2VA==
+  dependencies:
+    "@metaplex-foundation/umi-options" "^1.0.0"
+    "@metaplex-foundation/umi-public-keys" "^1.0.0"
+    "@metaplex-foundation/umi-serializers-core" "^1.0.0"
+    "@metaplex-foundation/umi-serializers-encodings" "^1.0.0"
+    "@metaplex-foundation/umi-serializers-numbers" "^1.0.0"
+
+"@metaplex-foundation/umi-transaction-factory-web3js@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-transaction-factory-web3js/-/umi-transaction-factory-web3js-1.0.0.tgz"
+  integrity sha512-VyHo6gTElAFCOpA87bQJE2nvEqOV8c72dGIlb/qAJAF85kca1Pw7jh6YFVFaZMOKNXFpFrbHofgS+uNQZRYXRg==
+  dependencies:
+    "@metaplex-foundation/umi-web3js-adapters" "^1.0.0"
+
+"@metaplex-foundation/umi-web3js-adapters@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi-web3js-adapters/-/umi-web3js-adapters-1.0.0.tgz"
+  integrity sha512-daAuxorWSwF3cOWz9UjlYKlgGVM6eTw7cbLKyj8Sk90umxv5sfMZR5CjmaILHsXz5uaYIcjoivabSngucp4xNA==
+  dependencies:
+    buffer "^6.0.3"
+
+"@metaplex-foundation/umi@^1.0.0", "@metaplex-foundation/umi@>= 0.8.2 <= 1":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@metaplex-foundation/umi/-/umi-1.0.0.tgz"
+  integrity sha512-kCYwVI4REdDW8SwJGjPkef70t3JBPqkyf6k+zu/tBKUXdGh7jOkbZnUghdXk5GZ2Md+bqh9dtM93u/66N6xcWA==
+  dependencies:
+    "@metaplex-foundation/umi-options" "^1.0.0"
+    "@metaplex-foundation/umi-public-keys" "^1.0.0"
+    "@metaplex-foundation/umi-serializers" "^1.0.0"
+
+"@mongodb-js/saslprep@^1.1.9":
+  version "1.1.9"
+  resolved "https://registry.npmjs.org/@mongodb-js/saslprep/-/saslprep-1.1.9.tgz"
+  integrity sha512-tVkljjeEaAhCqTzajSdgbQ6gE6f3oneVwa3iXR6csiEwXXOFsiC6Uh9iAjAhXPtqa/XMDHWjjeNH/77m/Yq2dw==
+  dependencies:
+    sparse-bitfield "^3.0.3"
+
 "@next/env@15.1.6":
   version "15.1.6"
   resolved "https://registry.npmjs.org/@next/env/-/env-15.1.6.tgz"
@@ -1512,7 +1658,7 @@
     jsbi "^3.1.5"
     sha.js "^2.4.11"
 
-"@noble/curves@^1.4.2", "@noble/curves@^1.8.0":
+"@noble/curves@^1.0.0", "@noble/curves@^1.4.2", "@noble/curves@^1.8.0":
   version "1.8.1"
   resolved "https://registry.npmjs.org/@noble/curves/-/curves-1.8.1.tgz"
   integrity sha512-warwspo+UYUPep0Q+vtdVB4Ugn8GGQj8iyB3gnRWsztmUHTI3S1nhdiWNsPUGL0vud7JlRRk1XEu7Lq1KGTnMQ==
@@ -1635,6 +1781,16 @@
     "@radix-ui/react-context" "1.1.1"
     "@radix-ui/react-primitive" "2.0.1"
     "@radix-ui/react-slot" "1.1.1"
+
+"@radix-ui/react-collection@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.npmjs.org/@radix-ui/react-collection/-/react-collection-1.1.2.tgz"
+  integrity sha512-9z54IEKRxIa9VityapoEYMuByaG42iSy1ZXlY2KcuLSEtq8x4987/N6m15ppoMffgZX72gER2uHe1D9Y6Unlcw==
+  dependencies:
+    "@radix-ui/react-compose-refs" "1.1.1"
+    "@radix-ui/react-context" "1.1.1"
+    "@radix-ui/react-primitive" "2.0.2"
+    "@radix-ui/react-slot" "1.1.2"
 
 "@radix-ui/react-compose-refs@1.1.1":
   version "1.1.1"
@@ -1804,6 +1960,13 @@
   dependencies:
     "@radix-ui/react-slot" "1.1.1"
 
+"@radix-ui/react-primitive@2.0.2":
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/@radix-ui/react-primitive/-/react-primitive-2.0.2.tgz"
+  integrity sha512-Ec/0d38EIuvDF+GZjcMU/Ze6MxntVJYO/fRlCPhCaVUyPY9WTalHJw54tp9sXeJo3tlShWpy41vQRgLRGOuz+w==
+  dependencies:
+    "@radix-ui/react-slot" "1.1.2"
+
 "@radix-ui/react-roving-focus@1.1.1":
   version "1.1.1"
   resolved "https://registry.npmjs.org/@radix-ui/react-roving-focus/-/react-roving-focus-1.1.1.tgz"
@@ -1816,6 +1979,21 @@
     "@radix-ui/react-direction" "1.1.0"
     "@radix-ui/react-id" "1.1.0"
     "@radix-ui/react-primitive" "2.0.1"
+    "@radix-ui/react-use-callback-ref" "1.1.0"
+    "@radix-ui/react-use-controllable-state" "1.1.0"
+
+"@radix-ui/react-roving-focus@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.npmjs.org/@radix-ui/react-roving-focus/-/react-roving-focus-1.1.2.tgz"
+  integrity sha512-zgMQWkNO169GtGqRvYrzb0Zf8NhMHS2DuEB/TiEmVnpr5OqPU3i8lfbxaAmC2J/KYuIQxyoQQ6DxepyXp61/xw==
+  dependencies:
+    "@radix-ui/primitive" "1.1.1"
+    "@radix-ui/react-collection" "1.1.2"
+    "@radix-ui/react-compose-refs" "1.1.1"
+    "@radix-ui/react-context" "1.1.1"
+    "@radix-ui/react-direction" "1.1.0"
+    "@radix-ui/react-id" "1.1.0"
+    "@radix-ui/react-primitive" "2.0.2"
     "@radix-ui/react-use-callback-ref" "1.1.0"
     "@radix-ui/react-use-controllable-state" "1.1.0"
 
@@ -1852,6 +2030,27 @@
   integrity sha512-RApLLOcINYJA+dMVbOju7MYv1Mb2EBp2nH4HdDzXTSyaR5optlm6Otrz1euW3HbdOR8UmmFK06TD+A9frYWv+g==
   dependencies:
     "@radix-ui/react-compose-refs" "1.1.1"
+
+"@radix-ui/react-slot@1.1.2":
+  version "1.1.2"
+  resolved "https://registry.npmjs.org/@radix-ui/react-slot/-/react-slot-1.1.2.tgz"
+  integrity sha512-YAKxaiGsSQJ38VzKH86/BPRC4rh+b1Jpa+JneA5LRE7skmLPNAyeG8kPJj/oo4STLvlrs8vkf/iYyc3A5stYCQ==
+  dependencies:
+    "@radix-ui/react-compose-refs" "1.1.1"
+
+"@radix-ui/react-tabs@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.npmjs.org/@radix-ui/react-tabs/-/react-tabs-1.1.3.tgz"
+  integrity sha512-9mFyI30cuRDImbmFF6O2KUJdgEOsGh9Vmx9x/Dh9tOhL7BngmQPQfwW4aejKm5OHpfWIdmeV6ySyuxoOGjtNng==
+  dependencies:
+    "@radix-ui/primitive" "1.1.1"
+    "@radix-ui/react-context" "1.1.1"
+    "@radix-ui/react-direction" "1.1.0"
+    "@radix-ui/react-id" "1.1.0"
+    "@radix-ui/react-presence" "1.1.2"
+    "@radix-ui/react-primitive" "2.0.2"
+    "@radix-ui/react-roving-focus" "1.1.2"
+    "@radix-ui/react-use-controllable-state" "1.1.0"
 
 "@radix-ui/react-tooltip@^1.0.7":
   version "1.1.7"
@@ -2249,6 +2448,13 @@
   integrity sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==
   dependencies:
     "@sinonjs/commons" "^3.0.0"
+
+"@soceanfi/solana-cli-config@0.2.0":
+  version "0.2.0"
+  resolved "https://registry.npmjs.org/@soceanfi/solana-cli-config/-/solana-cli-config-0.2.0.tgz"
+  integrity sha512-te44VYk+a5NpYu3Cek6wGo+Lou8zT5DUCos3FA6spr/WBfXb4L1SsmOtxgDCB9GRIuBQJgwDFcydAC+G9oL2PQ==
+  dependencies:
+    yaml "^2.1.1"
 
 "@socket.io/component-emitter@~3.1.0":
   version "3.1.2"
@@ -2803,7 +3009,7 @@
     "@solana/wallet-standard-core" "^1.1.2"
     "@solana/wallet-standard-wallet-adapter" "^1.1.4"
 
-"@solana/web3.js@*", "@solana/web3.js@^1.2.0", "@solana/web3.js@^1.30.2", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.44.3", "@solana/web3.js@^1.47.3", "@solana/web3.js@^1.5.0", "@solana/web3.js@^1.58.0", "@solana/web3.js@^1.61.0", "@solana/web3.js@^1.63.1", "@solana/web3.js@^1.77.3", "@solana/web3.js@^1.88.0", "@solana/web3.js@^1.95.3", "@solana/web3.js@^1.98.0":
+"@solana/web3.js@*", "@solana/web3.js@^1", "@solana/web3.js@^1.2.0", "@solana/web3.js@^1.30.2", "@solana/web3.js@^1.32.0", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.44.3", "@solana/web3.js@^1.47.3", "@solana/web3.js@^1.5.0", "@solana/web3.js@^1.58.0", "@solana/web3.js@^1.61.0", "@solana/web3.js@^1.63.1", "@solana/web3.js@^1.72.0", "@solana/web3.js@^1.77.3", "@solana/web3.js@^1.88.0", "@solana/web3.js@^1.95.3", "@solana/web3.js@^1.98.0":
   version "1.98.0"
   resolved "https://registry.npmjs.org/@solana/web3.js/-/web3.js-1.98.0.tgz"
   integrity sha512-nz3Q5OeyGFpFCR+erX2f6JPt3sKhzhYcSycBCSPkWjzSVDh/Rr1FqTVMRe58FKO16/ivTUcuJjeS5MyBvpkbzA==
@@ -3236,6 +3442,18 @@
   version "8.3.4"
   resolved "https://registry.npmjs.org/@types/uuid/-/uuid-8.3.4.tgz"
   integrity sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==
+
+"@types/webidl-conversions@*":
+  version "7.0.3"
+  resolved "https://registry.npmjs.org/@types/webidl-conversions/-/webidl-conversions-7.0.3.tgz"
+  integrity sha512-CiJJvcRtIgzadHCYXw7dqEnMNRjhGZlYK05Mj9OyktqV8uVT8fD2BFOB7S1uwBE3Kj2Z+4UyPmFw/Ixgw/LAlA==
+
+"@types/whatwg-url@^11.0.2":
+  version "11.0.5"
+  resolved "https://registry.npmjs.org/@types/whatwg-url/-/whatwg-url-11.0.5.tgz"
+  integrity sha512-coYR071JRaHa+xoEvvYqvnIHaVqaYrLPbsufM9BF63HkwI5Lgmy2QR8Q5K/lYDYo5AK82wOvSOS0UsLTpTG7uQ==
+  dependencies:
+    "@types/webidl-conversions" "*"
 
 "@types/ws@^7.4.4":
   version "7.4.7"
@@ -4062,6 +4280,11 @@ borsh@^0.7.0:
     bs58 "^4.0.0"
     text-encoding-utf-8 "^1.0.2"
 
+bottleneck@^2.19.5:
+  version "2.19.5"
+  resolved "https://registry.npmjs.org/bottleneck/-/bottleneck-2.19.5.tgz"
+  integrity sha512-VHiNCbI1lKdl44tGrhNfU3lup0Tj/ZBMJB5/2ZbNXRCPuRCO7ed2mgcK4r17y+KB2EfuYuRaVlwNbAeaWGSpbw==
+
 bowser@^2.11.0:
   version "2.11.0"
   resolved "https://registry.npmjs.org/bowser/-/bowser-2.11.0.tgz"
@@ -4203,6 +4426,11 @@ bser@2.1.1:
   integrity sha512-gQxTNE/GAfIIrmHLUE3oJyp5FO6HRBfhjnw4/wMmA63ZGDJnWBmgY/lyQBpnDUkGmAhbSe39tx2d/iTOAfglwQ==
   dependencies:
     node-int64 "^0.4.0"
+
+bson@^6.10.1:
+  version "6.10.2"
+  resolved "https://registry.npmjs.org/bson/-/bson-6.10.2.tgz"
+  integrity sha512-5afhLTjqDSA3akH56E+/2J6kTDuSIlBxyXPdQslj9hcIgOUE378xdOfZvC/9q3LifJNI6KR/juZ+d0NRNYBwXg==
 
 buffer-from@^1.0.0:
   version "1.1.2"
@@ -4397,7 +4625,7 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
     inherits "^2.0.4"
     safe-buffer "^5.2.1"
 
-class-variance-authority@^0.7.0:
+class-variance-authority@^0.7.1:
   version "0.7.1"
   resolved "https://registry.npmjs.org/class-variance-authority/-/class-variance-authority-0.7.1.tgz"
   integrity sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==
@@ -5927,10 +6155,10 @@ fraction.js@^4.3.7:
   resolved "https://registry.npmjs.org/fraction.js/-/fraction.js-4.3.7.tgz"
   integrity sha512-ZsDfxO51wGAXREY55a7la9LScWpwv9RxIrYABrlvOFBlH/ShPnrtsXeuUIfXKKOVicNxQ+o8JTbJvjS4M89yew==
 
-framer-motion@^12.0.6:
-  version "12.0.11"
-  resolved "https://registry.npmjs.org/framer-motion/-/framer-motion-12.0.11.tgz"
-  integrity sha512-1F+YNXr3bSHxt5sCzeCVL56sc4MngbOhdU5ptv02vaepdFYcQd0fZtuAHvFJgMbn5V7SOsaX/3hVqr21ZaCKhA==
+framer-motion@^12.4.0:
+  version "12.4.0"
+  resolved "https://registry.npmjs.org/framer-motion/-/framer-motion-12.4.0.tgz"
+  integrity sha512-QX92ThRniev3YTkjXOV/7m9fXBRQ5xDDRWDinuU//Xkjh+q9ppg3Nb0b95xgJYd2AE0rgJ7eoihY+Z+jjSv22w==
   dependencies:
     motion-dom "^12.0.0"
     motion-utils "^12.0.0"
@@ -7163,6 +7391,11 @@ memoize-one@^5.0.0:
   resolved "https://registry.npmjs.org/memoize-one/-/memoize-one-5.2.1.tgz"
   integrity sha512-zYiwtZUcYyXKo/np96AGZAckk+FWWsUdJ3cHGGmld7+AhvcWmQyGCYUh1hc4Q/pkOhb65dQR/pqCyK0cOaHz4Q==
 
+memory-pager@^1.0.2:
+  version "1.5.0"
+  resolved "https://registry.npmjs.org/memory-pager/-/memory-pager-1.5.0.tgz"
+  integrity sha512-ZS4Bp4r/Zoeq6+NLJpP+0Zzm0pR8whtGPf1XExKLJBAczGMnSi3It14OiNCStjQjM6NU1okjQGSxgEZN8eBYKg==
+
 merge-options@^3.0.4:
   version "3.0.4"
   resolved "https://registry.npmjs.org/merge-options/-/merge-options-3.0.4.tgz"
@@ -7460,6 +7693,23 @@ mkdirp@^1.0.4:
   version "1.0.4"
   resolved "https://registry.npmjs.org/mkdirp/-/mkdirp-1.0.4.tgz"
   integrity sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==
+
+mongodb-connection-string-url@^3.0.0:
+  version "3.0.2"
+  resolved "https://registry.npmjs.org/mongodb-connection-string-url/-/mongodb-connection-string-url-3.0.2.tgz"
+  integrity sha512-rMO7CGo/9BFwyZABcKAWL8UJwH/Kc2x0g72uhDWzG48URRax5TCIcJ7Rc3RZqffZzO/Gwff/jyKwCU9TN8gehA==
+  dependencies:
+    "@types/whatwg-url" "^11.0.2"
+    whatwg-url "^14.1.0 || ^13.0.0"
+
+mongodb@^6.13.0:
+  version "6.13.0"
+  resolved "https://registry.npmjs.org/mongodb/-/mongodb-6.13.0.tgz"
+  integrity sha512-KeESYR5TEaFxOuwRqkOm3XOsMqCSkdeDMjaW5u2nuKfX7rqaofp7JQGoi7sVqQcNJTKuveNbzZtWMstb8ABP6Q==
+  dependencies:
+    "@mongodb-js/saslprep" "^1.1.9"
+    bson "^6.10.1"
+    mongodb-connection-string-url "^3.0.0"
 
 motion-dom@^12.0.0:
   version "12.0.0"
@@ -9067,6 +9317,13 @@ source-map@~0.6.1:
   resolved "https://registry.npmjs.org/source-map/-/source-map-0.6.1.tgz"
   integrity sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==
 
+sparse-bitfield@^3.0.3:
+  version "3.0.3"
+  resolved "https://registry.npmjs.org/sparse-bitfield/-/sparse-bitfield-3.0.3.tgz"
+  integrity sha512-kvzhi7vqKTfkh0PZU+2D2PIllw2ymqJKujUcyPMd9Y75Nv4nPbGJZXNhxsgdQab2BmlDct1YnfQCguEvHr7VsQ==
+  dependencies:
+    memory-pager "^1.0.2"
+
 split@0.3:
   version "0.3.3"
   resolved "https://registry.npmjs.org/split/-/split-0.3.3.tgz"
@@ -9491,6 +9748,13 @@ tough-cookie@^4.0.0, tough-cookie@^4.1.2:
     universalify "^0.2.0"
     url-parse "^1.5.3"
 
+tr46@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/tr46/-/tr46-5.0.0.tgz"
+  integrity sha512-tk2G5R2KRwBd+ZN0zaEXpmzdKyOYksXwywulIX95MBODjSzMIuQnQ3m8JxgbhnL1LeVo7lqQKsYa1O3Htl7K5g==
+  dependencies:
+    punycode "^2.3.1"
+
 tr46@~0.0.3:
   version "0.0.3"
   resolved "https://registry.npmjs.org/tr46/-/tr46-0.0.3.tgz"
@@ -9814,6 +10078,11 @@ webidl-conversions@^3.0.0:
   resolved "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-3.0.1.tgz"
   integrity sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==
 
+webidl-conversions@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.npmjs.org/webidl-conversions/-/webidl-conversions-7.0.0.tgz"
+  integrity sha512-VwddBukDzu71offAQR975unBIGqfKZpM+8ZX6ySk8nYhVoo5CYaZyzt3YBvYtRtO+aoGlqxPg/B87NGVZ/fu6g==
+
 webrtc-adapter@^7.2.1:
   version "7.7.1"
   resolved "https://registry.npmjs.org/webrtc-adapter/-/webrtc-adapter-7.7.1.tgz"
@@ -9826,6 +10095,14 @@ whatwg-fetch@^3.0.0:
   version "3.6.20"
   resolved "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-3.6.20.tgz"
   integrity sha512-EqhiFU6daOA8kpjOWTL0olhVOF3i7OrFzSYiGsEMB8GcXS+RrzauAERX65xMeNWVqxA6HXH2m69Z9LaKKdisfg==
+
+"whatwg-url@^14.1.0 || ^13.0.0":
+  version "14.1.0"
+  resolved "https://registry.npmjs.org/whatwg-url/-/whatwg-url-14.1.0.tgz"
+  integrity sha512-jlf/foYIKywAt3x/XWKZ/3rz8OSJPiWktjmk891alJUEjiVxKX9LEO92qH3hv4aJ0mN3MWPvGMCy8jQi95xK4w==
+  dependencies:
+    tr46 "^5.0.0"
+    webidl-conversions "^7.0.0"
 
 whatwg-url@^5.0.0:
   version "5.0.0"
@@ -10023,7 +10300,7 @@ yallist@^3.0.2:
   resolved "https://registry.npmjs.org/yallist/-/yallist-3.1.1.tgz"
   integrity sha512-a4UGQaWPH59mOXUYnAG2ewncQS4i4F43Tv3JoAM+s2VDAmS9NsK8GpDMLrCHPksFT7h3K6TOoUNn2pb7RoXx4g==
 
-yaml@^2.3.4:
+yaml@^2.1.1, yaml@^2.3.4:
   version "2.7.0"
   resolved "https://registry.npmjs.org/yaml/-/yaml-2.7.0.tgz"
   integrity sha512-+hSoy/QHluxmC9kCIJyL/uyFmLmc+e5CFR5Wa+bpIhIj85LVb9ZH2nVnqrHoSvKogwODv0ClqZkmiSSaIH5LTA==

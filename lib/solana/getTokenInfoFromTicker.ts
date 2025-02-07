@@ -1,6 +1,6 @@
 import { getSolanaTokenCA } from "./getCaFromTicker"
 
-import { getDexScreenerData } from "./fetchCoinQuote"
+import { getDexScreenerData } from "./fetchDexData"
 
 export async function getTokenInfoFromTicker(ticker: string) {
     try {
