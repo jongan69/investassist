@@ -372,7 +372,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
     };
 
     return (
-        <main className='min-h-screen w-full dark:text-white text-gray-800 bg-gray-50 dark:bg-gray-900 flex justify-center items-center'>
+        <main className='min-h-screen w-full max-w-screen-lg dark:text-white text-gray-800 bg-gray-50 dark:bg-gray-900 flex justify-center items-center'>
             <section className='flex justify-center items-center'>
                 <div className='rounded-xl shadow-lg p-6 dark:bg-gray-800 bg-white sm:col-span-12'>
                     <div className='flex justify-between items-center mb-6'>
@@ -453,7 +453,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                             </button>
                         </form>
                     ) : (
-                        <div className='flex justify-center items-center'>
+                        <div className='max-w-screen-sm flex justify-center items-center'>
                             <div>
                                 <div className="max-w-sm overflow-hidden">
                                     <div className="overflow-x-auto">
