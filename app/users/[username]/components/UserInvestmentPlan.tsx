@@ -71,9 +71,14 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
         </div>
     );
 
-    // Update the investment plan display section
-
-    // Update the transformAllocationData function
+    // Add this function to calculate current allocations from holdings
+    const calculateCurrentAllocations = (holdings: typeof profile.holdings): AllocationData[] => {
+        const total = holdings.reduce((sum, token) => sum + token.usdValue, 0);
+        return holdings.map(token => ({
+            asset: token.symbol,
+            percentage: total > 0 ? token.usdValue / total : 0
+        }));
+    };
 
     return (
         <main className='min-h-screen w-full dark:text-white text-gray-800 bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800'>
@@ -122,9 +127,13 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
                                                 <TrendingUp className="w-4 h-4" />
                                                 Analysis
                                             </TabsTrigger>
+                                            <TabsTrigger value="current-allocation" className="flex items-center gap-2">
+                                                <PieChartIcon className="w-4 h-4" />
+                                                Current Allocation
+                                            </TabsTrigger>
                                             <TabsTrigger value="allocation" className="flex items-center gap-2">
                                                 <PieChartIcon className="w-4 h-4" />
-                                                Allocation
+                                                Target Allocation
                                             </TabsTrigger>
                                         </TabsList>
 
@@ -181,6 +190,12 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
                                                     </CardContent>
                                                 </Card>
                                             )}
+                                        </TabsContent>
+
+                                        <TabsContent value="current-allocation">
+                                            <Card className="p-6">
+                                                <AllocationChart allocations={calculateCurrentAllocations(profile.holdings)} />
+                                            </Card>
                                         </TabsContent>
 
                                         <TabsContent value="allocation">
