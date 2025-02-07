@@ -16,7 +16,7 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Profile already exists" }, { status: 400 });
         }
 
-        await collection.insertOne({ username, walletAddress, holdings, totalValue });
+        await collection.insertOne({ username, walletAddress, holdings, totalValue, createdAt: new Date() });
 
         return NextResponse.json({ message: "Profile created successfully" }, { status: 200 });
     } catch (error) {

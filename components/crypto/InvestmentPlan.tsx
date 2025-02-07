@@ -2,13 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import { HelioCheckout } from '@heliofi/checkout-react';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { useRouter } from 'next/navigation';
 import { PublicKey } from '@solana/web3.js';
-import { apiLimiter, fetchTokenAccounts, handleTokenData, TokenData } from '@/lib/solana/fetchTokens';
+import { apiLimiter, fetchTokenAccounts, handleTokenData } from '@/lib/solana/fetchTokens';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { useTheme } from 'next-themes';
 import { getProfileByWalletAddress } from '@/lib/users/getProfileByWallet';
-import { getProfileByUsername } from '@/lib/users/getProfileByUsername';
 import { Profile, BaseInvestmentPlan, AllocationData } from '@/types/users';
 import { saveInvestmentPlan } from '@/lib/users/saveInvestmentPlan';
 import { checkUsername } from '@/lib/users/checkUsername';
@@ -475,8 +473,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                             </button>
                         </form>
                     ) : (
-                        <div className="space-y-6">
-                            <div>
+                        <div className="space-y-6 dark:bg-gray-800/50 bg-gray-100 p-6 rounded-xl">
+                            <div className="flex justify-center items-center">
                                 <h3 className="text-xl mb-2">Helio Pay with Crypto</h3>
                                 <HelioCheckout config={cryptoConfig} />
                                 {isDevelopment && (

@@ -15,6 +15,7 @@ import * as Collapsible from '@radix-ui/react-collapsible'
 import '../../styles/navbar-styles.css'
 import { useWallet } from "@solana/wallet-adapter-react"
 import { getProfileByWalletAddress } from "@/lib/users/getProfileByWallet"
+
 // Dynamically import WalletMultiButton with no SSR
 const WalletMultiButton = dynamic(
   () => import('@solana/wallet-adapter-react-ui').then(mod => mod.WalletMultiButton),

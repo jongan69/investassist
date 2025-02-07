@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, Wallet, PieChart as PieChartIcon } from "lucide-react";
-
+import Image from 'next/image';
 interface UserInvestmentPlanProps {
     profile: Profile;
 }
@@ -100,7 +100,7 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
                                     <div className="flex justify-between items-center">
                                         <div>
                                             <CardTitle className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
-                                                {profile.username}'s Portfolio
+                                                {profile.username}&apos;s Portfolio
                                             </CardTitle>
                                             <p className="text-sm text-muted-foreground mt-1">{profile.walletAddress}</p>
                                         </div>
@@ -141,10 +141,12 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
                                                             <CardContent className="p-4 flex justify-between items-center">
                                                                 <div className="flex items-center gap-3">
                                                                     {token.logo && (
-                                                                        <img 
+                                                                        <Image 
                                                                             src={token.logo} 
                                                                             alt={token.symbol} 
                                                                             className="w-10 h-10 rounded-full"
+                                                                            width={40}
+                                                                            height={40}
                                                                         />
                                                                     )}
                                                                     <div>

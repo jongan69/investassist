@@ -3,7 +3,7 @@
 .wallet-adapter-button {
     background-color: transparent;
     border: none;
-    color: #fff;
+    color: var(--foreground);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -17,7 +17,7 @@
 }
 
 .wallet-adapter-button-trigger {
-    background-color: #000000;
+    background-color: var(--primary);
 }
 
 .wallet-adapter-button:not([disabled]):focus-visible {
@@ -25,12 +25,12 @@
 }
 
 .wallet-adapter-button:not([disabled]):hover {
-    background-color: #1a1f2e;
+    background-color: var(--muted);
 }
 
 .wallet-adapter-button[disabled] {
-    background: #404144;
-    color: #999;
+    background: var(--muted-foreground);
+    color: var(--muted);
     cursor: not-allowed;
 }
 
@@ -73,9 +73,9 @@
     right: 0;
     margin: 0;
     list-style: none;
-    background: #2c2d30;
+    background: var(--background);
     border-radius: 10px;
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.6);
+    box-shadow: 0px 8px 20px var(--shadow);
     opacity: 0;
     visibility: hidden;
     transition: opacity 200ms ease, transform 200ms ease, visibility 200ms;
@@ -108,12 +108,12 @@
 }
 
 .wallet-adapter-dropdown-list-item:not([disabled]):hover {
-    background-color: #1a1f2e;
+    background-color: var(--muted);
 }
 
 .wallet-adapter-modal-collapse-button svg {
     align-self: center;
-    fill: #999;
+    fill: var(--muted-foreground);
 }
 
 .wallet-adapter-modal-collapse-button.wallet-adapter-modal-collapse-button-active svg {
@@ -129,7 +129,7 @@
     bottom: 0;
     opacity: 0;
     transition: opacity linear 150ms;
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--modal-overlay);
     z-index: 1040;
     overflow-y: auto;
 }
@@ -147,7 +147,7 @@
     right: 18px;
     padding: 12px;
     cursor: pointer;
-    background: #1a1f2e;
+    background: var(--muted);
     border: none;
     border-radius: 50%;
 }
@@ -157,16 +157,16 @@
 }
 
 .wallet-adapter-modal-button-close svg {
-    fill: #777;
+    fill: var(--muted-foreground);
     transition: fill 200ms ease 0s;
 }
 
 .wallet-adapter-modal-button-close:hover svg {
-    fill: #fff;
+    fill: var(--foreground);
 }
 
 .wallet-adapter-modal-overlay {
-    background: rgba(0, 0, 0, 0.5);
+    background: var(--modal-overlay);
     position: fixed;
     top: 0;
     left: 0;
@@ -198,8 +198,8 @@
     z-index: 1050;
     max-width: 400px;
     border-radius: 10px;
-    background: #10141f;
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.6);
+    background: var(--background);
+    box-shadow: 0px 8px 20px var(--shadow);
     font-family: 'DM Sans', 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     flex: 1;
 }
@@ -215,7 +215,7 @@
     margin: 0;
     padding: 64px 48px 48px 48px;
     text-align: center;
-    color: #fff;
+    color: var(--foreground);
 }
 
 @media (max-width: 374px) {
@@ -259,12 +259,12 @@
     display: flex;
     align-items: center;
     background-color: transparent;
-    color: #fff;
+    color: var(--foreground);
 }
 
 .wallet-adapter-modal-list-more svg {
     transition: all 0.1s ease;
-    fill: rgba(255, 255, 255, 1);
+    fill: var(--foreground);
     margin-left: 0.5rem;
 }
 
@@ -286,10 +286,10 @@
     cursor: pointer;
     margin-top: 48px;
     width: 100%;
-    background-color: #000000;
+    background-color: var(--primary);
     padding: 12px;
     font-size: 18px;
     border: none;
     border-radius: 8px;
-    color: #fff;
+    color: var(--primary-foreground);
 }

@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@duneanalytics/client-sdk": "^0.2.5",
     "@headlessui/react": "2.2.0",
     "@heliofi/checkout-react": "^3.1.0",
     "@heroicons/react": "2.2.0",
