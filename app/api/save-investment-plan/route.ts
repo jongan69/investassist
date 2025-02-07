@@ -1,18 +1,18 @@
 import { NextResponse } from "next/server"
-import { MongoClient } from "mongodb"
+import clientPromise from "@/lib/mongo/connect"
 
 export async function POST(req: Request) {
+    const { username, investmentPlan } = await req.json();
+
+    // Validate input
+    if (!username || !investmentPlan) {
+        return NextResponse.json(
+            { error: "Username and investment plan are required" },
+            { status: 400 }
+        );
+    }
+
     try {
-        const { username, investmentPlan } = await req.json();
-
-        // Validate input
-        if (!username || !investmentPlan) {
-            return NextResponse.json(
-                { error: "Username and investment plan are required" },
-                { status: 400 }
-            );
-        }
-
         // Check if investment plan is not too large (16MB is MongoDB's document size limit)
         const planSize = JSON.stringify(investmentPlan).length;
         if (planSize > 16000000) { // Leave some room for other fields
@@ -22,44 +22,34 @@ export async function POST(req: Request) {
             );
         }
 
-        const mongoClient = new MongoClient(process.env.MONGODB_URI as string, {
-            maxIdleTimeMS: 5000, // Close idle connections after 5 seconds
-            maxPoolSize: 10      // Limit concurrent connections
-        });
-        
-        await mongoClient.connect();
+        const client = await clientPromise;
+        const db = client.db("investassist");
+        const collection = db.collection("profiles");
 
-        try {
-            const db = mongoClient.db("investassist");
-            const collection = db.collection("profiles");
-            
-            const result = await collection.updateOne(
-                { username }, 
-                { 
-                    $set: { 
-                        investmentPlan,
-                        lastUpdated: new Date()
-                    }
-                },
-                { upsert: true }
-            );
+        const result = await collection.updateOne(
+            { username },
+            {
+                $set: {
+                    investmentPlan,
+                    lastUpdated: new Date()
+                }
+            },
+            { upsert: true }
+        );
 
-            if (!result.acknowledged) {
-                throw new Error("MongoDB operation not acknowledged");
-            }
-
-            return NextResponse.json({ 
-                message: "Investment plan saved successfully",
-                modifiedCount: result.modifiedCount
-            }, { status: 200 });
-        } finally {
-            await mongoClient.close();
+        if (!result.acknowledged) {
+            throw new Error("MongoDB operation not acknowledged");
         }
+
+        return NextResponse.json({
+            message: "Investment plan saved successfully",
+            modifiedCount: result.modifiedCount
+        }, { status: 200 });
     } catch (error) {
         console.error("Error saving investment plan:", error);
         return NextResponse.json(
-            { error: "Failed to save investment plan" }, 
+            { error: "Failed to save investment plan" },
             { status: 500 }
         );
     }
-}
+} 

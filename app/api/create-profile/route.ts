@@ -1,14 +1,13 @@
 import { NextResponse } from "next/server"
-import { MongoClient } from "mongodb"
-
+// import { MongoClient } from "mongodb"
+import clientPromise from "@/lib/mongo/connect"
 export async function POST(req: Request) {
     try {
         const { username, walletAddress, holdings, totalValue } = await req.json();
 
-        const mongoClient = new MongoClient(process.env.MONGODB_URI as string);
-        await mongoClient.connect();
+        const client = await clientPromise; 
 
-        const db = mongoClient.db("investassist");
+        const db = client.db("investassist");
         const collection = db.collection("profiles");
 
         const profile = await collection.findOne({ username });
