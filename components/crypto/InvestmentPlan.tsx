@@ -281,10 +281,6 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                         <p className="text-sm mb-4">Risk Level: {plan.riskLevel}</p>
                     )}
                 </div>
-                <div className="bg-gray-700/30 p-4 rounded-lg">
-                    <h3 className="text-xl mb-2 text-[#fa6ece] text-center pb-10 mb-10">Allocation</h3>
-                    <AllocationChart allocations={allocations} />
-                </div>
 
                 <div className="dark:bg-gray-700/50 bg-gray-100 p-6 rounded-xl">
                     <h3 className="text-xl font-semibold text-center mb-6 text-pink-600 dark:text-pink-400">
