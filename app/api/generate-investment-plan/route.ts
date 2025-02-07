@@ -1,6 +1,7 @@
 import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
 import { categorizeTokens } from '@/lib/solana/categorizeTokens';
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -24,6 +25,7 @@ interface InvestmentPlanResponse {
   riskLevel?: string;
 }
 
+const MODEL = process.env.OPENAI_MODEL || "gpt-4o"; // Add fallback model
 
 export async function POST(req: Request) {
   const maxRetries = 2;
@@ -48,10 +50,10 @@ export async function POST(req: Request) {
     // Try to categorize tokens with a timeout
     try {
       const tokenCategorizationPromise = categorizeTokens(userPortfolio.holdings);
-      const timeoutPromise = new Promise((_, reject) => 
+      const timeoutPromise = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Token categorization timed out')), 5000)
       );
-      
+
       categorizedTokens = await Promise.race([tokenCategorizationPromise, timeoutPromise]) as {
         memecoins: any[];
         verified: any[];
@@ -123,41 +125,70 @@ export async function POST(req: Request) {
         console.log(`Attempt ${attempt + 1} to generate response`); // Debug log
         const completion = await openai.chat.completions.create({
           messages: [{ role: "user", content: prompt }],
-          model: "gpt-4o",
+          model: MODEL,
           response_format: { type: "json_object" },
           temperature: 0.7,
           max_tokens: 4000,
         });
-        console.log('Completion from OpenAI:', completion); // Debug log
-        if (completion.choices[0].message.content) {
-          responseGenerated = true;
-          const response = JSON.parse(completion.choices[0].message.content);
-          console.log('Received response from OpenAI:', response); // Debug log
 
-          // Validate the response has the required structure
-          if (!response.allocations || !Array.isArray(response.allocations)) {
-            console.error('Invalid response format - missing allocations array');
-          }
-
-          // Validate that allocations sum to 100%
-          const totalAllocation = response.allocations.reduce(
-            (sum: number, item: any) => sum + (item.percentage || 0),
-            0
-          );
-
-          if (Math.abs(totalAllocation - 100) > 0.1) { // Allow small rounding differences
-            console.error('Allocations do not sum to 100%');
-          }
-
-          return NextResponse.json(response as InvestmentPlanResponse);
+        // Add more detailed error logging
+        if (!completion) {
+          console.error('OpenAI completion is null or undefined');
+          throw new Error('Empty completion from OpenAI');
         }
-      } catch (apiError) {
-        console.error(`Attempt ${attempt + 1} failed:`, apiError);
-      }
 
-      if (!responseGenerated && attempt < maxRetries - 1) {
-        console.log(`Retrying after ${retryDelay}ms delay`); // Debug log
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        if (!completion.choices || completion.choices.length === 0) {
+          console.error('OpenAI completion has no choices:', completion);
+          throw new Error('No choices in OpenAI completion');
+        }
+
+        if (!completion.choices[0].message?.content) {
+          console.error('OpenAI completion has no content:', completion.choices[0]);
+          throw new Error('No content in OpenAI completion');
+        }
+
+        console.log('Completion from OpenAI:', completion); // Debug log
+        responseGenerated = true;
+        const response = JSON.parse(completion.choices[0].message.content);
+        console.log('Received response from OpenAI:', response); // Debug log
+
+        // Validate the response has the required structure
+        if (!response.allocations || !Array.isArray(response.allocations)) {
+          console.error('Invalid response format - missing allocations array');
+        }
+
+        // Validate that allocations sum to 100%
+        const totalAllocation = response.allocations.reduce(
+          (sum: number, item: any) => sum + (item.percentage || 0),
+          0
+        );
+
+        if (Math.abs(totalAllocation - 100) > 0.1) { // Allow small rounding differences
+          console.error('Allocations do not sum to 100%');
+        }
+
+        return NextResponse.json(response as InvestmentPlanResponse);
+      } catch (apiError: any) {
+        console.error(`Attempt ${attempt + 1} failed with error:`, {
+          name: apiError.name,
+          message: apiError.message,
+          status: apiError.status,
+          stack: apiError.stack,
+        });
+
+        // Check for specific OpenAI API errors
+        if (apiError.status === 429) {
+          console.error('Rate limit exceeded');
+        } else if (apiError.status === 401) {
+          console.error('Authentication error - check OPENAI_API_KEY');
+        }
+
+        // Add delay between retries
+        if (!responseGenerated && attempt < maxRetries - 1) {
+          const currentDelay = retryDelay * Math.pow(2, attempt); // Exponential backoff
+          console.log(`Retrying after ${currentDelay}ms delay`);
+          await new Promise(resolve => setTimeout(resolve, currentDelay));
+        }
       }
       attempt++;
     }
