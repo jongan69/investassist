@@ -1,6 +1,6 @@
 import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
-
+import { categorizeTokens } from '@/lib/solana/categorizeTokens';
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
@@ -24,68 +24,6 @@ interface InvestmentPlanResponse {
   riskLevel?: string;
 }
 
-interface JupiterToken {
-  address: string;
-  name: string;
-  symbol: string;
-  tags: string[];
-  daily_volume: number;
-}
-
-async function categorizeTokens(holdings: any[]) {
-  try {
-    console.log('Categorizing tokens for holdings:', holdings); // Debug log
-    // Fetch verified tokens from Jupiter API
-    const response = await fetch('https://api.jup.ag/tokens/v1/all');
-    const allTokens: JupiterToken[] = await response.json();
-    console.log('Fetched tokens from Jupiter API:', allTokens.length); // Debug log
-    const categorized = {
-      verified: [] as any[],
-      memecoins: [] as any[],
-      lst: [] as any[],  // Liquid Staked Tokens
-      defi: [] as any[],
-      other: [] as any[]
-    };
-
-    for (const holding of holdings) {
-      const jupiterToken = allTokens.find(t => t.address === holding.mintAddress);
-      console.log('Processing holding:', holding, 'Found token:', jupiterToken); // Debug log
-
-      if (!jupiterToken) {
-        categorized.other.push(holding);
-        continue;
-      }
-
-      // Check tags
-      if (jupiterToken.tags.includes('lst')) {
-        categorized.lst.push(holding);
-      } else if (jupiterToken.tags.includes('verified')) {
-        if (jupiterToken.tags.includes('defi')) {
-          categorized.defi.push(holding);
-        } else if (
-          jupiterToken.symbol.includes('PEPE') ||
-          jupiterToken.symbol.includes('DOGE') ||
-          jupiterToken.symbol.includes('SHIB') ||
-          jupiterToken.symbol.includes('BONK') ||
-          jupiterToken.symbol.includes('WIF') ||
-          jupiterToken.daily_volume < 10000 // Low volume might indicate meme tokens
-        ) {
-          categorized.memecoins.push(holding);
-        } else {
-          categorized.verified.push(holding);
-        }
-      } else {
-        categorized.other.push(holding);
-      }
-    }
-
-    console.log('Categorized tokens:', categorized); // Debug log
-    return categorized;
-  } catch (error) {
-    console.error('Error categorizing tokens:', error);
-    return null;
-  }
-}
 
 export async function POST(req: Request) {
   const maxRetries = 2;
@@ -93,6 +31,7 @@ export async function POST(req: Request) {
   let userPortfolio;
   let memecoinPercentage = 0;
   let memecoins: any[] = [];
+  let categorizedTokens = null;
 
   try {
     const { fearGreedValue, sectorPerformance, marketData, userPortfolio: portfolioData } = await req.json();
@@ -105,12 +44,32 @@ export async function POST(req: Request) {
     console.log('Filtered user portfolio holdings:', userPortfolio.holdings); // Debug log
     const updatedPortfolioValue = userPortfolio.holdings.reduce((sum: number, token: any) => sum + token.usdValue, 0);
     console.log('Updated portfolio value:', updatedPortfolioValue); // Debug log
-    // Replace detectMemecoins with new categorization
-    const categorizedTokens = await categorizeTokens(userPortfolio.holdings);
-    const memecoins = categorizedTokens?.memecoins || [];
-    const memecoinValue = memecoins.reduce((sum, token) => sum + token.usdValue, 0);
-    memecoinPercentage = Math.min(20, (memecoinValue / userPortfolio.totalValue) * 100);
-    console.log('Memecoin percentage:', memecoinPercentage); // Debug log
+
+    // Try to categorize tokens with a timeout
+    try {
+      const tokenCategorizationPromise = categorizeTokens(userPortfolio.holdings);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Token categorization timed out')), 5000)
+      );
+      
+      categorizedTokens = await Promise.race([tokenCategorizationPromise, timeoutPromise]) as {
+        memecoins: any[];
+        verified: any[];
+        lst: any[];
+        defi: any[];
+        other: any[];
+      } | null;
+      memecoins = categorizedTokens?.memecoins || [];
+      const memecoinValue = memecoins.reduce((sum, token) => sum + token.usdValue, 0);
+      memecoinPercentage = Math.min(20, (memecoinValue / updatedPortfolioValue) * 100);
+      console.log('Memecoin percentage:', memecoinPercentage); // Debug log
+    } catch (error) {
+      console.error('Error or timeout in token categorization:', error);
+      // Continue without categorization
+      categorizedTokens = null;
+      memecoins = [];
+      memecoinPercentage = 0;
+    }
 
     const prompt = `
       As a financial advisor, analyze the following data and provide an investment allocation plan:
@@ -132,19 +91,18 @@ export async function POST(req: Request) {
 
       Market Data:
       ${JSON.stringify(marketData, null, 2)}
-      
-      Current Portfolio includes ${memecoins.length} memecoins worth $${memecoinValue.toFixed(2)}.
-      Memecoins: ${memecoins.map(m => `${m.symbol}: $${m.usdValue.toFixed(2)}`).join(', ')}
-      
-      Include these memecoins in the allocation, but limit their total allocation to max 20%.
-      
+      ${categorizedTokens ? `
       Portfolio Categories:
-      - Verified Tokens: ${categorizedTokens?.verified.map(t => t.symbol).join(', ')}
-      - Liquid Staked Tokens: ${categorizedTokens?.lst.map(t => t.symbol).join(', ')}
-      - DeFi Tokens: ${categorizedTokens?.defi.map(t => t.symbol).join(', ')}
-      - Memecoins: ${categorizedTokens?.memecoins.map(t => t.symbol).join(', ')}
-      - Other: ${categorizedTokens?.other.map(t => t.symbol).join(', ')}
+      - Verified Tokens: ${categorizedTokens.verified.map((t: any) => t.symbol).join(', ')}
+      - Liquid Staked Tokens: ${categorizedTokens.lst.map((t: any) => t.symbol).join(', ')}
+      - DeFi Tokens: ${categorizedTokens.defi.map((t: any) => t.symbol).join(', ')}
+      - Memecoins: ${categorizedTokens.memecoins.map((t: any) => t.symbol).join(', ')}
+      - Other: ${categorizedTokens.other.map((t: any) => t.symbol).join(', ')}
       
+      Current Portfolio includes ${memecoins.length} memecoins worth $${memecoins.reduce((sum, m) => sum + m.usdValue, 0).toFixed(2)}.
+      Include these memecoins in the allocation, but limit their total allocation to max 20%.
+      ` : ''}
+
       Provide a response in JSON format that MUST include:
       1. A "marketAnalysis" object with an "overview" of current market conditions
       2. An "allocations" array where each item has:
