@@ -94,7 +94,7 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
                 transition={{ duration: 0.6 }}
             >
                 <motion.div {...fadeInUp}>
-                    <Card className="overflow-hidden border-0 shadow-lg dark:bg-gray-800/50 bg-white/80 backdrop-blur-sm min-w-full">
+                    <Card className="overflow-hidden border-0 shadow-lg dark:bg-black-800/50 bg-black/80 backdrop-blur-sm min-w-full">
                         <CardHeader className="border-b dark:border-gray-700/50">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
                                 <div>
