@@ -6,12 +6,42 @@ interface JupiterToken {
     daily_volume: number;
 }
 
+// Add this cache object at the top of the file, outside the function
+let tokenCache: {
+    data: JupiterToken[] | null;
+    timestamp: number;
+} = {
+    data: null,
+    timestamp: 0
+};
+
 export async function categorizeTokens(holdings: any[]) {
     try {
-        // console.log('Categorizing tokens for holdings:', holdings); // Debug log
-        // Fetch verified tokens from Jupiter API
-        const response = await fetch('https://api.jup.ag/tokens/v1/all');
-        const allTokens: JupiterToken[] = await response.json();
+        // Check cache first (cache valid for 1 hour)
+        const ONE_HOUR = 3600000;
+        const now = Date.now();
+        
+        let allTokens: JupiterToken[];
+        
+        if (tokenCache.data && (now - tokenCache.timestamp) < ONE_HOUR) {
+            allTokens = tokenCache.data;
+        } else {
+            // Fetch from our Next.js API route instead of directly from Jupiter
+            const response = await fetch('/api/jupiter-tokens');
+            
+            if (!response.ok) {
+                throw new Error('Failed to fetch tokens');
+            }
+            
+            allTokens = await response.json();
+            
+            // Update cache
+            tokenCache = {
+                data: allTokens,
+                timestamp: now
+            };
+        }
+
         // console.log('Fetched tokens from Jupiter API:', allTokens.length); // Debug log
         const categorized = {
             verified: [] as any[],
