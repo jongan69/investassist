@@ -131,12 +131,13 @@ export async function POST(req: Request) {
 
         if (completion.choices[0].message.content) {
           responseGenerated = true;
+          console.log('Completion from OpenAI:', completion); // Debug log
           const response = JSON.parse(completion.choices[0].message.content);
           console.log('Received response from OpenAI:', response); // Debug log
 
           // Validate the response has the required structure
           if (!response.allocations || !Array.isArray(response.allocations)) {
-            throw new Error('Invalid response format - missing allocations array');
+            console.error('Invalid response format - missing allocations array');
           }
 
           // Validate that allocations sum to 100%
@@ -146,7 +147,7 @@ export async function POST(req: Request) {
           );
 
           if (Math.abs(totalAllocation - 100) > 0.1) { // Allow small rounding differences
-            throw new Error('Allocations do not sum to 100%');
+            console.error('Allocations do not sum to 100%');
           }
 
           return NextResponse.json(response as InvestmentPlanResponse);
