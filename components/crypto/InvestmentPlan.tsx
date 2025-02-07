@@ -416,7 +416,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                                 disabled={isGeneratingPlan}
                                 className="w-full bg-[#fa6ece] text-white py-2 px-4 rounded-lg hover:bg-[#e55eb7]"
                             >
-                                {isGeneratingPlan ? 'Generating Investment Plan...' : 'Generate Investment Plan'}
+
+                                {isGeneratingPlan ? 'Generating Investment Plan...' : error ? 'Error Generating Investment Plan' : 'Generate Investment Plan'}
                             </button>
 
                             {investmentPlan && <InvestmentPlanDisplay plan={investmentPlan} />}
