@@ -38,23 +38,21 @@ function getMarketSentiment(changePercentage: number | undefined) {
   }
 }
 
-// Add this interface for the search params
-interface SearchParams {
-  ticker?: string
-  range?: string
-  interval?: string
-  page?: string
+interface Props {
+  searchParams: Promise<any>
 }
 
-export default async function Page({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
+export default async function Page({ searchParams }: Props) {
+  const params = await searchParams
   const tickers = isMarketOpen() ? tickerAfterOpen : tickersFutures
-  const typedSearchParams = searchParams as unknown as SearchParams
-  const ticker = tickers[0].symbol || "BTC-USD"
-  const range = validateRange(typedSearchParams?.range || DEFAULT_RANGE)
+  const ticker = tickers[0].symbol || params.ticker
+  const range = validateRange(
+    (Array.isArray(params?.range) ? params.range[0] : params.range) || DEFAULT_RANGE
+  )
 
   const interval = validateInterval(
     range,
-    (typedSearchParams?.interval as Interval) || DEFAULT_INTERVAL
+    ((Array.isArray(params?.interval) ? params.interval[0] : params.interval) || DEFAULT_INTERVAL) as Interval
   )
 
   const news = await fetchStockSearch("^DJI", 100)
