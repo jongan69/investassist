@@ -11,18 +11,18 @@ import { Profile, BaseInvestmentPlan, AllocationData } from '@/types/users';
 import { generateInvestmentPlan } from '@/lib/users/generateInvesmentPlan';
 import { hasFreeAccess } from '@/lib/users/hasFreeAccess';
 interface InvestmentPlanProps {
-  initialData: {
-    symbol: string;
-    regularMarketPrice: number;
-  }[];
-  fearGreedValue: {
-    value: number;
-    classification: string;
-  };
-  sectorPerformance: {
-    sector: string;
-    changesPercentage: string;
-  }[];
+    initialData: {
+        symbol: string;
+        regularMarketPrice: number;
+    }[];
+    fearGreedValue: {
+        value: number;
+        classification: string;
+    };
+    sectorPerformance: {
+        sector: string;
+        changesPercentage: string;
+    }[];
 }
 
 
@@ -64,7 +64,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
     };
 
     // Update the COLORS array to use theme-based colors
-    const COLORS = resolvedTheme === 'dark' 
+    const COLORS = resolvedTheme === 'dark'
         ? ['#fa6ece', '#63b3ed', '#48bb78', '#f6ad55', '#fc8181', '#b794f4', '#f687b3']  // Dark theme colors
         : ['#d53f8c', '#4299e1', '#38a169', '#ed8936', '#e53e3e', '#805ad5', '#d53f8c'];  // Light theme colors
 
@@ -160,8 +160,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
         setIsGeneratingPlan(true);
         try {
             const plan = await generateInvestmentPlan(
-                fearGreedValue, 
-                sectorPerformance, 
+                fearGreedValue,
+                sectorPerformance,
                 initialData,
                 {
                     totalValue: profile.totalValue,
@@ -211,7 +211,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
         const marketAnalysis = plan.marketAnalysis || {};
         const recommendation = plan.portfolioRecommendation || plan.investmentRecommendation || {};
         const allocations = transformAllocationData(plan);
-                
+
         return (
             <div className="space-y-4 mt-6">
                 <div className="bg-gray-700/30 p-4 rounded-lg">
@@ -219,7 +219,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                     <p className="text-sm mb-4">
                         {marketAnalysis.overview || marketAnalysis.summary || plan.summary}
                     </p>
-                    
+
                     {marketAnalysis.sectors && (
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                             {/* Handle both sector formats */}
@@ -284,7 +284,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
 
                 <div className="dark:bg-gray-700/50 bg-gray-100 p-6 rounded-xl">
                     <h3 className="text-xl font-semibold text-center mb-6 text-pink-600 dark:text-pink-400">
-                        Portfolio Allocation
+                        Recommended Portfolio Allocation
                     </h3>
                     {allocations && allocations.length > 0 ? (
                         <AllocationChart allocations={allocations} />
@@ -304,8 +304,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
         }
 
         const allocations: AllocationData[] = [];
-        const allocation = plan.portfolioRecommendation?.allocation || 
-                          plan.investmentRecommendation?.allocationPlan || {};
+        const allocation = plan.portfolioRecommendation?.allocation ||
+            plan.investmentRecommendation?.allocationPlan || {};
 
         // Process equities
         if (allocation.equities) {
@@ -319,10 +319,10 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
         }
 
         // Process fixed income/bonds
-        const bondPercentage = typeof allocation.fixedIncome === 'number' 
-            ? allocation.fixedIncome 
-            : allocation.fixedIncome?.bonds || 
-              allocation.bonds;
+        const bondPercentage = typeof allocation.fixedIncome === 'number'
+            ? allocation.fixedIncome
+            : allocation.fixedIncome?.bonds ||
+            allocation.bonds;
 
         if (bondPercentage) {
             allocations.push({
@@ -373,11 +373,11 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                 <div className='rounded-xl shadow-lg p-6 dark:bg-gray-800 bg-white sm:col-span-12'>
                     <div className='flex justify-between items-center mb-6'>
                         <h2 className='font-bold text-2xl text-[#fa6ece] dark:text-[#fa6ece] text-pink-600'>
-                            {profile ? 
-                            <a href={`/users/${profile.username}`} className='text-pink-600 dark:text-pink-400'>Your Profile</a>
-                            : showProfileForm 
-                                ? 'Create Your Profile' 
-                                : 'Purchase Investment Plan'}
+                            {profile ?
+                                <a href={`/users/${profile.username}`} className='text-pink-600 dark:text-pink-400'>Your Profile</a>
+                                : showProfileForm
+                                    ? 'Create Your Profile'
+                                    : 'Purchase Investment Plan'}
                         </h2>
                     </div>
 
@@ -407,16 +407,14 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                                     </div>
                                 ))}
                             </div>
+                            {investmentPlan && <InvestmentPlanDisplay plan={investmentPlan} />}
                             <button
                                 onClick={generatePlan}
                                 disabled={isGeneratingPlan}
                                 className="w-full bg-[#fa6ece] text-white py-2 px-4 rounded-lg hover:bg-[#e55eb7]"
                             >
-
                                 {isGeneratingPlan ? 'Generating Investment Plan...' : error ? 'Error Generating Investment Plan' : 'Generate Investment Plan'}
                             </button>
-
-                            {investmentPlan && <InvestmentPlanDisplay plan={investmentPlan} />}
                         </div>
                     ) : showProfileForm ? (
                         <form onSubmit={(e) => handleProfileSubmit(e, publicKey)} className="space-y-4">
@@ -432,9 +430,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                                         setUsername(e.target.value);
                                         setUsernameError(null); // Clear error when user types
                                     }}
-                                    className={`w-full p-2 rounded-lg bg-gray-700 text-white ${
-                                        usernameError ? 'border-red-500 border-2' : ''
-                                    }`}
+                                    className={`w-full p-2 rounded-lg bg-gray-700 text-white ${usernameError ? 'border-red-500 border-2' : ''
+                                        }`}
                                     required
                                 />
                                 {usernameError && (
