@@ -37,7 +37,6 @@ async function categorizeTokens(holdings: any[]) {
     // Fetch verified tokens from Jupiter API
     const response = await fetch('https://api.jup.ag/tokens/v1/all');
     const allTokens: JupiterToken[] = await response.json();
-    
     const categorized = {
       verified: [] as any[],
       memecoins: [] as any[],
@@ -47,8 +46,8 @@ async function categorizeTokens(holdings: any[]) {
     };
 
     for (const holding of holdings) {
-      const jupiterToken = allTokens.find(t => t.address === holding.mint);
-      
+      const jupiterToken = allTokens.find(t => t.address === holding.mintAddress);
+
       if (!jupiterToken) {
         categorized.other.push(holding);
         continue;
@@ -93,8 +92,10 @@ export async function POST(req: Request) {
 
   try {
     const { fearGreedValue, sectorPerformance, marketData, userPortfolio: portfolioData } = await req.json();
-    userPortfolio = portfolioData;
-
+    console.log(JSON.stringify(fearGreedValue));
+    userPortfolio = portfolioData
+    userPortfolio.holdings = userPortfolio.holdings.filter((position: any) => position.usdValue > 1).slice(0, 10);
+    const updatedPortfolioValue = userPortfolio.holdings.reduce((sum: number, token: any) => sum + token.usdValue, 0);
     // Replace detectMemecoins with new categorization
     const categorizedTokens = await categorizeTokens(userPortfolio.holdings);
     const memecoins = categorizedTokens?.memecoins || [];
@@ -105,10 +106,16 @@ export async function POST(req: Request) {
       As a financial advisor, analyze the following data and provide an investment allocation plan:
       
       Current Portfolio:
-      Total Value: $${userPortfolio.totalValue}
-      Holdings: ${userPortfolio.holdings.map((h: any) => `${h.symbol}: $${h.usdValue}`).join(', ')}
+      Total Value: $${updatedPortfolioValue}
+      Holdings: ${userPortfolio.holdings.map((h: any) => `${h.symbol}: $${h.usdValue.toFixed(2)}`).join(', ')}
       
-      Fear & Greed Index: ${fearGreedValue}
+      Market Sentiment (Fear & Greed Index):
+      Current: ${fearGreedValue.fgi.now.value} (${fearGreedValue.fgi.now.valueText})
+      Previous Close: ${fearGreedValue.fgi.previousClose.value} (${fearGreedValue.fgi.previousClose.valueText})
+      One Week Ago: ${fearGreedValue.fgi.oneWeekAgo.value} (${fearGreedValue.fgi.oneWeekAgo.valueText})
+      One Month Ago: ${fearGreedValue.fgi.oneMonthAgo.value} (${fearGreedValue.fgi.oneMonthAgo.valueText})
+      One Year Ago: ${fearGreedValue.fgi.oneYearAgo.value} (${fearGreedValue.fgi.oneYearAgo.valueText})
+      Last Updated: ${new Date(fearGreedValue.lastUpdated.humanDate).toLocaleString()}
       
       Sector Performance:
       ${sectorPerformance.map((sector: any) => `${sector.sector}: ${sector.performance}%`).join('\n')}
@@ -116,8 +123,8 @@ export async function POST(req: Request) {
       Market Data:
       ${JSON.stringify(marketData, null, 2)}
       
-      Current Portfolio includes ${memecoins.length} memecoins worth $${memecoinValue}.
-      Memecoins: ${memecoins.map(m => `${m.symbol}: $${m.usdValue}`).join(', ')}
+      Current Portfolio includes ${memecoins.length} memecoins worth $${memecoinValue.toFixed(2)}.
+      Memecoins: ${memecoins.map(m => `${m.symbol}: $${m.usdValue.toFixed(2)}`).join(', ')}
       
       Include these memecoins in the allocation, but limit their total allocation to max 20%.
       
@@ -139,7 +146,7 @@ export async function POST(req: Request) {
 
       The sum of all allocation percentages must equal 100.
     `;
-
+    console.log(prompt);
     let attempt = 0;
     let responseGenerated = false;
 
@@ -156,7 +163,7 @@ export async function POST(req: Request) {
         if (completion.choices[0].message.content) {
           responseGenerated = true;
           const response = JSON.parse(completion.choices[0].message.content);
-          
+
           // Validate the response has the required structure
           if (!response.allocations || !Array.isArray(response.allocations)) {
             throw new Error('Invalid response format - missing allocations array');
@@ -164,10 +171,10 @@ export async function POST(req: Request) {
 
           // Validate that allocations sum to 100%
           const totalAllocation = response.allocations.reduce(
-            (sum: number, item: any) => sum + (item.percentage || 0), 
+            (sum: number, item: any) => sum + (item.percentage || 0),
             0
           );
-          
+
           if (Math.abs(totalAllocation - 100) > 0.1) { // Allow small rounding differences
             throw new Error('Allocations do not sum to 100%');
           }
@@ -193,19 +200,19 @@ export async function POST(req: Request) {
           currentPortfolio: userPortfolio
         },
         allocations: [
-          { asset: "Large Cap Stocks", percentage: 30 - (memecoinPercentage/2), reasoning: "Core market exposure" },
-          { asset: "Bonds", percentage: 30 - (memecoinPercentage/2), reasoning: "Stability and income" },
+          { asset: "Large Cap Stocks", percentage: 30 - (memecoinPercentage / 2), reasoning: "Core market exposure" },
+          { asset: "Bonds", percentage: 30 - (memecoinPercentage / 2), reasoning: "Stability and income" },
           { asset: "Cash", percentage: 20, reasoning: "Safety and flexibility" },
           { asset: "Gold", percentage: 10, reasoning: "Inflation hedge" },
           ...(memecoinPercentage > 0 ? [{
-            asset: "Memecoins", 
-            percentage: memecoinPercentage, 
+            asset: "Memecoins",
+            percentage: memecoinPercentage,
             reasoning: `Existing memecoin holdings: ${memecoins.map(m => m.symbol).join(', ')}`
           }] : []),
-          { 
-            asset: "Cryptocurrencies", 
-            percentage: 10, 
-            reasoning: "Growth potential" 
+          {
+            asset: "Cryptocurrencies",
+            percentage: 10,
+            reasoning: "Growth potential"
           }
         ],
         summary: `Conservative allocation with ${memecoinPercentage.toFixed(1)}% existing memecoin exposure`,
@@ -216,7 +223,7 @@ export async function POST(req: Request) {
     }
   } catch (error) {
     console.error('Error generating investment plan:', error);
-    
+
     // Update the fallback response to include memecoins if present
     const fallbackResponse: InvestmentPlanResponse = {
       marketAnalysis: {
@@ -225,19 +232,19 @@ export async function POST(req: Request) {
         currentPortfolio: userPortfolio
       },
       allocations: [
-        { asset: "Large Cap Stocks", percentage: 30 - (memecoinPercentage/2), reasoning: "Core market exposure" },
-        { asset: "Bonds", percentage: 30 - (memecoinPercentage/2), reasoning: "Stability and income" },
+        { asset: "Large Cap Stocks", percentage: 30 - (memecoinPercentage / 2), reasoning: "Core market exposure" },
+        { asset: "Bonds", percentage: 30 - (memecoinPercentage / 2), reasoning: "Stability and income" },
         { asset: "Cash", percentage: 20, reasoning: "Safety and flexibility" },
         { asset: "Gold", percentage: 10, reasoning: "Inflation hedge" },
         ...(memecoinPercentage > 0 ? [{
-          asset: "Memecoins", 
-          percentage: memecoinPercentage, 
+          asset: "Memecoins",
+          percentage: memecoinPercentage,
           reasoning: `Existing memecoin holdings: ${memecoins.map(m => m.symbol).join(', ')}`
         }] : []),
-        { 
-          asset: "Cryptocurrencies", 
-          percentage: 10, 
-          reasoning: "Growth potential" 
+        {
+          asset: "Cryptocurrencies",
+          percentage: 10,
+          reasoning: "Growth potential"
         }
       ],
       summary: `Conservative allocation with ${memecoinPercentage.toFixed(1)}% existing memecoin exposure`,
