@@ -473,14 +473,16 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                             </button>
                         </form>
                     ) : (
-                        <div className="space-y-6 dark:bg-gray-800/50 bg-gray-100 p-6 rounded-xl">
-                            <div className="flex justify-center items-center">
-                                <h3 className="text-xl mb-2">Helio Pay with Crypto</h3>
-                                <HelioCheckout config={cryptoConfig} />
+                        <div className="space-y-6 dark:bg-gray-800/50 bg-gray-100 p-4 sm:p-6 rounded-xl">
+                            <div className="flex flex-col items-center space-y-4">
+                                <h3 className="text-lg sm:text-xl text-center">Helio Pay with Crypto</h3>
+                                <div className="w-full max-w-sm">
+                                    <HelioCheckout config={cryptoConfig} />
+                                </div>
                                 {isDevelopment && (
                                     <button
                                         onClick={() => paymentSuccessful()}
-                                        className="mt-4 w-full bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700"
+                                        className="w-full max-w-sm bg-yellow-600 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 text-sm sm:text-base"
                                     >
                                         Test Mode: Skip Payment
                                     </button>
