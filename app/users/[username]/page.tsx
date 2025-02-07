@@ -21,9 +21,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       keywords: ["profile", "user", "profile page"],
     }
   }
+  const profileData = await getProfileByUsername(username);
+
   return {
-    title: `${username}'s Profile`,
-    description: `Profile page for ${username}`,
+    title: `${username}'s Profile: ${profileData.profile.totalValue.toFixed(2)}`,
+    description: `Portfolio page for ${username}`,
     keywords: ["profile", username],
   }
 }

@@ -24,9 +24,6 @@ import CryptoTrends from "@/components/crypto/Trends"
 import NewsSection from "@/components/NewsSection"
 import { tickersFutures, tickerAfterOpen, isMarketOpen } from "@/lib/utils"
 import InvestmentPlan from "@/components/crypto/InvestmentPlan"
-import { Metadata } from "next"
-import { NextPage } from 'next'
-
 
 function getMarketSentiment(changePercentage: number | undefined) {
   if (!changePercentage) {
@@ -42,23 +39,23 @@ function getMarketSentiment(changePercentage: number | undefined) {
 }
 
 // Add this interface for the search params
-// interface SearchParams {
-//   ticker?: string
-//   range?: string
-//   interval?: string
-//   page?: string
-// }
+interface SearchParams {
+  ticker?: string
+  range?: string
+  interval?: string
+  page?: string
+}
 
-export default async function Page() {
+export default async function Page({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   const tickers = isMarketOpen() ? tickerAfterOpen : tickersFutures
-  // const typedSearchParams = searchParams as unknown as SearchParams
+  const typedSearchParams = searchParams as unknown as SearchParams
   const ticker = tickers[0].symbol || "BTC-USD"
-  // const range = validateRange(typedSearchParams?.range || DEFAULT_RANGE)
+  const range = validateRange(typedSearchParams?.range || DEFAULT_RANGE)
 
-  // const interval = validateInterval(
-  //   range,
-  //   (typedSearchParams?.interval as Interval) || DEFAULT_INTERVAL
-  // )
+  const interval = validateInterval(
+    range,
+    (typedSearchParams?.interval as Interval) || DEFAULT_INTERVAL
+  )
 
   const news = await fetchStockSearch("^DJI", 100)
 
@@ -148,7 +145,7 @@ export default async function Page() {
           </div>
           <div className="w-full lg:w-3/4">
             <Suspense fallback={<div>Loading...</div>}>
-              <MarketsChart ticker={ticker} range={DEFAULT_RANGE} interval={DEFAULT_INTERVAL} />
+              <MarketsChart ticker={ticker} range={range} interval={interval} />
             </Suspense>
           </div>
         </Card>
