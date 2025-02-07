@@ -35,15 +35,15 @@ export async function POST(req: Request) {
 
   try {
     const { fearGreedValue, sectorPerformance, marketData, userPortfolio: portfolioData } = await req.json();
-    console.log('Received request data:', { fearGreedValue, sectorPerformance, marketData, portfolioData }); // Debug log
+    // console.log('Received request data:', { fearGreedValue, sectorPerformance, marketData, portfolioData }); // Debug log
     userPortfolio = portfolioData;
     if (!userPortfolio) {
       return NextResponse.json({ error: "User portfolio not found" }, { status: 404 });
     }
     userPortfolio.holdings = userPortfolio.holdings.filter((position: any) => position.usdValue > 1).slice(0, 10);
-    console.log('Filtered user portfolio holdings:', userPortfolio.holdings); // Debug log
+    // console.log('Filtered user portfolio holdings:', userPortfolio.holdings); // Debug log
     const updatedPortfolioValue = userPortfolio.holdings.reduce((sum: number, token: any) => sum + token.usdValue, 0);
-    console.log('Updated portfolio value:', updatedPortfolioValue); // Debug log
+    // console.log('Updated portfolio value:', updatedPortfolioValue); // Debug log
 
     // Try to categorize tokens with a timeout
     try {
@@ -128,10 +128,9 @@ export async function POST(req: Request) {
           temperature: 0.7,
           max_tokens: 1000,
         });
-
+        console.log('Completion from OpenAI:', completion); // Debug log
         if (completion.choices[0].message.content) {
           responseGenerated = true;
-          console.log('Completion from OpenAI:', completion); // Debug log
           const response = JSON.parse(completion.choices[0].message.content);
           console.log('Received response from OpenAI:', response); // Debug log
 
