@@ -4,10 +4,12 @@ import { Profile } from '@/types/users';
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, Wallet, PieChart as PieChartIcon } from "lucide-react";
+import { TrendingUp, Wallet, PieChart as PieChartIcon, Share2 } from "lucide-react";
 import { AllocationChart } from './charts/AllocationChart';
 import { HoldingCard } from './HoldingCard';
 import { AnalysisCard } from './AnalysisCard';
+import { Button } from "@/components/ui/button";
+import * as htmlToImage from 'html-to-image';
 
 interface UserInvestmentPlanProps {
     profile: Profile;
@@ -15,6 +17,7 @@ interface UserInvestmentPlanProps {
 
 const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
     const [selectedTab, setSelectedTab] = useState('holdings');
+    const cardRef = React.useRef<HTMLDivElement>(null);
 
     const fadeInUp = {
         initial: { opacity: 0, y: 20 },
@@ -73,6 +76,45 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
         </>
     );
 
+    const handleShare = async () => {
+        if (cardRef.current) {
+            try {
+                const dataUrl = await htmlToImage.toPng(cardRef.current, {
+                    quality: 1.0,
+                    backgroundColor: '#000',
+                });
+
+                // Convert base64 to blob
+                const response = await fetch(dataUrl);
+                const blob = await response.blob();
+
+                // Create form data
+                const formData = new FormData();
+                formData.append('image', blob, 'portfolio.png');
+
+                // Upload via our API route
+                const uploadResponse = await fetch('/api/upload-share-image', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const { imageUrl } = await uploadResponse.json();
+
+                // Create the share text with image
+                const shareText = `Check out my crypto portfolio on InvestAssist.app! 🚀\n\nTotal Value: $${profile.totalValue.toFixed(2)}\n\nView my Portfolio: ${imageUrl}`;
+                
+                // Create the X share URL
+                const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`;
+                
+                // Open X share window
+                window.open(shareUrl, '_blank', 'width=550,height=420');
+
+            } catch (error) {
+                console.error('Error sharing to X:', error);
+            }
+        }
+    };
+
     if (!profile) {
         return (
             <Card className="border-2 border-yellow-500/30">
@@ -94,7 +136,10 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
                 transition={{ duration: 0.6 }}
             >
                 <motion.div {...fadeInUp}>
-                    <Card className="overflow-hidden border-0 shadow-lg dark:bg-black-800/50 bg-black/80 backdrop-blur-sm min-w-full">
+                    <Card 
+                        ref={cardRef}
+                        className="overflow-hidden border-0 shadow-lg dark:bg-black-800/50 bg-black/80 backdrop-blur-sm min-w-full"
+                    >
                         <CardHeader className="border-b dark:border-gray-700/50">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
                                 <div>
@@ -103,9 +148,20 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
                                     </CardTitle>
                                     <p className="text-sm text-muted-foreground mt-1">{profile.walletAddress}</p>
                                 </div>
-                                <div className="text-left sm:text-right w-full sm:w-auto">
-                                    <p className="text-sm text-muted-foreground">Total Value</p>
-                                    <p className="text-3xl font-bold text-pink-500">${profile.totalValue.toFixed(2)}</p>
+                                <div className="flex items-center gap-4">
+                                    <div className="text-left sm:text-right">
+                                        <p className="text-sm text-muted-foreground">Total Value</p>
+                                        <p className="text-3xl font-bold text-pink-500">${profile.totalValue.toFixed(2)}</p>
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={handleShare}
+                                        className="ml-2"
+                                        title="Share to X"
+                                    >
+                                        <Share2 className="h-4 w-4" />
+                                    </Button>
                                 </div>
                             </div>
                         </CardHeader>
