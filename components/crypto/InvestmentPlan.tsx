@@ -1,7 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import { HelioCheckout } from '@heliofi/checkout-react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet, useConnection } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { fetchTokenDatafromPublicKey } from '@/lib/solana/fetchTokens';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
@@ -10,6 +10,9 @@ import { getProfileByWalletAddress } from '@/lib/users/getProfileByWallet';
 import { Profile, BaseInvestmentPlan, AllocationData } from '@/types/users';
 import { generateInvestmentPlan } from '@/lib/users/generateInvesmentPlan';
 import { hasFreeAccess } from '@/lib/users/hasFreeAccess';
+import { burnTokens } from '@/lib/solana/burnTokens';
+import { connection } from 'next/dist/server/request/connection';
+import { INVEST_ASSIST_MINT, COST_OF_INVESTMENT_PLAN } from '@/lib/solana/constants';
 interface InvestmentPlanProps {
     initialData: {
         symbol: string;
@@ -27,7 +30,7 @@ interface InvestmentPlanProps {
 
 
 const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedValue, sectorPerformance }) => {
-    const { publicKey } = useWallet();
+    const wallet = useWallet();
     const { resolvedTheme } = useTheme();
     const isDevelopment = process.env.NEXT_PUBLIC_ENV === 'development';
     const [showProfileForm, setShowProfileForm] = useState(false);
@@ -41,6 +44,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
     const [error, setError] = useState<string | null>(null);
     const [freeAccess, setHasFreeAccess] = useState(false);
     const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 0);
+    const [paymentMethod, setPaymentMethod] = useState<'burn' | 'helio'>('helio');
+    const { connection } = useConnection();
 
     useEffect(() => {
         const handleResize = () => {
@@ -70,12 +75,12 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
 
     useEffect(() => {
         const checkProfile = async () => {
-            if (publicKey) {
-                const freeAccessResponse = await hasFreeAccess(publicKey.toString());
+            if (wallet.publicKey) {
+                const freeAccessResponse = await hasFreeAccess(wallet.publicKey.toString());
                 setHasFreeAccess(freeAccessResponse);
                 setIsLoading(true);
                 try {
-                    const profileData = await getProfileByWalletAddress(publicKey.toString());
+                    const profileData = await getProfileByWalletAddress(wallet.publicKey.toString());
                     if (profileData && profileData.exists) {
                         setProfile(profileData.profile);
                         setUsername(profileData.profile.username);
@@ -88,7 +93,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
             }
         };
         checkProfile();
-    }, [publicKey]);
+    }, [wallet.publicKey]);
 
     const paymentSuccessful = async () => {
         console.log("Payment successful");
@@ -371,6 +376,22 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
         return allocations;
     };
 
+    const handleBurnTokens = async () => {
+        const txId = await burnTokens(INVEST_ASSIST_MINT, wallet, COST_OF_INVESTMENT_PLAN, connection);
+        if (txId) {
+            try {
+                // Wait for transaction confirmation
+                const confirmation = await connection.confirmTransaction(txId);
+                if (confirmation) {
+                    // Transaction confirmed, proceed to profile creation
+                    setShowProfileForm(true);
+                }
+            } catch (error) {
+                console.error("Error confirming burn transaction:", error);
+            }
+        }
+    };
+
     return (
         <div className='min-h-screen w-full p-4 text-gray-900 dark:text-gray-100 bg-black-50 dark:bg-black-900'>
             <div className='max-w-4xl mx-auto'>
@@ -385,7 +406,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                         </h2>
                     </div>
 
-                    {!publicKey ? (
+                    {!wallet.publicKey ? (
                         <div className='text-center p-4 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-100 border border-yellow-200 dark:border-yellow-800 rounded-lg'>
                             Please connect your wallet to continue
                         </div>
@@ -421,7 +442,9 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                             </button>
                         </div>
                     ) : showProfileForm ? (
-                        <form onSubmit={(e) => handleProfileSubmit(e, publicKey)} className="space-y-4">
+                        <form onSubmit={(e) => {
+                            if (wallet.publicKey) handleProfileSubmit(e, wallet.publicKey)
+                        }} className="space-y-4">
                             <div>
                                 <label htmlFor="username" className="block text-sm font-medium mb-1">
                                     Username
@@ -434,9 +457,8 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                                         setUsername(e.target.value);
                                         setUsernameError(null);
                                     }}
-                                    className={`w-full p-2 rounded-lg bg-black-50 dark:bg-black-700 border border-black-300 dark:border-gray-600 ${
-                                        usernameError ? 'border-red-500 dark:border-red-500' : ''
-                                    }`}
+                                    className={`w-full p-2 rounded-lg bg-black-50 dark:bg-black-700 border border-black-300 dark:border-gray-600 ${usernameError ? 'border-red-500 dark:border-red-500' : ''
+                                        }`}
                                     required
                                 />
                                 {usernameError && (
@@ -452,22 +474,59 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                             </button>
                         </form>
                     ) : (
-                        <div className='max-w-screen-sm flex justify-center items-center'>
-                            <div>
-                                <div className="max-w-sm overflow-hidden">
-                                    <div className="overflow-x-auto">
-                                        <HelioCheckout config={cryptoConfig} />
-                                    </div>
-                                </div>
-                                {(isDevelopment || freeAccess) && (
+                        <div className='max-w-screen-sm mx-auto'>
+                            <div className="mb-6">
+                                <div className="flex justify-center space-x-4 p-4 bg-black-100 dark:bg-black-800 rounded-lg">
                                     <button
-                                        onClick={() => paymentSuccessful()}
-                                        className="w-full max-w-sm bg-yellow-600 dark:bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 dark:hover:bg-yellow-600 text-sm sm:text-base mt-4 transition-colors"
+                                        onClick={() => setPaymentMethod('helio')}
+                                        className={`px-4 py-2 rounded-lg transition-colors ${paymentMethod === 'helio'
+                                                ? 'bg-pink-600 text-white'
+                                                : 'bg-black-200 dark:bg-black-700'
+                                            }`}
                                     >
-                                        Free Access: Skip Payment
+                                        Pay with Helio
                                     </button>
-                                )}
+                                    <button
+                                        onClick={() => setPaymentMethod('burn')}
+                                        className={`px-4 py-2 rounded-lg transition-colors ${paymentMethod === 'burn'
+                                                ? 'bg-pink-600 text-white'
+                                                : 'bg-black-200 dark:bg-black-700'
+                                            }`}
+                                    >
+                                        Burn Tokens
+                                    </button>
+                                </div>
                             </div>
+
+                            {paymentMethod === 'helio' ? (
+                                <div className="flex flex-col items-center">
+                                    <div className="max-w-sm overflow-hidden">
+                                        <div className="overflow-x-auto">
+                                            <HelioCheckout config={cryptoConfig} />
+                                        </div>
+                                    </div>
+                                    {(isDevelopment || freeAccess) && (
+                                        <button
+                                            onClick={() => paymentSuccessful()}
+                                            className="w-full max-w-sm bg-yellow-600 dark:bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-700 dark:hover:bg-yellow-600 text-sm sm:text-base mt-4 transition-colors"
+                                        >
+                                            Free Access: Skip Payment
+                                        </button>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="text-center">
+                                    <p className="mb-4 text-gray-600 dark:text-gray-400">
+                                        Burn your tokens to access the investment plan
+                                    </p>
+                                    <button
+                                        onClick={handleBurnTokens}
+                                        className="w-full max-w-sm bg-pink-600 dark:bg-pink-500 text-white py-2 px-4 rounded-lg hover:bg-pink-700 dark:hover:bg-pink-600 transition-colors"
+                                    >
+                                        Burn Tokens
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
