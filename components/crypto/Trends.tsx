@@ -160,7 +160,8 @@ export default function CryptoTrends({ data }: { data: any }) {
                                                     <tr key={activity.symbol} className="group">
                                                         <td colSpan={3} className="p-0">
                                                             <Link
-                                                                href={`https://dexscreener.com/solana/${activity.token_address}`}
+                                                                href={`/coins/${activity.symbol}?ca=${activity.token_address}`}
+                                                                // href={`https://dexscreener.com/solana/${activity.token_address}`}
                                                                 className="block w-full relative z-10"
                                                                 target="_blank"
                                                             >
