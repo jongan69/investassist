@@ -9,7 +9,8 @@ export default function Leaderboard() {
     useEffect(() => {
         const fetchData = async () => {
             const result = await getLeaderboard();
-            setData(result);
+            const sortedData = result.leaderboard.sort((a: any, b: any) => b.totalValue - a.totalValue);
+            setData(sortedData);
         };
         
         fetchData();
