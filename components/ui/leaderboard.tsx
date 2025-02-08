@@ -4,7 +4,7 @@ import { getLeaderboard } from "@/lib/users/getLeaderboard";
 import Link from "next/link"
 
 export default function Leaderboard() {
-    const [data, setData] = useState<any>(null);
+    const [data, setData] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -31,7 +31,7 @@ export default function Leaderboard() {
                         </tr>
                     </thead>
                     <tbody>
-                        {data?.leaderboard?.map((user: any, index: number) => (
+                        {data.map((user: any, index: number) => (
                             <tr
                                 key={`${user.id}-${index}`}
                                 className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
