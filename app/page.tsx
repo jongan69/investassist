@@ -24,6 +24,9 @@ import CryptoTrends from "@/components/crypto/Trends"
 import NewsSection from "@/components/NewsSection"
 import { tickersFutures, tickerAfterOpen, isMarketOpen } from "@/lib/utils"
 import InvestmentPlan from "@/components/crypto/InvestmentPlan"
+import { fetchStockNews } from "@/lib/alpaca/fetchStockNews"
+import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest"
+import TrendingStocks from "@/components/stocks/Trending"
 
 function getMarketSentiment(changePercentage: number | undefined) {
   if (!changePercentage) {
@@ -49,6 +52,16 @@ export default async function Page({ searchParams }: Props) {
   const range = validateRange(
     (Array.isArray(params?.range) ? params.range[0] : params.range) || DEFAULT_RANGE
   )
+
+  const latestNews = await fetchStockNews()
+  const latestNewsSymbols = latestNews.filter((newsArticle: any) => newsArticle.symbols.length > 0)
+  const highOiOptions = await Promise.all(
+    latestNewsSymbols.flatMap((newsArticle: any) =>
+      newsArticle.symbols.map((symbol: string) => getHighOpenInterestContracts(symbol, 'call'))
+    )
+  )
+
+  // console.log(latestNews)
 
   const interval = validateInterval(
     range,
@@ -111,6 +124,9 @@ export default async function Page({ searchParams }: Props) {
                 sectorPerformance={sectorPerformance}
               />
             )}
+            <Suspense fallback={<div>Loading...</div>}> 
+              {latestNews && highOiOptions && <TrendingStocks data={{ news: latestNews, highOiOptions }} />}
+            </Suspense>
             <NewsSection news={news.news} />
             <div
               className={`pointer-events-none absolute inset-0 z-0 h-[65%] w-[65%] -translate-x-[10%] -translate-y-[30%] rounded-full blur-3xl ${sentimentBackground}`}
@@ -151,7 +167,7 @@ export default async function Page({ searchParams }: Props) {
       <div>
         <h2 className="py-4 text-xl font-medium">Investment Plan</h2>
         <Suspense fallback={<div>Loading...</div>}>
-          <InvestmentPlan 
+          <InvestmentPlan
             initialData={resultsWithTitles}
             fearGreedValue={fearGreedValue}
             sectorPerformance={sectorPerformance}

@@ -32,6 +32,7 @@ const keysToDisplay = [
   },
   { key: "beta", title: "Beta" },
   { key: "trailingEps", title: "EPS", section: "defaultKeyStatistics" },
+  
 ]
 
 export default async function FinanceSummary({ ticker }: { ticker: string }) {

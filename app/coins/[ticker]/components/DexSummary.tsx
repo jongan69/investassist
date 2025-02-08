@@ -4,7 +4,7 @@ import { getPairDetails, getDexScreenerData } from "@/lib/solana/fetchDexData"
 import { Card } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
 import { Twitter, Send, Globe, Search } from "lucide-react"
-import { getTokenInfoFromTicker } from "@/lib/solana/getTokenInfoFromTicker"
+import { getTokenInfoFromTicker } from "@/lib/solana/fetchTokenInfoFromTicker"
 
 function formatNumber(num: number) {
   if (num >= 1e12) return `${(num / 1e12).toFixed(2)}T`

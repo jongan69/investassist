@@ -7,7 +7,7 @@ import { getDexScreenerData } from "@/lib/solana/fetchDexData"
 import CoinChart from "@/app/coins/[ticker]/components/CoinChart"
 import { Skeleton } from "@/components/ui/skeleton"
 import DexSummary from "./components/DexSummary"
-import { getTokenInfoFromTicker } from "@/lib/solana/getTokenInfoFromTicker"
+import { getTokenInfoFromTicker } from "@/lib/solana/fetchTokenInfoFromTicker"
 type Props = {
   params: Promise<any>
   searchParams: Promise<{

@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
-import { fetchCryptoTrends } from '@/lib/solana/getTrends';
+import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
 
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();

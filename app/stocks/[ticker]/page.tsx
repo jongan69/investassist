@@ -12,7 +12,8 @@ import { Interval } from "@/types/yahoo-finance"
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchQuote } from "@/lib/yahoo-finance/fetchQuote"
-
+import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest"
+import OpenInterest from "./components/OpenInterest"
 type Props = {
   params: Promise<any>
   searchParams: Promise<{
@@ -45,11 +46,11 @@ export default async function StocksPage({ params, searchParams }: Props) {
   const ticker = (await params).ticker
   const typedSearchParams = await searchParams
   const range = validateRange(typedSearchParams?.range || DEFAULT_RANGE)
+  // const highOiOptions = await getHighOpenInterestContracts(ticker)
   const interval = validateInterval(
     range,
     (typedSearchParams?.interval as Interval) || DEFAULT_INTERVAL
   )
-
   return (
     <div>
       <Card>
@@ -71,6 +72,15 @@ export default async function StocksPage({ params, searchParams }: Props) {
             }
           >
             <FinanceSummary ticker={ticker} />
+          </Suspense>
+          <Suspense
+            fallback={
+              <div className="flex h-[27.5rem] items-center justify-center text-muted-foreground ">
+                Loading...
+              </div>
+            }
+          >
+            <OpenInterest ticker={ticker} />
           </Suspense>
           <Suspense
             fallback={

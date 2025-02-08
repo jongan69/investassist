@@ -16,7 +16,7 @@ import { extractCidFromUrl } from "./extractCidUrl";
 import { processTokenMetadata } from "./processMetadata";
 import { withRetry } from "./withRetry";
 import { HELIUS } from "./constants";
-import { getDefaultTokenMetadata } from "./getDefaultTokenData";
+import { getDefaultTokenMetadata } from "./fetchDefaultTokenData";
 import { DEFAULT_IMAGE_URL } from "./constants";
 
 // Initialize connection and metaplex

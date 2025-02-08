@@ -13,7 +13,7 @@ import {
 import { Button } from "./button"
 import tickers from "@/data/tickers.json"
 import { useRouter } from "next/navigation"
-import { fetchCryptoTrends } from "@/lib/solana/getTrends"
+import { fetchCryptoTrends } from "@/lib/solana/fetchTrends"
 
 const SUGGESTIONS = [
   { ticker: "BTC-USD", title: "Bitcoin", assetType: "stocks" },

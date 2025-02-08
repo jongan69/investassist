@@ -1,4 +1,4 @@
-import { getSolanaTokenCA } from "./getCaFromTicker"
+import { getSolanaTokenCA } from "./fetchCaFromTicker"
 
 import { getDexScreenerData } from "./fetchDexData"
 
