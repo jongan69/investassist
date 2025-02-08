@@ -1,11 +1,24 @@
 "use client"
+import { useEffect, useState } from "react";
+import { getLeaderboard } from "@/lib/users/getLeaderboard";
 import Link from "next/link"
 
-export default function Leaderboard(data: any) {
-    const leaderboard = data.data.leaderboard
-    console.log(leaderboard)
+export default function Leaderboard() {
+    const [data, setData] = useState<any>(null);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const result = await getLeaderboard();
+            setData(result);
+        };
+        
+        fetchData();
+    }, []);
+
+    if (!data) return null;
+
     return (
-        leaderboard && <div className="mt-8">
+        <div className="mt-8">
             <h2 className="text-2xl font-bold mb-4 dark:text-white">Leaderboard</h2>
             <div className="overflow-x-auto rounded-lg border dark:border-gray-700">
                 <table className="min-w-full bg-white dark:bg-gray-800">
@@ -17,7 +30,7 @@ export default function Leaderboard(data: any) {
                         </tr>
                     </thead>
                     <tbody>
-                        {leaderboard?.map((user: any, index: number) => (
+                        {data?.leaderboard?.map((user: any, index: number) => (
                             <tr
                                 key={`${user.id}-${index}`}
                                 className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"

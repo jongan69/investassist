@@ -1,14 +1,12 @@
-import { getLeaderboard } from "@/lib/users/getLeaderboard";
-import Leaderboard from "@/components/ui/leaderboard";
 import { Suspense } from "react";
-export default async function AboutPage() {
-  const data = await getLeaderboard();
+import Leaderboard from "@/components/ui/leaderboard";
 
+export default async function AboutPage() {
   return (
     <div className="max-w-4xl mx-auto p-6">
-       <Suspense fallback={<div>Loading...</div>}>
-        {data && <Leaderboard data={data} />}
-       </Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
+        <Leaderboard />
+      </Suspense>
       <br />
       <h1 className="text-3xl font-bold mb-4 dark:text-white">About InvestAssist</h1>
       <p className="mb-4 dark:text-gray-300">
