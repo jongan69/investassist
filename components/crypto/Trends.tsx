@@ -110,7 +110,8 @@ export default function CryptoTrends({ data }: { data: any }) {
                                             <tr key={ticker.ticker} className="group">
                                                 <td colSpan={2} className="p-0">
                                                     <Link
-                                                        href={`https://dexscreener.com/solana/${ticker.ca}`}
+                                                        href={`/coins/${ticker.ticker.replace(/\$/g, '')}`}
+                                                        // href={`https://dexscreener.com/solana/${ticker.ca}`}
                                                         className="block w-full relative z-10"
                                                         target="_blank"
                                                     >
