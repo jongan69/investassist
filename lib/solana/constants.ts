@@ -15,7 +15,6 @@ export const DEFAULT_IMAGE_URL = process.env.UNKNOWN_IMAGE_URL || "https://s3.co
 export const JUPITER_QUOTE = "https://quote-api.jup.ag/v6";
 
 export const BLOCKENGINE = `mainnet.block-engine.jito.wtf`
-
 export const INVEST_ASSIST_MINT = "8KxEiudmUF5tpJKK4uHzjDuJPGKUz9hYUDBEVcfdpump";
 export const INVEST_ASSIST_MINT_DECIMALS = 6;
 export const COST_OF_INVESTMENT_PLAN = 1000;

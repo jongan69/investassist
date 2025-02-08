@@ -1,9 +1,6 @@
-import { cn } from "@/lib/utils"
-
 import AreaClosedCoinChart from "./AreaClosedCoinChart"
 import { type KrakenRange, type KrakenInterval, type KrakenOHLCResponse, type QuoteError } from "@/lib/solana/fetchCoinQuote"
 import { useMemo, memo } from "react"
-import { Skeleton } from "@/components/ui/skeleton"
 
 interface CoinChartProps {
   ticker: string
@@ -14,37 +11,6 @@ interface CoinChartProps {
     error: QuoteError | null
   }>
 }
-
-const rangeTextMapping = {
-  "1d": "",
-  "1w": "Past Week",
-  "1m": "Past Month",
-  "3m": "Past 3 Months",
-  "1y": "Past Year",
-}
-
-function calculatePriceChangePercentage(qouteClose: number, currentPrice: number) {
-  const firstItemPrice = qouteClose || 0
-  return ((currentPrice - firstItemPrice) / firstItemPrice) * 100
-}
-
-function calculatePriceChangeUsd(qouteClose: number, currentPrice: number) {
-  const firstItemPrice = qouteClose || 0
-  return currentPrice - firstItemPrice
-}
-
-// Add a loading component
-const ChartSkeleton = () => (
-  <div className="space-y-4">
-    <div className="flex items-end justify-between">
-      <div className="space-y-2">
-        <Skeleton className="h-6 w-32" />
-        <Skeleton className="h-4 w-48" />
-      </div>
-    </div>
-    <Skeleton className="h-[350px] w-full" />
-  </div>
-)
 
 // Add this utility function at the top
 function isTimeframeAvailable(timeframeData: Record<KrakenRange, {
@@ -108,7 +74,7 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
 
     const data = currentData.data as KrakenOHLCResponse
     const quotes = data.result[`${upperCaseTicker}USD`].map(
-      ([timestamp, open, high, low, close]) => ({
+      ([timestamp,,,, close]) => ({
         date: new Date(timestamp * 1000),
         close: parseFloat(close)
       })
