@@ -20,7 +20,7 @@ export default function Leaderboard() {
 
     return (
         <div className="mt-8">
-            <h2 className="text-2xl font-bold mb-4 dark:text-white">Leaderboard</h2>
+            <h2 className="text-2xl font-bold mb-4 dark:text-white">Portfolio Leaderboard</h2>
             <div className="overflow-x-auto rounded-lg border dark:border-gray-700">
                 <table className="min-w-full bg-white dark:bg-gray-800">
                     <thead>
