@@ -5,7 +5,7 @@ export default function Leaderboard(data: any) {
     const leaderboard = data.data.leaderboard
     console.log(leaderboard)
     return (
-        data && <div className="mt-8">
+        leaderboard && <div className="mt-8">
             <h2 className="text-2xl font-bold mb-4 dark:text-white">Leaderboard</h2>
             <div className="overflow-x-auto rounded-lg border dark:border-gray-700">
                 <table className="min-w-full bg-white dark:bg-gray-800">
@@ -17,7 +17,7 @@ export default function Leaderboard(data: any) {
                         </tr>
                     </thead>
                     <tbody>
-                        {leaderboard.map((user: any, index: number) => (
+                        {leaderboard?.map((user: any, index: number) => (
                             <tr
                                 key={`${user.id}-${index}`}
                                 className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
