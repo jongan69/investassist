@@ -20,6 +20,6 @@ export async function fetchFearGreedIndex() {
     return data
   } catch (error) {
     console.error("Error fetching fear and greed index", error)
-    throw new Error("Failed to fetch fear and greed index")
+    return null
   }
 }

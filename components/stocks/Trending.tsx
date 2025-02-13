@@ -8,10 +8,10 @@ export default function TrendingStocks(data: any) {
             <div className="p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
                 <h1 className="text-center text-2xl font-bold mb-8 text-gray-800 dark:text-gray-200">Trending Stocks with High Open Interest</h1>
                 <div className="flex flex-wrap justify-center">
-                    {news?.map((newsItem: any) => {
+                    {news && news?.map((newsItem: any) => {
                         // Find the corresponding options for the news item
                         const options = highOiOptions.find((option: any) =>
-                            option.shortTerm.root_symbol === newsItem.symbols[0]
+                            option?.shortTerm?.root_symbol === newsItem.symbols[0]
                         );
 
                         return (
