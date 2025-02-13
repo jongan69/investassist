@@ -4,12 +4,12 @@ export const fetchCryptoTrends = async (setTrends: (trends: any) => void, setIsL
         setError(null);
         const response = await fetch('/api/crypto-trends');
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            console.error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
 
         if (!data.bitcoinPrice || !data.ethereumPrice || !data.solanaPrice) {
-            throw new Error('Missing required price data');
+            console.error('Missing required price data');
         }
 
         setTrends(data);
