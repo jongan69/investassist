@@ -24,29 +24,48 @@ export interface KrakenOHLCResponse {
     };
 }
 
-export const krakenIntervalMapping = {
-    "1d": 1,      // 1 minute intervals for 1 day
-    "1w": 15,     // 15 minute intervals for 1 week
-    "1m": 60,     // 1 hour intervals for 1 month
-    "3m": 240,    // 4 hour intervals for 3 months
-    "1y": 1440,   // 1 day intervals for 1 year
+export const standardIntervals = {
+    "1m": "1m",    // 1 minute
+    "5m": "5m",    // 5 minutes
+    "15m": "15m",  // 15 minutes
+    "30m": "30m",  // 30 minutes
+    "1h": "60m",   // 1 hour
+    "4h": "240m",  // 4 hours
+    "1d": "1d",    // 1 day
+    "1w": "1w",    // 1 week
 } as const;
 
-export type KrakenRange = keyof typeof krakenIntervalMapping;
+export type StandardInterval = keyof typeof standardIntervals;
+
+// Update krakenIntervalMapping to map from StandardInterval
+export const krakenIntervalMapping: Record<StandardInterval, number> = {
+    "1m": 1,
+    "5m": 5,
+    "15m": 15,
+    "30m": 30,
+    "1h": 60,
+    "4h": 240,
+    "1d": 1440,
+    "1w": 10080,
+} as const;
+
+// Update the cache time constants
+const CACHE_TIME: Record<StandardInterval, number> = {
+    "1m": 30 * 1000,        // 30 seconds
+    "5m": 60 * 1000,        // 1 minute
+    "15m": 2 * 60 * 1000,   // 2 minutes
+    "30m": 5 * 60 * 1000,   // 5 minutes
+    "1h": 10 * 60 * 1000,   // 10 minutes
+    "4h": 30 * 60 * 1000,   // 30 minutes
+    "1d": 60 * 60 * 1000,   // 1 hour
+    "1w": 4 * 60 * 60 * 1000, // 4 hours
+} as const;
 
 // Add more sophisticated caching with types
 interface CacheEntry<T> {
-    timestamp: number
-    data: T
+    timestamp: number;
+    data: T;
 }
-
-const CACHE_TIME = {
-    "1d": 60 * 1000,    // 1 minute for 1d data
-    "1w": 5 * 60 * 1000,  // 5 minutes for 1w data
-    "1m": 15 * 60 * 1000, // 15 minutes for 1m data
-    "3m": 30 * 60 * 1000, // 30 minutes for 3m data
-    "1y": 60 * 60 * 1000, // 1 hour for 1y data
-} as const
 
 const priceCache = new Map<string, CacheEntry<KrakenOHLCResponse>>()
 
@@ -72,7 +91,7 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = 3): P
     throw new Error('Max retries reached')
 }
 
-export async function fetchCoinQuote(ticker: string, range: KrakenRange = "1d") {
+export async function fetchCoinQuote(ticker: string, range: StandardInterval = "1d") {
     const cacheKey = `${ticker}-${range}`
     const cached = priceCache.get(cacheKey)
 
@@ -81,7 +100,7 @@ export async function fetchCoinQuote(ticker: string, range: KrakenRange = "1d") 
     }
 
     try {
-        const pair = `${ticker}USD`
+        const pair = ticker.replace('-', '')
         const interval = krakenIntervalMapping[range]
         const url = new URL('https://api.kraken.com/0/public/OHLC')
         const params = new URLSearchParams({
@@ -139,11 +158,10 @@ export async function fetchCoinQuote(ticker: string, range: KrakenRange = "1d") 
 
 export async function fetchAllTimeframes(ticker: string) {
     noStore()
+    console.time(`fetchAllTimeframes:${ticker}`)
 
-    console.time(`fetchAllTimeframes:${ticker}`)  // Start timer
-
-    const timeframes = Object.keys(krakenIntervalMapping) as KrakenRange[]
-    const timeframeData: Record<KrakenRange, {
+    const timeframes = Object.keys(standardIntervals) as StandardInterval[]
+    const timeframeData: Record<StandardInterval, {
         data: KrakenOHLCResponse | null,
         error: QuoteError | null
     }> = {} as any
@@ -217,7 +235,7 @@ export async function fetchAllTimeframes(ticker: string) {
 export async function fetchKrakenTickerData(ticker: string) {
     noStore()
     try {
-        const response = await fetch(`https://api.kraken.com/0/public/Ticker?pair=${ticker.toUpperCase()}USD`)
+        const response = await fetch(`https://api.kraken.com/0/public/Ticker?pair=${ticker.toUpperCase().replace('-', '')}`)
         const data = await response.json()
         return data
     } catch (err) {

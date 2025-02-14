@@ -2,7 +2,7 @@ import News from "@/app/stocks/[ticker]/components/News"
 import { Card, CardContent } from "@/components/ui/card"
 import { Suspense } from "react"
 import type { Metadata } from "next"
-import { type KrakenRange, type KrakenInterval, fetchAllTimeframes } from "@/lib/solana/fetchCoinQuote"
+import { type KrakenInterval, fetchAllTimeframes } from "@/lib/solana/fetchCoinQuote"
 import { getDexScreenerData } from "@/lib/solana/fetchDexData"
 import CoinChart from "@/app/coins/[ticker]/components/CoinChart"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -66,10 +66,10 @@ export default async function CoinsPage({ params, searchParams }: Props) {
   const typedSearchParams = await searchParams
   const ca = typedSearchParams?.ca as string || null
   const hasCa = ca ? true : false
-  const range = typedSearchParams?.range as KrakenRange || '1d'
-  const interval = typedSearchParams?.interval as KrakenInterval || '1m'
+  const range = typedSearchParams?.range || '1d'
+  const interval = typedSearchParams?.interval || '1m'
 
-  const allTimeframeData = await fetchAllTimeframes(ticker)
+  const allTimeframeData = await fetchAllTimeframes(`${ticker}USD`)
   return (
     <div suppressHydrationWarning>
       <Card>
@@ -90,7 +90,7 @@ export default async function CoinsPage({ params, searchParams }: Props) {
               <CoinChart
                 ticker={ticker}
                 range={range}
-                interval={interval}
+                interval={interval as any}
                 timeframeData={allTimeframeData.data}
               />}
           </Suspense>

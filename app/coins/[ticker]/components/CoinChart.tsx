@@ -1,22 +1,22 @@
 import AreaClosedCoinChart from "./AreaClosedCoinChart"
-import { type KrakenRange, type KrakenInterval, type KrakenOHLCResponse, type QuoteError } from "@/lib/solana/fetchCoinQuote"
+import { type KrakenInterval, type KrakenOHLCResponse, type QuoteError } from "@/lib/solana/fetchCoinQuote"
 import { useMemo, memo } from "react"
 
 interface CoinChartProps {
   ticker: string
-  range: KrakenRange
+  range: any
   interval?: KrakenInterval
-  timeframeData: Record<KrakenRange, {
+  timeframeData: Record<any, {
     data: KrakenOHLCResponse | null
     error: QuoteError | null
   }>
 }
 
 // Add this utility function at the top
-function isTimeframeAvailable(timeframeData: Record<KrakenRange, {
+function isTimeframeAvailable(timeframeData: Record<any, {
   data: KrakenOHLCResponse | null
   error: QuoteError | null
-}>, range: KrakenRange) {
+}>, range: any) {
   const data = timeframeData[range]
   return data?.data?.result && !data?.error
 }
@@ -28,8 +28,8 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
   // Add this to check available ranges
   const availableRanges = useMemo(() => {
     return Object.keys(timeframeData).filter(r => 
-      isTimeframeAvailable(timeframeData, r as KrakenRange)
-    ) as KrakenRange[]
+      isTimeframeAvailable(timeframeData, r)
+    )
   }, [timeframeData])
 
   // If current range is unavailable, use the closest available range
@@ -39,7 +39,7 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
     }
     
     // Order ranges from shortest to longest
-    const rangeOrder: KrakenRange[] = ['1d', '1w', '1m', '3m', '1y']
+    const rangeOrder: any[] = ['1d', '1w', '1m', '3m', '1y']
     const currentIndex = rangeOrder.indexOf(range)
     
     // Try to find the closest available range
