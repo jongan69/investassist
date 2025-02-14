@@ -27,6 +27,7 @@ import InvestmentPlan from "@/components/crypto/InvestmentPlan"
 import { fetchStockNews } from "@/lib/alpaca/fetchStockNews"
 import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest"
 import TrendingStocks from "@/components/stocks/Trending"
+import SmsAlert from "@/components/ui/sms-alert/SmsAlert"
 
 function getMarketSentiment(changePercentage: number | undefined) {
   if (!changePercentage) {
@@ -124,7 +125,7 @@ export default async function Page({ searchParams }: Props) {
                 sectorPerformance={sectorPerformance}
               />
             )}
-            <Suspense fallback={<div>Loading...</div>}> 
+            <Suspense fallback={<div>Loading...</div>}>
               {latestNews && highOiOptions && <TrendingStocks data={{ news: latestNews, highOiOptions }} />}
             </Suspense>
             <NewsSection news={news.news} />
@@ -163,6 +164,10 @@ export default async function Page({ searchParams }: Props) {
             </Suspense>
           </div>
         </Card>
+      </div>
+      <div>
+        <h2 className="py-4 text-xl font-medium">SMS Alerts</h2>
+        <SmsAlert />
       </div>
       <div>
         <h2 className="py-4 text-xl font-medium">Investment Plan</h2>

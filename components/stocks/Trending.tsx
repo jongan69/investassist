@@ -1,7 +1,7 @@
 import Image from "next/image"
 
 export default function TrendingStocks(data: any) {
-    console.log(data)
+    // console.log(data)
     const { news, highOiOptions } = data.data
     return (
         news && highOiOptions && (
