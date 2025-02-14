@@ -90,7 +90,8 @@ export async function GET(req: Request) {
         }
 
         const startDate = new Date();
-        startDate.setDate(startDate.getDate() - 8); // Get last 30 days by default
+        if(interval === '1m') startDate.setDate(startDate.getDate() - 8); // Get last 30 days by default
+        else startDate.setDate(startDate.getDate() - 30); // Get last 30 days by default
         const endDate = new Date();
 
         const yahooresult = await yahooFinance.chart(symbol, {
