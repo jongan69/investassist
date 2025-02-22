@@ -1,4 +1,4 @@
-## InvestAssist: Stocks tracking app
+## InvestAssist: Stocks and Crypto tracking app
 
 ![InvestAssist](./public/demo.png)
 
