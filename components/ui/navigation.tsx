@@ -26,6 +26,7 @@ const NAVIGATION = [
   { title: "Markets", href: "/" },
   { title: "Screener", href: "/screener" },
   { title: "About", href: "/about" },
+  { title: "Learn", href: "/learn" },
 ]
 
 export default function Navigation() {
