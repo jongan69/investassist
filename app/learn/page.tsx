@@ -73,6 +73,11 @@ const USEFUL_LINKS = [
     title: "Fundrise",
     description: "Fundrise offers world-class private market investments like real estate, private credit, and venture.",
     url: "https://fundrise.com/i/g70dlo?utm_source=fundrise&utm_campaign=ios_share"
+  },
+  {
+    title: "SolTrendio Watch App",
+    description: "SolTrendio is a watch app that allows you to track the latest trends in the cryptocurrency ecosystem on your Apple Watch.",
+    url: "https://apps.apple.com/us/app/soltrendio-trends/id6742119975"
   }
 ]
 
@@ -187,14 +192,24 @@ export default async function LearnPage() {
             <p className="dark:text-gray-300 mb-4">
               Keep track of all your investments in one place.
             </p>
-            <Link
-              href={USEFUL_LINKS.find(link => link.title === "AssetDash")?.url || "#"}
-              className="text-blue-600 dark:text-blue-400 hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              AssetDash - Comprehensive Portfolio Tracker →
-            </Link>
+            <div className="space-y-2">
+              <Link
+                href={USEFUL_LINKS.find(link => link.title === "AssetDash")?.url || "#"}
+                className="text-blue-600 dark:text-blue-400 hover:underline block"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                AssetDash - Comprehensive Portfolio Tracker →
+              </Link>
+              <Link
+                href={USEFUL_LINKS.find(link => link.title === "SolTrendio Watch App")?.url || "#"}
+                className="text-blue-600 dark:text-blue-400 hover:underline block"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                SolTrendio - Apple Watch Crypto Tracker →
+              </Link>
+            </div>
           </div>
         </div>
       </section>
