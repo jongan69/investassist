@@ -1,7 +1,28 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     images: {
-        domains: ['dd.dexscreener.com', 'coin-images.coingecko.com', 'ipfs.io', 'cdn.benzinga.com', 'avatar.iran.liara.run']
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'dd.dexscreener.com'
+            },
+            {
+                protocol: 'https',
+                hostname: 'coin-images.coingecko.com'
+            },
+            {
+                protocol: 'https',
+                hostname: 'ipfs.io'
+            },
+            {
+                protocol: 'https',
+                hostname: 'cdn.benzinga.com'
+            },
+            {
+                protocol: 'https',
+                hostname: 'avatar.iran.liara.run'
+            }
+        ]
     },
     webpack: (config, { isServer }) => {
         if (!isServer) {

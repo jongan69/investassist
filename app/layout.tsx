@@ -24,6 +24,11 @@ export default function RootLayout({
     <ViewTransitions>
       <html lang="en" suppressHydrationWarning>
         <head>
+          <script
+            async
+            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6202902142885850"
+            crossOrigin="anonymous">
+            </script>
           <meta
             name="description"
             content="InvestAssist is a source of free stock quotes, business and finance news, portfolio management tools, and international market data."
