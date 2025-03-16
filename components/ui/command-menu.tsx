@@ -15,29 +15,36 @@ import tickers from "@/data/tickers.json"
 import { useRouter } from "next/navigation"
 import { fetchCryptoTrends } from "@/lib/solana/fetchTrends"
 
+const index = tickers.length
+
 const SUGGESTIONS = [
-  { ticker: "BTC-USD", title: "Bitcoin", assetType: "stocks" },
-  { ticker: "ETH-USD", title: "Ethereum", assetType: "stocks" },
-  { ticker: "SOL-USD", title: "Solana", assetType: "stocks" },
-  { ticker: "TSLA", title: "Tesla Inc.", assetType: "stocks" },
-  { ticker: "NVDA", title: "NVIDIA Corporation", assetType: "stocks" },
-  { ticker: "AAPL", title: "Apple Inc.", assetType: "stocks" },
-  { ticker: "MSFT", title: "Microsoft Corporation", assetType: "stocks" },
-  { ticker: "GOOGL", title: "Alphabet Inc.", assetType: "stocks" },
-  { ticker: "AMZN", title: "Amazon.com Inc.", assetType: "stocks" },
-  { ticker: "DOGE-USD", title: "Dogecoin", assetType: "stocks" },
-  { ticker: "SHIB-USD", title: "Shiba Inu", assetType: "stocks" },
-  { ticker: "XRP-USD", title: "XRP", assetType: "stocks" },
-  { ticker: "ADA-USD", title: "Cardano", assetType: "stocks" },
-  { ticker: "DOT-USD", title: "Polkadot", assetType: "stocks" },
-  { ticker: "LINK-USD", title: "Chainlink", assetType: "stocks" },
-  { ticker: "UNI-USD", title: "Uniswap", assetType: "stocks" },
-  { ticker: "LOCKIN", title: "Lockin", assetType: "coins" },
-  { ticker: "MLG", title: "360noscope420blazeit", assetType: "coins" },
-  { ticker: "TREND", title: "Soltrendio", assetType: "coins" }  
+  { id: index+1, ticker: "BTC-USD", title: "Bitcoin", assetType: "stocks" },
+  { id: index+2, ticker: "ETH-USD", title: "Ethereum", assetType: "stocks" },
+  { id: index+3, ticker: "SOL-USD", title: "Solana", assetType: "stocks" },
+  { id: index+4, ticker: "TSLA", title: "Tesla Inc.", assetType: "stocks" },
+  { id: index+5, ticker: "NVDA", title: "NVIDIA Corporation", assetType: "stocks" },
+  { id: index+6, ticker: "AAPL", title: "Apple Inc.", assetType: "stocks" },
+  { id: index+7, ticker: "MSFT", title: "Microsoft Corporation", assetType: "stocks" },
+  { id: index+8, ticker: "GOOGL", title: "Alphabet Inc.", assetType: "stocks" },
+  { id: index+9, ticker: "AMZN", title: "Amazon.com Inc.", assetType: "stocks" },
+  { id: index+10, ticker: "DOGE-USD", title: "Dogecoin", assetType: "stocks" },
+  { id: index+11, ticker: "SHIB-USD", title: "Shiba Inu", assetType: "stocks" },
+  { id: index+12, ticker: "XRP-USD", title: "XRP", assetType: "stocks" },
+  { id: index+13, ticker: "ADA-USD", title: "Cardano", assetType: "stocks" },
+  { id: index+14, ticker: "DOT-USD", title: "Polkadot", assetType: "stocks" },
+  { id: index+15, ticker: "LINK-USD", title: "Chainlink", assetType: "stocks" },
+  { id: index+16, ticker: "UNI-USD", title: "Uniswap", assetType: "stocks" },
+  { id: index+17, ticker: "LOCKIN", title: "Lockin", assetType: "coins" },
+  { id: index+18, ticker: "MLG", title: "360noscope420blazeit", assetType: "coins" },
+  { id: index+19, ticker: "CRASHOUT", title: "Crashout", assetType: "coins" },
+  { id: index+20, ticker: "RETARDIO", title: "Retardio", assetType: "coins" },
+  { id: index+21, ticker: "GIGACHAD", title: "GigaChad", assetType: "coins" },
+  { id: index+22, ticker: "WIF", title: "DogWifHat", assetType: "coins" },
+  { id: index+23, ticker: "Business", title: "Business Coin", assetType: "coins" },
+  { id: index+24, ticker: "Sidelined", title: "Sidelined", assetType: "coins" },  
 ]
 
-
+const COMBINED_TICKERS = [...SUGGESTIONS, ...tickers]
 
 export default function CommandMenu() {
   const [open, setOpen] = useState(false)
@@ -166,7 +173,7 @@ export default function CommandMenu() {
               </>
             )}
             {search.length > 0 &&
-              tickers
+              COMBINED_TICKERS
                 .filter(
                   (ticker) =>
                     ticker.ticker
@@ -182,7 +189,7 @@ export default function CommandMenu() {
                     onSelect={() => {
                       setOpen(false)
                       setSearch("")
-                      router.push(`/stocks/${ticker.ticker}`)
+                      router.push(`/${ticker.assetType}/${ticker.ticker}`)
                     }}
                   >
                     <p className="mr-2 font-semibold">{ticker.ticker}</p>

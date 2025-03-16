@@ -36,8 +36,8 @@ export default async function StockChart({
 
   const [chart, quote] = await Promise.all([chartData, quoteData])
 
-  if (quote.error || !quote.data) {
-    return <div>Error loading quote data for {ticker}</div>
+  if (!chart || quote.error || !quote.data) {
+    return <div>Error loading data for {ticker}</div>
   }
 
   const quoteInfo = quote.data
