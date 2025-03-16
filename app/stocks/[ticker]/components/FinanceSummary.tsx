@@ -36,7 +36,17 @@ const keysToDisplay = [
 ]
 
 export default async function FinanceSummary({ ticker }: { ticker: string }) {
-  const financeSummaryData: FinanceSummaryData = await fetchQuoteSummary(ticker)
+  const data = await fetchQuoteSummary(ticker)
+  
+  if (!data) {
+    return (
+      <div className="flex h-[10rem] items-center justify-center text-muted-foreground">
+        Failed to load financial summary
+      </div>
+    )
+  }
+
+  const financeSummaryData: FinanceSummaryData = data
 
   return (
     <div className="grid grid-flow-col grid-rows-6 gap-4 md:grid-rows-3">
