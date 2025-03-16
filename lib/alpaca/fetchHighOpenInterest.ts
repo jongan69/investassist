@@ -37,8 +37,14 @@ export const getHighOpenInterestContracts = async (ticker: string, optionType = 
             });
 
             if (!response.ok) {
+                if (response.status === 422) {
+                    console.error(`Invalid ticker symbol: ${ticker}`);
+                    return {
+                        error: `Invalid ticker symbol: ${ticker}`
+                    };
+                }
                 console.error(`Error fetching contracts: ${response.status} ${response.statusText}`);
-                return null;
+                throw new Error(`API Error: ${response.status} ${response.statusText}`);
             }
 
             const data = await response.json();
@@ -51,9 +57,14 @@ export const getHighOpenInterestContracts = async (ticker: string, optionType = 
         return {
             shortTerm: shortTermContract,
             leap: leapContract,
+            error: null
         };
     } catch (error: any) {
         console.error(`Error fetching high open-interest contracts for ${ticker}: ${error.message}`);
-        return {};
+        return {
+            shortTerm: null,
+            leap: null,
+            error: error.message
+        };
     }
 };

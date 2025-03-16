@@ -13,6 +13,7 @@ type OptionContract = {
 type OpenInterestData = {
   shortTerm?: OptionContract
   leap?: OptionContract
+  error?: string | null
 }
 
 const keysToDisplay = [
@@ -27,8 +28,21 @@ const keysToDisplay = [
 export default async function OpenInterest({ ticker }: { ticker: string }) {
   const openInterestData = await getHighOpenInterestContracts(ticker) as OpenInterestData
   
+  // Handle API errors first
+  if (openInterestData.error) {
+    return (
+      <div className="text-red-500 p-4 rounded-md bg-red-50">
+        {openInterestData.error.includes('Invalid ticker') 
+          ? 'Invalid ticker symbol. Please check the stock symbol and try again.' 
+          : 'Unable to fetch options data. Please try again later.'}
+      </div>
+    )
+  }
+
   // Filter out undefined contracts
-  const availableContracts = Object.entries(openInterestData).filter(([_, contract]) => contract !== undefined)
+  const availableContracts = Object.entries(openInterestData)
+    .filter(([key]) => key !== 'error')
+    .filter(([_, contract]) => contract !== undefined) as [string, OptionContract][]
   
   if (availableContracts.length === 0) {
     return <div>No high open interest contracts available</div>

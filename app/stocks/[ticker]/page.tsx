@@ -51,6 +51,9 @@ export default async function StocksPage({ params, searchParams }: Props) {
     range,
     (typedSearchParams?.interval as Interval) || DEFAULT_INTERVAL
   )
+  console.log('ticker', ticker)
+  console.log('range', range)
+  console.log('interval', interval)
   return (
     <div>
       <Card>
@@ -62,7 +65,15 @@ export default async function StocksPage({ params, searchParams }: Props) {
               </div>
             }
           >
-            <StockChart ticker={ticker} range={range} interval={interval} />
+            {
+              ticker && range && interval ?
+                <StockChart ticker={ticker} range={range} interval={interval} />
+                : (
+                  <div className="flex h-[27.5rem] items-center justify-center text-muted-foreground ">
+                    Loading...
+                  </div>
+                )
+            }
           </Suspense>
           <Suspense
             fallback={

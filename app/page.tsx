@@ -56,6 +56,7 @@ export default async function Page({ searchParams }: Props) {
 
   const latestNews = await fetchStockNews()
   const latestNewsSymbols = latestNews.filter((newsArticle: any) => newsArticle.symbols.length > 0)
+  console.log('latestNewsSymbols', latestNewsSymbols)
   const highOiOptions = await Promise.all(
     latestNewsSymbols.flatMap((newsArticle: any) =>
       newsArticle.symbols.map((symbol: string) => getHighOpenInterestContracts(symbol, 'call'))
