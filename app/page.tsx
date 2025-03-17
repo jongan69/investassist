@@ -512,7 +512,7 @@ export default async function Page({ searchParams }: Props) {
                               </span>
                             </div>
                             <p className="text-[10px] text-muted-foreground/80">
-                              Today's trading range
+                              Today&apos;s trading range
                             </p>
                           </div>
                         </div>
