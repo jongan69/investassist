@@ -4,7 +4,6 @@ export default function TrendingStocks(data: any) {
     // console.log(data)
     const { news, highOiOptions } = data.data
     const filteredNews = news.filter((item: any) => item.symbols.length > 0)
-    console.log('filteredNews', filteredNews)
     return (
         filteredNews && highOiOptions && (
             <div className="p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
