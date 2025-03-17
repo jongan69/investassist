@@ -4,19 +4,20 @@ export const fetchCryptoTrends = async (setTrends: (trends: any) => void, setIsL
         setError(null);
         const response = await fetch('/api/crypto-trends');
         if (!response.ok) {
-            console.error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
 
         if (!data.bitcoinPrice || !data.ethereumPrice || !data.solanaPrice) {
-            console.error('Missing required price data');
+            throw new Error('Missing required price data');
         }
 
+        // Set all state updates in a single batch
         setTrends(data);
     } catch (error) {
         console.error('Error fetching crypto trends:', error);
         setError('Failed to load crypto trends');
-        setTrends(null);
+        setTrends({}); // Set empty object instead of null to prevent null checks
     } finally {
         setIsLoading(false);
     }

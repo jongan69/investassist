@@ -1,26 +1,62 @@
 "use client"
 
-import { useEffect, useState, Fragment } from 'react';
+import { useEffect, useState, Fragment, useRef } from 'react';
 import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
+
 import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
+import { fetchLatestTweets } from '@/lib/twitter/fetchLatestTweets';
+import { fetchTweetedCas } from '@/lib/twitter/fetchTweetedCas';
 
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
     const [isMounted, setIsMounted] = useState(false);
 
+    
     const [trends, setTrends] = useState<TrendData | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const [latestTweets, setLatestTweets] = useState<any[]>([]);
+    const [tweetedCas, setTweetedCas] = useState<any[]>([]);
+
+    // Separate loading states
+    const [isTrendsLoading, setIsTrendsLoading] = useState(true);
+    const [isTweetsLoading, setIsTweetsLoading] = useState(true);
+    const [isCasLoading, setIsCasLoading] = useState(true);
+
+    // Separate error states
+    const [trendsError, setTrendsError] = useState<string | null>(null);
+    const [tweetsError, setTweetsError] = useState<string | null>(null);
+    const [casError, setCasError] = useState<string | null>(null);
+
+    // Add a ref to track if we've already fetched data
+    const hasFetchedData = useRef(false);
+
     useEffect(() => {
-        fetchCryptoTrends(setTrends, setIsLoading, setError);
-    }, []);
+        const fetchData = async () => {
+            if (hasFetchedData.current) return;
+            hasFetchedData.current = true;
+
+            try {
+                await Promise.all([
+                    fetchCryptoTrends(setTrends, setIsTrendsLoading, setTrendsError),
+                    fetchLatestTweets(setLatestTweets, setIsTweetsLoading, setTweetsError),
+                    fetchTweetedCas(setTweetedCas, setIsCasLoading, setCasError)
+                ]);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                setTrendsError('Failed to load crypto trends');
+                setTweetsError('Failed to load latest tweets');
+                setCasError('Failed to load CAS tokens');
+            }
+        };
+
+        fetchData();
+    }, []); // Empty dependency array since these functions are stable
 
     useEffect(() => {
         setIsMounted(true);
-    }, []);
+    }, []); // Empty dependency array since this only needs to run once
 
     // Ensure the component only renders after the theme is resolved and the component is mounted
     if (!resolvedTheme || !isMounted) return null;
@@ -41,7 +77,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                     <h2 className={`text-xl font-bold ${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} transition-colors`}>
                         Crypto Trends
                     </h2>
-                    {isLoading && (
+                    {(isTrendsLoading || isTweetsLoading || isCasLoading) && (
                         <div className="flex gap-1 px-1">
                             {[0, 0.2, 0.4].map((delay) => (
                                 <motion.span
@@ -55,9 +91,9 @@ export default function CryptoTrends({ data }: { data: any }) {
                     )}
                 </div>
 
-                {error ? (
+                {trendsError ? (
                     <p className={`${resolvedTheme === 'dark' ? 'text-red-400' : 'text-red-600'} leading-relaxed text-xs`}>
-                        {error}
+                        {trendsError}
                     </p>
                 ) : trends ? (
                     <Fragment>
@@ -91,6 +127,68 @@ export default function CryptoTrends({ data }: { data: any }) {
                                     ))}
                                 </tbody>
                             </table>
+                        </div>
+
+                        {/* Latest Tweets Section */}
+                        <div className="prose prose-sm prose-invert max-w-full py-1">
+                            <h1 className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed font-bold`}>
+                                Latest Tweets
+                            </h1>
+                            {tweetsError ? (
+                                <p className={`${resolvedTheme === 'dark' ? 'text-red-400' : 'text-red-600'} leading-relaxed text-xs`}>
+                                    {tweetsError}
+                                </p>
+                            ) : isTweetsLoading ? (
+                                <p className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed text-xs`}>
+                                    Loading tweets...
+                                </p>
+                            ) : latestTweets && latestTweets.length > 0 ? (
+                                <div className="space-y-3 h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
+                                    {latestTweets.map((cluster: any, index: number) => (
+                                        <div
+                                            key={index}
+                                            className={`rounded-lg p-3 ${resolvedTheme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'} hover:bg-gray-700/50 transition-colors`}
+                                        >
+                                            <div className="flex items-start gap-2">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className={`text-xs font-medium ${resolvedTheme === 'dark' ? 'text-white' : 'text-black'}`}>
+                                                            Cluster {index + 1}
+                                                        </span>
+                                                        <span className={`text-xs ${resolvedTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                            {cluster.size} tweets
+                                                        </span>
+                                                    </div>
+                                                    <div className={`text-xs ${resolvedTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'} mb-2`}>
+                                                        Terms: {cluster.terms.slice(0, 5).join(', ')}
+                                                        {cluster.terms.length > 5 && ` +${cluster.terms.length - 5} more`}
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        {cluster.tweets.map((tweet: any, tweetIndex: number) => (
+                                                            <div
+                                                                key={tweetIndex}
+                                                                className={`text-xs ${resolvedTheme === 'dark' ? 'text-gray-300' : 'text-gray-600'} border-l-2 pl-2 border-gray-600`}
+                                                            >
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span className="font-medium">@{tweet.username}</span>
+                                                                    <span className={`text-xs ${resolvedTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                                        {new Date(tweet.createdAt).toLocaleTimeString()}
+                                                                    </span>
+                                                                </div>
+                                                                <p>{tweet.text}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed text-xs`}>
+                                    No tweets available
+                                </p>
+                            )}
                         </div>
 
                         {trends.topTweetedTickers.length > 0 && (
@@ -187,6 +285,82 @@ export default function CryptoTrends({ data }: { data: any }) {
                                     </table>
                                 </Fragment>
                             ))}
+                        </div>
+
+                        {/* Tweeted CAS Section */}
+                        <div className="prose prose-sm prose-invert max-w-full py-1">
+                            <h1 className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed font-bold`}>
+                                Tweeted CAS Tokens
+                            </h1>
+                            {casError ? (
+                                <p className={`${resolvedTheme === 'dark' ? 'text-red-400' : 'text-red-600'} leading-relaxed text-xs`}>
+                                    {casError}
+                                </p>
+                            ) : isCasLoading ? (
+                                <p className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed text-xs`}>
+                                    Loading CAS tokens...
+                                </p>
+                            ) : tweetedCas && tweetedCas.length > 0 ? (
+                                <div className="space-y-3 h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
+                                    {tweetedCas.map((cas: any, index: number) => (
+                                        <div
+                                            key={index}
+                                            className={`rounded-lg p-3 ${resolvedTheme === 'dark' ? 'bg-gray-800' : 'bg-gray-50'} hover:bg-gray-700/50 transition-colors`}
+                                        >
+                                            <div className="flex items-start gap-2">
+                                                <div className="flex-1">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <div>
+                                                            {cas.tokenInfo ? (
+                                                                <>
+                                                                    <span className={`text-xs font-medium ${resolvedTheme === 'dark' ? 'text-white' : 'text-black'}`}>
+                                                                        {cas.tokenInfo.name} ({cas.tokenInfo.symbol})
+                                                                    </span>
+                                                                    <div className={`text-xs ${resolvedTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                                        ${cas.tokenInfo.price} | MC: ${cas.tokenInfo.marketCap.toLocaleString()}
+                                                                    </div>
+                                                                </>
+                                                            ) : (
+                                                                <span className={`text-xs font-medium ${resolvedTheme === 'dark' ? 'text-white' : 'text-black'}`}>
+                                                                    {cas.address.slice(0, 6)}...{cas.address.slice(-4)}
+                                                                </span>
+                                                            )}
+                                                            <div className={`text-xs ${resolvedTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                                {cas.count} tweets
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="space-y-2">
+                                                        {cas.tweets.map((tweet: any, tweetIndex: number) => (
+                                                            <div
+                                                                key={tweetIndex}
+                                                                className={`text-xs ${resolvedTheme === 'dark' ? 'text-gray-300' : 'text-gray-600'} border-l-2 pl-2 border-gray-600`}
+                                                            >
+                                                                <div className="flex items-center gap-2 mb-1">
+                                                                    <span className="font-medium">@{tweet.username}</span>
+                                                                    <span className={`text-xs ${resolvedTheme === 'dark' ? 'text-gray-400' : 'text-gray-500'}`}>
+                                                                        {new Date(tweet.createdAt).toLocaleTimeString()}
+                                                                    </span>
+                                                                    {tweet?.url && (
+                                                                        <Link href={tweet.url} target="_blank" className={`text-xs ${resolvedTheme === 'dark' ? 'text-blue-400' : 'text-blue-600'}`}>
+                                                                            View
+                                                                        </Link>
+                                                                    )}
+                                                                </div>
+                                                                <p>{tweet.text}</p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed text-xs`}>
+                                    No CAS tokens available
+                                </p>
+                            )}
                         </div>
                     </Fragment>
                 ) : (

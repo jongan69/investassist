@@ -10,6 +10,45 @@ interface TokenInfo {
   priceNative: number;  // Price in SOL
   image: string;
   website: string;
+  // Additional fields from API
+  chainId: string;
+  dexId: string;
+  url: string;
+  pairAddress: string;
+  quoteToken: {
+    address: string;
+    name: string;
+    symbol: string;
+  };
+  txns: {
+    m5: { buys: number; sells: number };
+    h1: { buys: number; sells: number };
+    h6: { buys: number; sells: number };
+    h24: { buys: number; sells: number };
+  };
+  volume: {
+    h24: number;
+    h6: number;
+    h1: number;
+    m5: number;
+  };
+  priceChange: {
+    h24: number;
+  };
+  liquidity: {
+    usd: number;
+    base: number;
+    quote: number;
+  };
+  fdv: number;
+  pairCreatedAt: number;
+  info: {
+    imageUrl: string;
+    header: string;
+    openGraph: string;
+    websites: Array<{ label: string; url: string }>;
+    socials: Array<{ type: string; url: string }>;
+  };
 }
 
 // Helper function to fetch token info from contract address
@@ -34,6 +73,18 @@ export async function getTokenInfo(address: string): Promise<TokenInfo | null> {
         priceNative: pair.priceNative || 0,
         image: pair.info?.imageUrl,
         website: pair.info?.websites,
+        chainId: pair.chainId,
+        dexId: pair.dexId,
+        url: pair.url,
+        pairAddress: pair.pairAddress,
+        quoteToken: pair.quoteToken,
+        txns: pair.txns,
+        volume: pair.volume,
+        priceChange: pair.priceChange,
+        liquidity: pair.liquidity,
+        fdv: pair.fdv,
+        pairCreatedAt: pair.pairCreatedAt,
+        info: pair.info,
       };
     } catch (error) {
       console.error("Error fetching token info for", address, ":", error);

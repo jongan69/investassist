@@ -78,6 +78,11 @@ const USEFUL_LINKS = [
     title: "SolTrendio Watch App",
     description: "SolTrendio is a watch app that allows you to track the latest trends in the cryptocurrency ecosystem on your Apple Watch.",
     url: "https://apps.apple.com/us/app/soltrendio-trends/id6742119975"
+  },
+  {
+    title: "Kraken",
+    description: "Kraken is a platform that allows you to trade cryptocurrencies.",
+    url: "https://kraken.onelink.me/JDNW/m6z2wu7k"
   }
 ]
 
@@ -158,6 +163,14 @@ export default async function LearnPage() {
                 rel="noopener noreferrer"
               >
                 Ourbit - Multi-Chain Trading →
+              </Link>
+              <Link
+                href={USEFUL_LINKS.find(link => link.title === "Kraken")?.url || "#"}
+                className="text-blue-600 dark:text-blue-400 hover:underline block"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Kraken - Established Crypto Exchange →
               </Link>
             </div>
           </div>
