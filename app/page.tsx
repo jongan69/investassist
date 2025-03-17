@@ -449,7 +449,7 @@ export default async function Page({ searchParams }: Props) {
                               {signal === 'weeklyMomentum' && "Weekly price movement - shows short-term momentum"}
                               {signal === 'yearlyPerformance' && "Year-over-year performance - long-term market direction"}
                               {signal === 'volumeTrend' && "Volume compared to 10-day average - shows trading activity strength"}
-                              {signal === 'priceAboveOpen' && "Current price vs today's opening - shows intraday momentum"}
+                              {signal === 'priceAboveOpen' && "Current price vs today&apos;s opening - shows intraday momentum"}
                               {signal === 'dailyMomentum' && "Daily price change in absolute terms - short-term strength"}
                               {signal === 'volatility' && "Price range relative to opening - market stability indicator"}
                             </p>
