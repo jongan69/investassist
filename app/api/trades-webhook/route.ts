@@ -92,7 +92,7 @@ async function fetchTraderAccounts() {
 export async function POST(request: Request) {
   try {
     const webhookData = await request.json()
-    // console.log(webhookData)
+    console.log(webhookData)
     if (!Array.isArray(webhookData) || webhookData.length === 0) {
       return NextResponse.json({ error: 'Invalid webhook data format' }, { status: 400 })
     }
