@@ -51,9 +51,9 @@ export default async function StocksPage({ params, searchParams }: Props) {
     range,
     (typedSearchParams?.interval as Interval) || DEFAULT_INTERVAL
   )
-  console.log('ticker', ticker)
-  console.log('range', range)
-  console.log('interval', interval)
+  // console.log('ticker', ticker)
+  // console.log('range', range)
+  // console.log('interval', interval)
   return (
     <div>
       <Card>

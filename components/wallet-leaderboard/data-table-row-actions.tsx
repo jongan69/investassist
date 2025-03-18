@@ -24,9 +24,9 @@ interface DataTableRowActionsProps<TData> {
 }
 
 export function DataTableRowActions<TData>({ row }: DataTableRowActionsProps<TData>) {
-  console.log(row.original)
+  // console.log(row.original)
   const user = UserSchema.parse(row.original);
-  console.log(user.walletAddress); // Note: use the id for any action (example: delete, view, edit)
+  // console.log(user.walletAddress); // Note: use the id for any action (example: delete, view, edit)
 
   return (
     <DropdownMenu>

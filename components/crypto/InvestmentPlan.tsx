@@ -96,7 +96,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
     }, [wallet.publicKey]);
 
     const paymentSuccessful = async () => {
-        console.log("Payment successful");
+        // console.log("Payment successful");
         setShowProfileForm(true);
     }
 
@@ -151,7 +151,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
     const cryptoConfig = {
         ...helioConfig,
         onSuccess: (payment: any) => {
-            console.log("Payment success", payment);
+            // console.log("Payment success", payment);
             paymentSuccessful();
         }
     };
@@ -372,7 +372,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
             });
         }
 
-        console.log('Final allocations:', allocations); // Add debugging
+        // console.log('Final allocations:', allocations); // Add debugging
         return allocations;
     };
 

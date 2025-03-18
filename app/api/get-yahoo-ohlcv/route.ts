@@ -20,12 +20,12 @@ export async function GET(req: Request) {
       return: "object" as const
     };
 
-    console.log("Fetching data with options:", {
-      symbol,
-      period1: startDate.toISOString(),
-      period2: endDate.toISOString(),
-      interval
-    });
+    // console.log("Fetching data with options:", {
+    //   symbol,
+    //   period1: startDate.toISOString(),
+    //   period2: endDate.toISOString(),
+    //   interval
+    // });
 
     const result = await yahooFinance.chart(symbol, queryOptions);
     return NextResponse.json(result);

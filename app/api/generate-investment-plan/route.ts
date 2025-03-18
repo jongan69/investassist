@@ -96,12 +96,12 @@ export async function POST(req: Request) {
 
       The sum of all allocation percentages must equal 100.
     `;
-    console.log('Generated prompt for OpenAI:', prompt); // Debug log
+    // console.log('Generated prompt for OpenAI:', prompt); // Debug log
     let attempt = 0;
 
     while (attempt < maxRetries && !responseGenerated) {
       try {
-        console.log(`Attempt ${attempt + 1} to generate response`); // Debug log
+        // console.log(`Attempt ${attempt + 1} to generate response`); // Debug log
         const completion = await openai.chat.completions.create({
           messages: [{ role: "user", content: prompt }],
           model: MODEL,
@@ -126,10 +126,10 @@ export async function POST(req: Request) {
           throw new Error('No content in OpenAI completion');
         }
 
-        console.log('Completion from OpenAI:', completion); // Debug log
+        // console.log('Completion from OpenAI:', completion); // Debug log
         responseGenerated = true;
         const response = JSON.parse(completion.choices[0].message.content);
-        console.log('Received response from OpenAI:', response); // Debug log
+        // console.log('Received response from OpenAI:', response); // Debug log
 
         // Validate the response has the required structure
         if (!response.allocations || !Array.isArray(response.allocations)) {
@@ -165,7 +165,7 @@ export async function POST(req: Request) {
         // Add delay between retries
         if (!responseGenerated && attempt < maxRetries - 1) {
           const currentDelay = retryDelay * Math.pow(2, attempt); // Exponential backoff
-          console.log(`Retrying after ${currentDelay}ms delay`);
+          // console.log(`Retrying after ${currentDelay}ms delay`);
           await new Promise(resolve => setTimeout(resolve, currentDelay));
         }
       }
@@ -173,7 +173,7 @@ export async function POST(req: Request) {
     }
 
     if (!responseGenerated) {
-      console.log('Generating fallback response'); // Debug log
+      // console.log('Generating fallback response'); // Debug log
       // Update the fallback response to include memecoins if present
       const fallbackResponse: InvestmentPlanResponse = {
         marketAnalysis: {

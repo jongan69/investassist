@@ -16,7 +16,7 @@ export default function Leaderboard() {
                 ...user,
                 totalValue: Number(user.totalValue.toFixed(2)),
             }));
-            console.log(updatedData)
+            // console.log(updatedData)
             setData(updatedData);
            
         };

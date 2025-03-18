@@ -85,7 +85,7 @@ export async function categorizeTokens(holdings: any[]) {
             }
         }
 
-        console.log('Categorized tokens:', categorized); // Debug log
+        // console.log('Categorized tokens:', categorized); // Debug log
         return categorized;
     } catch (error) {
         console.error('Error categorizing tokens:', error);

@@ -89,7 +89,7 @@ export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerforma
             throw new Error('Failed to parse JSON response');
         }
 
-        console.log('Response from OpenAI:', data);
+        // console.log('Response from OpenAI:', data);
         saveInvestmentPlan(username, data);
         return data;
     } catch (error) {

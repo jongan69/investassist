@@ -13,7 +13,7 @@ export const fetchStockNews = async () => {
     try {
         const today = DateTime.utc().toISODate();
         const fiveDaysPrior = DateTime.utc().minus({ days: 5 }).toISODate();
-        console.log(`\nFetching stock news from ${fiveDaysPrior} to ${today}\n`);
+        // console.log(`\nFetching stock news from ${fiveDaysPrior} to ${today}\n`);
         const response = await fetch(`${ALPACA_NEWS_API_URL}?sort=desc&start=${fiveDaysPrior}&end=${today}&exclude_contentless=true`, {
             method: 'GET',
             headers: {

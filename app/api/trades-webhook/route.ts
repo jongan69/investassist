@@ -83,7 +83,7 @@ interface Trader {
 export async function POST(request: Request) {
   try {
     const webhookData = await request.json()
-    console.log(webhookData)
+    // console.log(webhookData)
     if (!Array.isArray(webhookData) || webhookData.length === 0) {
       return NextResponse.json({ error: 'Invalid webhook data format' }, { status: 400 })
     }
@@ -171,9 +171,15 @@ function extractTransferDetails(transaction: Transaction) {
 
 async function findMatchingTrader(senderAddress?: string, receiverAddress?: string) {
   const tradersData = await fetchTraderAccounts()
+  if (!tradersData) {
+    return null
+  }
   return tradersData.find((trader: Trader) => {
-    const solWallets = trader.wallets.SOL || []
-    return solWallets.some((wallet: string) => 
+    // Skip traders with no wallets or no SOL wallets
+    if (!trader.wallets || !trader.wallets.SOL || trader.wallets.SOL.length === 0) {
+      return false
+    }
+    return trader.wallets.SOL.some((wallet: string) => 
       senderAddress?.toLowerCase() === wallet.toLowerCase() ||
       receiverAddress?.toLowerCase() === wallet.toLowerCase()
     )

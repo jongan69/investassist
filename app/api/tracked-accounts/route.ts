@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const response = await fetch('https://soltrendio.com/api/premium/tracked-accounts');
+    const response = await fetch('https://soltrendio.com/api/premium/tracked-accounts', { cache: 'no-store' });
     const data = await response.json();
     return NextResponse.json(data, {
       headers: {

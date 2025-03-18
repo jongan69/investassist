@@ -358,26 +358,24 @@ export default async function Page({ searchParams }: Props) {
                   <h3 className="mb-3 text-sm font-medium flex items-center justify-between">
                     <span>Bitcoin Trend Analysis</span>
                     <div className="flex items-center gap-2">
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        bitcoinWeekly.trend === 'bullish'
-                          ? 'bg-green-500/10 text-green-500'
-                          : bitcoinWeekly.trend === 'bearish'
-                            ? 'bg-red-500/10 text-red-500'
-                            : 'bg-neutral-500/10 text-neutral-500'
-                      }`}>
+                      <span className={`text-xs px-2 py-1 rounded-full ${bitcoinWeekly.trend === 'bullish'
+                        ? 'bg-green-500/10 text-green-500'
+                        : bitcoinWeekly.trend === 'bearish'
+                          ? 'bg-red-500/10 text-red-500'
+                          : 'bg-neutral-500/10 text-neutral-500'
+                        }`}>
                         {bitcoinWeekly.trend.toUpperCase()}
                       </span>
-                      <span className={`text-xs px-2 py-1 rounded-full ${
-                        bitcoinWeekly.tradingSignal === 'strong_buy'
-                          ? 'bg-green-500/20 text-green-500 font-medium'
-                          : bitcoinWeekly.tradingSignal === 'buy'
-                            ? 'bg-green-500/10 text-green-500'
-                            : bitcoinWeekly.tradingSignal === 'strong_sell'
-                              ? 'bg-red-500/20 text-red-500 font-medium'
-                              : bitcoinWeekly.tradingSignal === 'sell'
-                                ? 'bg-red-500/10 text-red-500'
-                                : 'bg-neutral-500/10 text-neutral-500'
-                      }`}>
+                      <span className={`text-xs px-2 py-1 rounded-full ${bitcoinWeekly.tradingSignal === 'strong_buy'
+                        ? 'bg-green-500/20 text-green-500 font-medium'
+                        : bitcoinWeekly.tradingSignal === 'buy'
+                          ? 'bg-green-500/10 text-green-500'
+                          : bitcoinWeekly.tradingSignal === 'strong_sell'
+                            ? 'bg-red-500/20 text-red-500 font-medium'
+                            : bitcoinWeekly.tradingSignal === 'sell'
+                              ? 'bg-red-500/10 text-red-500'
+                              : 'bg-neutral-500/10 text-neutral-500'
+                        }`}>
                         {bitcoinWeekly.tradingSignal.toUpperCase().replace('_', ' ')}
                       </span>
                     </div>
@@ -414,17 +412,16 @@ export default async function Page({ searchParams }: Props) {
                       <div className="grid gap-3">
                         {Object.entries(bitcoinWeekly.signals).map(([signal, value]) => (
                           <div key={signal}
-                            className={`space-y-1 p-2 rounded-lg transition-colors ${
-                              value === 'high' 
-                                ? 'bg-yellow-500/5'
-                                : value === 'low'
-                                  ? 'bg-blue-500/5'
-                                  : value === 'bullish'
-                                    ? 'bg-green-500/5'
-                                    : value === 'bearish'
-                                      ? 'bg-red-500/5'
-                                      : 'bg-neutral-500/5'
-                            }`}>
+                            className={`space-y-1 p-2 rounded-lg transition-colors ${value === 'high'
+                              ? 'bg-yellow-500/5'
+                              : value === 'low'
+                                ? 'bg-blue-500/5'
+                                : value === 'bullish'
+                                  ? 'bg-green-500/5'
+                                  : value === 'bearish'
+                                    ? 'bg-red-500/5'
+                                    : 'bg-neutral-500/5'
+                              }`}>
                             <div className="flex items-center justify-between text-xs">
                               <span className="capitalize font-medium">
                                 {signal.replace(/([A-Z])/g, ' $1').trim()}
@@ -603,13 +600,20 @@ export default async function Page({ searchParams }: Props) {
                 <SectorPerformance />
               </Suspense>
             </CardContent>
-            <Suspense fallback={<div>Loading...</div>}>
-              <CryptoTrends data={resultsWithTitles} />
-            </Suspense>
           </Card>
+
+          <Suspense fallback={<div>Loading...</div>}>
+            <CryptoTrends data={resultsWithTitles} />
+          </Suspense>
+          
           <Card className="mt-4">
             <Suspense fallback={<div>Loading...</div>}>
-              <LiveTrades />
+              <CardHeader>
+                <CardTitle className="text-lg">Live Trades</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <LiveTrades />
+              </CardContent>
             </Suspense>
           </Card>
         </div>

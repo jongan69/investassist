@@ -53,10 +53,10 @@ export async function fetchTokenMetadata(mintAddress: PublicKey, mint: string) {
     // console.log(`[fetchTokenMetadata] Found metadata PDA: ${metadataPda}`);
     
     const metadataAccountInfo = await fetchDigitalAssetByMetadata(metaplexUmi, metadataPda);
-    console.log(`[fetchTokenMetadata] Fetched digital asset metadata:`, metadataAccountInfo);
+    // console.log(`[fetchTokenMetadata] Fetched digital asset metadata:`, metadataAccountInfo);
     
     if (!metadataAccountInfo) {
-      console.log(`[fetchTokenMetadata] No metadata found for mint: ${mint}`);
+      // console.log(`[fetchTokenMetadata] No metadata found for mint: ${mint}`);
       return getDefaultTokenMetadata(mint);
     }
     
@@ -77,7 +77,7 @@ export async function fetchTokenMetadata(mintAddress: PublicKey, mint: string) {
     );
 
     let metadata = await processTokenMetadata(token, logo?.imageUrl ?? '', cid ?? '', mint);
-    console.log(`[fetchTokenMetadata] Processed metadata:`, metadata);
+    // console.log(`[fetchTokenMetadata] Processed metadata:`, metadata);
     // Handle collection metadata separately to prevent failures
     const tokenStandard = metadataAccountInfo?.metadata?.tokenStandard?.valueOf();
     // console.log(`[fetchTokenMetadata] Token standard:`, tokenStandard);
@@ -157,7 +157,7 @@ export async function handleTokenData(publicKey: PublicKey, tokenAccount: any, a
   // console.log(`[handleTokenData] Jupiter price data:`, jupiterPrice.data[mintAddress]);
 
   const metadata = await fetchTokenMetadata(new PublicKey(mintAddress), mintAddress);
-  console.log(`[handleTokenData] Processed metadata:`, metadata);
+  // console.log(`[handleTokenData] Processed metadata:`, metadata);
 
   if (!metadata?.isNft) {
     const price = jupiterPrice.data[mintAddress]?.price || 0;

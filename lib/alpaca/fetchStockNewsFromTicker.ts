@@ -12,7 +12,7 @@ export const fetchNewsForTicker = async (ticker: string) => {
     try {
         const today = DateTime.utc().toISODate();
         const threeDaysPrior = DateTime.utc().minus({ days: 3 }).toISODate();
-        console.log(`\nFetching stock news from ${threeDaysPrior} to ${today}\n`);
+        // console.log(`\nFetching stock news from ${threeDaysPrior} to ${today}\n`);
         const response = await fetch(`${ALPACA_NEWS_API_URL}?sort=desc&start=${threeDaysPrior}&end=${today}&symbols=${ticker}&exclude_contentless=true`, {
             method: 'GET',
             headers: {
@@ -20,13 +20,13 @@ export const fetchNewsForTicker = async (ticker: string) => {
                 'Apca-Api-Secret-Key': ALPACA_API_SECRET,
             },
         });
-        console.log(`\nSTOCK NEWS response: ${JSON.stringify(response)}\n`);
+        // console.log(`\nSTOCK NEWS response: ${JSON.stringify(response)}\n`);
         if (!response.ok) {
             console.error(`Error fetching stock news: ${response.status} ${response.statusText}`);
             return [];
         }
         const data = await response.json();
-        console.log(`\nSTOCK NEWS data: ${JSON.stringify(data)}\n`);
+        // console.log(`\nSTOCK NEWS data: ${JSON.stringify(data)}\n`);
         return data.news || [];
     } catch (error: any) {
         console.error(`Error fetching stock news: ${error.message}`);
