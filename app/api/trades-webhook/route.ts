@@ -102,8 +102,8 @@ export async function POST(request: Request) {
     // Create base trade object
     const trade = {
       id: Date.now(), // or generate a proper ID
-      wallet: transaction.feePayer,
-      toAmount: amount,
+      wallet: transaction.feePayer || '',
+      toAmount: amount || 0,
       action: null,
       fromAmount: 0,
       fromTokenAddress: '',
@@ -121,10 +121,10 @@ export async function POST(request: Request) {
       holding: 0,
       avgSell: 0,
       holdingTime: 0,
-      timestamp: transaction.timestamp * 1000,
+      timestamp: (transaction.timestamp || Date.now()) * 1000,
       label: matchingTrader?.username || 'Unknown',
-      description: transaction.description,
-      signature: transaction.signature,
+      description: transaction.description || '',
+      signature: transaction.signature || '',
       fromTokenData: null,
       toTokenData: null
     }
@@ -134,9 +134,12 @@ export async function POST(request: Request) {
       await enrichTradeWithSwapDetails(trade, transaction)
     }
 
+    // Ensure all values are properly formatted before sending to Pusher
+    const sanitizedTrade = JSON.parse(JSON.stringify(trade))
+
     // Save and broadcast
     // await saveTrade(trade)
-    await pusher.trigger('trades', 'new-trade', trade)
+    await pusher.trigger('trades', 'new-trade', sanitizedTrade)
 
     return NextResponse.json({ success: true })
   } catch (err) {
