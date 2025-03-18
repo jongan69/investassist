@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { pusher } from '@/lib/pusher'
 import { getTokenInfo } from '@/lib/solana/fetchDefaultTokenData'
-import { fetchTraderAccounts } from '@/lib/traders/fetchTraderAccounts'
 import { Trade } from '@/types/trades'
 
 interface TokenTransfer {
@@ -78,6 +77,16 @@ interface Trader {
     SOL?: string[];
     ETH?: string[];
   };
+}
+
+async function fetchTraderAccounts() {
+  try {
+    const response = await fetch('https://soltrendio.com/api/premium/tracked-accounts', { cache: 'no-store' });
+    return await response.json();
+  } catch (error) {
+    console.error('Error retrieving tracked accounts:', error);
+    return null;
+  }
 }
 
 export async function POST(request: Request) {
