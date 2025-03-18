@@ -62,6 +62,11 @@ interface Transaction {
   }
   fee: number
   feePayer: string
+  instructions: Array<{
+    programId: string
+    accounts: string[]
+    data: string
+  }>
   nativeTransfers: NativeTransfer[]
   signature: string
   slot: number
@@ -89,15 +94,85 @@ async function fetchTraderAccounts() {
   }
 }
 
+async function parsePumpFunTransaction(transaction: Transaction): Promise<{ action: string | null; description: string }> {
+  // Pump.fun program ID and constants
+  const PUMP_PROGRAM_ID = '6EF8rrecthR5Dkzon8Nwu78hRvfCKubJ14M5uBEwF6P'
+  const SOL_MINT = 'So11111111111111111111111111111111111111112'
+  const SOL_DECIMAL = 1e9
+  
+  if (transaction.source === PUMP_PROGRAM_ID) {
+    // Check if any instruction is from the Pump.fun program
+    const hasPumpInstruction = transaction.instructions?.some(
+      instruction => instruction.programId === PUMP_PROGRAM_ID
+    )
+
+    if (!hasPumpInstruction) {
+      return { action: null, description: transaction.description }
+    }
+
+    // Find the token transfer that isn't SOL (the token being bought/sold)
+    const tokenTransfer = transaction.tokenTransfers.find(t => t.mint !== SOL_MINT)
+    const solTransfer = transaction.tokenTransfers.find(t => t.mint === SOL_MINT)
+
+    if (!tokenTransfer) {
+      return { action: null, description: transaction.description }
+    }
+
+    // Get token info to display symbol
+    const tokenInfo = await getTokenInfo(tokenTransfer.mint)
+    const tokenSymbol = tokenInfo?.symbol || 'Unknown Token'
+
+    // Determine if it's a buy or sell based on the token transfer direction
+    const isBuy = tokenTransfer.toUserAccount === transaction.feePayer
+
+    if (isBuy) {
+      const solAmount = Math.abs(solTransfer?.tokenAmount || 0)
+      return {
+        action: 'Buy',
+        description: `Bought ${tokenTransfer.tokenAmount?.toFixed(2) || '0'} ${tokenSymbol} for ${solAmount.toFixed(4)} SOL`
+      }
+    } else {
+      const solAmount = Math.abs(solTransfer?.tokenAmount || 0)
+      return {
+        action: 'Sell',
+        description: `Sold ${tokenTransfer.tokenAmount?.toFixed(2) || '0'} ${tokenSymbol} for ${solAmount.toFixed(4)} SOL`
+      }
+    }
+  }
+  
+  return {
+    action: null,
+    description: transaction.description
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const webhookData = await request.json()
-    console.log('Webhook Data:', JSON.stringify(webhookData, null, 2))
+    const transaction = webhookData[0]
+    
+    // Log a concise transaction summary
+    console.log('\nTransaction Summary:')
+    console.log('-------------------')
+    console.log('Type:', transaction.type)
+    console.log('Description:', transaction.description)
+    console.log('Fee Payer:', transaction.feePayer)
+    console.log('Timestamp:', new Date(transaction.timestamp * 1000).toISOString())
+    console.log('\nToken Transfers:')
+    transaction.tokenTransfers?.forEach((transfer: TokenTransfer, index: number) => {
+      console.log(`\n[Transfer ${index + 1}]`)
+      console.log('From:', transfer.fromUserAccount)
+      console.log('To:', transfer.toUserAccount)
+      console.log('Amount:', transfer.tokenAmount)
+      console.log('Token:', transfer.mint)
+      console.log('Standard:', transfer.tokenStandard)
+    })
+    console.log('\n-------------------\n')
+
     if (!Array.isArray(webhookData) || webhookData.length === 0) {
       return NextResponse.json({ error: 'Invalid webhook data format' }, { status: 400 })
     }
 
-    const transaction: Transaction = webhookData[0]
     if (!transaction?.feePayer) {
       return NextResponse.json({ error: 'Missing required transaction data' }, { status: 400 })
     }
@@ -108,12 +183,15 @@ export async function POST(request: Request) {
     // Find matching trader
     const matchingTrader = await findMatchingTrader(senderAddress, receiverAddress)
 
+    // Parse Pump.fun specific details - now awaiting the async function
+    const { action, description } = await parsePumpFunTransaction(transaction)
+
     // Create base trade object
     const trade = {
-      id: Date.now(), // or generate a proper ID
+      id: Date.now(),
       wallet: transaction.feePayer || '',
       toAmount: amount || 0,
-      action: null,
+      action: action,
       fromAmount: 0,
       fromTokenAddress: '',
       fromTokenSymbol: '',
@@ -132,7 +210,7 @@ export async function POST(request: Request) {
       holdingTime: 0,
       timestamp: (transaction.timestamp || Date.now()) * 1000,
       label: matchingTrader?.username || 'Unknown',
-      description: transaction.description || '',
+      description: description,
       signature: transaction.signature || '',
       fromTokenData: null,
       toTokenData: null
