@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card"
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip"
 import { Twitter, Send, Globe, Search } from "lucide-react"
 import { getTokenInfoFromTicker } from "@/lib/solana/fetchTokenInfoFromTicker"
+import AxiomTradeButton from "./AxiomTradeButton"
 
 function formatNumber(num: number) {
   if (num >= 1e12) return `${(num / 1e12).toFixed(2)}T`
@@ -148,7 +149,7 @@ const SocialLinks = ({ dexScreenerData, pairDetails, hasCmc }: { dexScreenerData
   )
 }
 
-export default async function DexSummary({ ticker, ca, hasCa }: { ticker: string, ca: string, hasCa: boolean }) {
+export default async function DexSummary({ ticker, ca, hasCa, axiomLink }: { ticker: string, ca: string, hasCa: boolean, axiomLink: string }) {
   const tokenInfo = hasCa ? await getDexScreenerData(ca) : await getTokenInfoFromTicker(ticker)
   if (!tokenInfo) {
     return <div>Error: Token info not found</div>
@@ -225,7 +226,9 @@ export default async function DexSummary({ ticker, ca, hasCa }: { ticker: string
               
               </div>
             )}
+             <AxiomTradeButton axiomLink={axiomLink} />
             <SocialLinks dexScreenerData={datiledOfPair} pairDetails={datiledOfPair} hasCmc={hasCmc} />
+           
           </div>
 
           {datiledOfPair?.ti?.description && (
@@ -233,11 +236,15 @@ export default async function DexSummary({ ticker, ca, hasCa }: { ticker: string
               {datiledOfPair.ti.description}
             </p>
           )}
+          
           <br />
+         
         </div>
 
         {/* Stats Grid */}
+
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          
           {keysToDisplay.map(({ key, title, format, tooltip }) => {
             const data = getData(key)
             const formattedData = data !== undefined && !isNaN(data)

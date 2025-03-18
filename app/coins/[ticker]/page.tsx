@@ -2,12 +2,13 @@ import News from "@/app/stocks/[ticker]/components/News"
 import { Card, CardContent } from "@/components/ui/card"
 import { Suspense } from "react"
 import type { Metadata } from "next"
-import { type KrakenInterval, fetchAllTimeframes } from "@/lib/solana/fetchCoinQuote"
+import { fetchAllTimeframes } from "@/lib/solana/fetchCoinQuote"
 import { getDexScreenerData } from "@/lib/solana/fetchDexData"
 import CoinChart from "@/app/coins/[ticker]/components/CoinChart"
 import { Skeleton } from "@/components/ui/skeleton"
 import DexSummary from "./components/DexSummary"
 import { getTokenInfoFromTicker } from "@/lib/solana/fetchTokenInfoFromTicker"
+
 type Props = {
   params: Promise<any>
   searchParams: Promise<{
@@ -16,6 +17,10 @@ type Props = {
     interval?: string
     ca?: string
   }>
+}
+
+const coinLink = (pairAddress: string) => {
+  return `https://axiom.trade/meme/${pairAddress}/@drboob`
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -47,7 +52,6 @@ function LoadingChart() {
           ))}
         </div>
       </div>
-
       <div className="relative h-[350px]">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="flex flex-col items-center gap-4">
@@ -68,21 +72,42 @@ export default async function CoinsPage({ params, searchParams }: Props) {
   const hasCa = ca ? true : false
   const range = typedSearchParams?.range || '1d'
   const interval = typedSearchParams?.interval || '1m'
+  let axiomLink = ''
+
+  if (!hasCa) {
+    const dexScreenerData = await getTokenInfoFromTicker(ticker)
+    const pairAddress = dexScreenerData?.pairs[0].pairAddress
+    if (pairAddress) {
+      axiomLink = coinLink(pairAddress)
+    }
+  } else {
+    if (ca) {
+      const dexScreenerData = await getDexScreenerData(ca)
+      const pairAddress = dexScreenerData?.pairs[0].pairAddress
+      if (pairAddress) {
+        axiomLink = coinLink(pairAddress)
+      }
+    }
+  }
 
   const allTimeframeData = await fetchAllTimeframes(`${ticker}USD`)
   return (
     <div suppressHydrationWarning>
       <Card>
         <CardContent className="space-y-10 pt-6 lg:px-40 lg:py-14">
-          <Suspense
-            fallback={
-              <div className="flex h-[10rem] items-center justify-center text-muted-foreground ">
-                Loading...
-              </div>
-            }
-          >
-            <DexSummary ticker={ticker} ca={ca || ''} hasCa={hasCa} />
-          </Suspense>
+          <div className="flex justify-between items-center">
+            <Suspense
+              fallback={
+                <div className="flex h-[10rem] items-center justify-center text-muted-foreground ">
+                  Loading...
+                </div>
+              }
+            >
+             
+              <DexSummary ticker={ticker} ca={ca || ''} hasCa={hasCa} axiomLink={axiomLink} />
+            </Suspense>
+           
+          </div>
           <Suspense fallback={
             <LoadingChart />
           }>
@@ -93,6 +118,7 @@ export default async function CoinsPage({ params, searchParams }: Props) {
                 interval={interval as any}
                 timeframeData={allTimeframeData.data}
               />}
+
           </Suspense>
 
           <Suspense
