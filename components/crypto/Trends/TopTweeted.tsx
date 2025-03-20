@@ -4,7 +4,7 @@ import { Link } from 'next-view-transitions';
 export function TopTweeted({ trends }: { trends: any }) {
     const { resolvedTheme } = useTheme();
     return (
-        trends.topTweetedTickers.length > 0 && (
+        trends && trends.topTweetedTickers && trends.topTweetedTickers.length > 0 && (
             <div className="prose prose-sm prose-invert max-w-full py-4">
                 <h1 className="text-lg font-semibold mb-4 text-foreground">
                     Top Tweeted Cryptos

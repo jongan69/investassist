@@ -7,10 +7,10 @@ export const fetchLatestTweets = async (setLatestTweets: (latestTweets: any) => 
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        if (!data.data || !data.data.clusters) {
-            throw new Error('Invalid API response format');
-        }
-        const filteredData = data.data.clusters.filter((clusters: any) => clusters.size > 1);
+        // if (!data.data || !data.data.clusters) {
+        //     throw new Error('Invalid API response format');
+        // }
+        const filteredData = data?.data?.clusters?.filter((clusters: any) => clusters.size > 1);
         setLatestTweets(filteredData);
     } catch (error) {
         console.error('Error fetching latest tweets:', error);

@@ -9,16 +9,17 @@ export const fetchTweetedCas = async (setTweetedCas: (tweetedCas: any) => void, 
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const responseData = await response.json();
-        if (!responseData.success || !responseData.data) {
-            throw new Error('Invalid API response format');
-        }
+        // if (!responseData.success || !responseData.data) {
+        //     throw new Error('Invalid API response format');
+        // }
 
-        const data = responseData.data;
+        const data = responseData?.data;
 
         // Fetch token info in parallel for better performance
-        const tokenInfoPromises = data.map(async (item: any) => {
-            try {
-                const tokenInfo = await getTokenInfo(item.address);
+        if (data && data.length > 0) {
+            const tokenInfoPromises = data.map(async (item: any) => {
+                try {
+                    const tokenInfo = await getTokenInfo(item.address);
                 if (tokenInfo) {
                     return { ...item, tokenInfo };
                 }
@@ -28,8 +29,11 @@ export const fetchTweetedCas = async (setTweetedCas: (tweetedCas: any) => void, 
             return item;
         });
 
-        const enrichedData = await Promise.all(tokenInfoPromises);
-        setTweetedCas(enrichedData);
+            const enrichedData = await Promise.all(tokenInfoPromises);
+            setTweetedCas(enrichedData);
+        } else {
+            setTweetedCas([]);
+        }
     } catch (error) {
         console.error('Error fetching Twitter trending cas:', error);
         setError('Failed to load Twitter trending cas');

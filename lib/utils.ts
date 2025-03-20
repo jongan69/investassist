@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx"
 import { twMerge } from "tailwind-merge"
 import type { Interval } from "@/types/yahoo-finance"
+import tickers from "@/data/tickers.json"
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -156,3 +157,19 @@ export const tickerAfterOpen = [
   { symbol: "ETH-USD", shortName: "Ethereum" },
   { symbol: "SOL-USD", shortName: "Solana" },
 ]
+
+export const validateTicker = (ticker: string): boolean => {
+  // Convert ticker to uppercase for consistent comparison
+  const upperTicker = ticker.toUpperCase();
+  
+  // Check if it's a special ticker (like indices or futures)
+  const isSpecialTicker = [...tickerAfterOpen, ...tickersFutures].some(
+    (t: { symbol: string }) => t.symbol === upperTicker
+  );
+  
+  if (isSpecialTicker) return true;
+  
+  // Check if it exists in our tickers database
+  // Note: This is a simple check - in a production environment, you might want to use a more efficient data structure
+  return tickers.some((t: { ticker: string }) => t.ticker === upperTicker);
+};
