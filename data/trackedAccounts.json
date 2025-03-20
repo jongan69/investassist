@@ -1,0 +1,145 @@
+{
+    "trackedAccounts": [
+        "VitalikButerin",
+        "zhusu",
+        "zachxbt",
+        "elonmusk",
+        "jack",
+        "0xMert_",
+        "Loopifyyy",
+        "DancingEddie_",
+        "notthreadguy",
+        "vydamo_",
+        "optimizoor",
+        "orangie",
+        "mememe69696969",
+        "staccoverflow",
+        "rasmr_eth",
+        "aeyakovenko",
+        "DeeZe",
+        "0xMerp",
+        "rajgokal",
+        "cbb0fe",
+        "inversebrah",
+        "blknoiz06",
+        "metaversejoji",
+        "casino616",
+        "ShockedJS",
+        "BastilleBtc",
+        "TheMisterFrog",
+        "0xGroovy",
+        "973Meech",
+        "rektober",
+        "frankdegods",
+        "imperooterxbt",
+        "sabby_eth",
+        "NokiTheTrader",
+        "moneymaykah_",
+        "MustStopMurad",
+        "dolonosolo",
+        "based16z",
+        "chefjerrry",
+        "Euris_JT",
+        "Cented7",
+        "timmpix1",
+        "ratwizardx",
+        "Ga__ke",
+        "waddles_eth",
+        "assasin_eth",
+        "KayTheDoc",
+        "Geni100x",
+        "MonarkyMemes",
+        "untaxxable",
+        "lynk0x",
+        "AroaOnSol",
+        "gorillacapsol",
+        "publixplays",
+        "Loopierr",
+        "0GAntD",
+        "jijo_exe",
+        "treysocial",
+        "4GH0STEE",
+        "0xExorcized",
+        "Latuche95",
+        "solrevv",
+        "stoolpresidente",
+        "ottabag",
+        "FlippingProfits"
+    ],
+    "walletAddresses": {
+        "MustStopMurad": {
+            "ETH": [
+                "0x6b411100c72ba2445e50ffd20839c28b3546de7c",
+                "0xcbd0dee0c3eed152c3398b062361becc4a15522b",
+                "0x13fc38ec99a8217a06d1dc6db8c0bf0ee97ebf7f",
+                "0x71b4fd11eef705ba60176e7c034cd1a4f97ae02d",
+                "0x30b46a659761b576a00028b44d1e37fdc64b034d",
+                "0x5b1569db234a0f2884814a3f7184f01cf641b0c6",
+                "0x464e0a666734ba93e231d929ace538eaf05ff424",
+                "0xdb47714727cba70f0408ba30dc4ea0b5ac436055"
+            ],
+            "SOL": [
+                "7QZGS7MQ4S6hRmE8iXoFTXgQ2hXVUCho2ZhgeWvLNPZT",
+                "GyBkVYkHBPMapyQeueQ6d44YthwqYiX4ajgnGLqq9P7r",
+                "2xn57hPD2v6ighJFPXNPSoiGUXkW4KKo8Hb3NpXmHZvZ"
+            ]
+        },
+        "frankdegods": {
+            "SOL": ["CRVidEDtEUTYZisCxBZkpELzhQc9eauMLR3FWg74tReL"]
+        },
+        "93Meech": {
+            "SOL": ["831qmkeGhfL8YpcXuhrug6nHj1YdK3aXMDQUCo85Auh1"]
+        },
+        "joujou100x": {
+            "SOL": ["7SDs3PjT2mswKQ7Zo4FTucn9gJdtuW4jaacPA65BseHS"]
+        },
+        "FlippingProfits": {
+            "SOL": ["G5nxEXuFMfV74DSnsrSatqCW32F34XUnBeq3PfDS7w5E"]
+        },
+        "Euris_JT": {
+            "SOL": ["DfMxre4cKmvogbLrPigxmibVTTQDuzjdXojWzjCXXhzj"]
+        },
+        "traderpow": {
+            "SOL": ["8zFZHuSRuDpuAR7J6FzwyF3vKNx4CVW3DFHJerQhc7Zd"]
+        },
+        "cookerflips": {
+            "SOL": ["8deJ9xeUvXSJwicYptA9mHsU2rN2pDx37KWzkDkEXhU6"]
+        },
+        "stoolpresidente": {
+            "SOL": ["5rkPDK4JnVAumgzeV2Zu8vjggMTtHdDtrsd5o9dhGZHD"]
+        },
+        "ottabag": {
+            "SOL": ["As7HjL7dzzvbRbaD3WCun47robib2kmAKRXMvjHkSMB5"]
+        },
+        "publixplays": {
+            "SOL": ["86AEJExyjeNNgcp7GrAvCXTDicf5aGWgoERbXFiG1EdD"]
+        },
+        "Cupseyy": {
+            "SOL": ["suqh5sHtr8HyJ7q8scBimULPkPpA557prMG47xCHQfK"]
+        },
+        "0GAntD": {
+            "SOL": ["215nhcAHjQQGgwpQSJQ7zR26etbjjtVdW74NLzwEgQjP"]
+        },
+        "TheMisterFrog": {
+            "SOL": ["4DdrfiDHpmx55i4SPssxVzS9ZaKLb8qr45NKY9Er9nNh"]
+        },
+        "BastilleBtc": {
+            "SOL": ["3kebnKw7cPdSkLRfiMEALyZJGZ4wdiSRvmoN4rD1yPzV"]
+        },
+        "0xGroovy": {
+            "SOL": ["34ZEH778zL8ctkLwxxERLX5ZnUu6MuFyX9CWrs8kucMw"]
+        },
+        "blknoiz06": {
+            "SOL": ["AVAZvHLR2PcWpDf8BXY4rVxNHYRBytycHkcB5z5QNXYm"]
+        },
+        "metaversejoji": {
+            "SOL": ["525LueqAyZJueCoiisfWy6nyh4MTvmF4X9jSqi6efXJT"]
+        },
+        "casino616": {
+            "SOL": ["8rvAsDKeAcEjEkiZMug9k8v1y8mW6gQQiMobd89Uy7qR"]
+        },
+        "ShockedJS": {
+            "SOL": ["6m5sW6EAPAHncxnzapi1ZVJNRb9RZHQ3Bj7FD84X9rAF"]
+        }
+    }
+} 

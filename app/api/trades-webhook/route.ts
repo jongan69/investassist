@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { pusher } from '@/lib/pusher'
 import { getTokenInfo } from '@/lib/solana/fetchDefaultTokenData'
 import { Trade } from '@/types/trades'
+import tradersData from '@/data/trackedAccounts.json'
 
 interface TokenTransfer {
   fromUserAccount: string
@@ -84,15 +85,15 @@ interface Trader {
   };
 }
 
-async function fetchTraderAccounts() {
-  try {
-    const response = await fetch('https://soltrendio.com/api/premium/tracked-accounts', { cache: 'no-store' });
-    return await response.json();
-  } catch (error) {
-    console.error('Error retrieving tracked accounts:', error);
-    return null;
-  }
-}
+// async function fetchTraderAccounts() {
+//   try {
+//     const response = await fetch('https://soltrendio.com/api/premium/tracked-accounts', { cache: 'no-store' });
+//     return await response.json();
+//   } catch (error) {
+//     console.error('Error retrieving tracked accounts:', error);
+//     return null;
+//   }
+// }
 
 async function parsePumpFunTransaction(transaction: Transaction): Promise<{ action: string | null; description: string }> {
   // Pump.fun program ID and constants
@@ -209,7 +210,7 @@ export async function POST(request: Request) {
       avgSell: 0,
       holdingTime: 0,
       timestamp: (transaction.timestamp || Date.now()) * 1000,
-      label: matchingTrader?.username || 'Unknown',
+      label: matchingTrader || 'Unknown',
       description: description,
       signature: transaction.signature || '',
       fromTokenData: null,
@@ -259,21 +260,20 @@ function extractTransferDetails(transaction: Transaction) {
   return { amount, senderAddress, receiverAddress }
 }
 
-async function findMatchingTrader(senderAddress?: string, receiverAddress?: string) {
-  const tradersData = await fetchTraderAccounts()
+async function findMatchingTrader(senderAddress?: string, receiverAddress?: string): Promise<string | null> {
   if (!tradersData) {
     return null
   }
-  return tradersData.find((trader: Trader) => {
+  return Object.entries(tradersData.walletAddresses).find(([username, wallets]) => {
     // Skip traders with no wallets or no SOL wallets
-    if (!trader.wallets || !trader.wallets.SOL || trader.wallets.SOL.length === 0) {
+    if (!wallets || !wallets.SOL || wallets.SOL.length === 0) {
       return false
     }
-    return trader.wallets.SOL.some((wallet: string) => 
+    return wallets.SOL.some((wallet: string) => 
       senderAddress?.toLowerCase() === wallet.toLowerCase() ||
       receiverAddress?.toLowerCase() === wallet.toLowerCase()
     )
-  })
+  })?.[0] || null
 }
 
 async function enrichTradeWithSwapDetails(trade: Trade, transaction: Transaction) {
