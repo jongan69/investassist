@@ -103,10 +103,10 @@ export default async function CoinsPage({ params, searchParams }: Props) {
                 </div>
               }
             >
-             
+
               <DexSummary ticker={ticker} ca={ca || ''} hasCa={hasCa} axiomLink={axiomLink} />
             </Suspense>
-           
+
           </div>
           <Suspense fallback={
             <LoadingChart />

@@ -5,5 +5,5 @@ export async function fetchUserTweets(username: string) {
         body: JSON.stringify({ username: username }),
     });
     const data = await response.json();
-    return data;
+    return data.tweets;
 }

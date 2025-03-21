@@ -46,6 +46,24 @@ export interface EnrichedTokenData extends TokenMetadata {
     value: number;
 }
 
+// Add this interface at the top with other interfaces
+interface VerifiedToken {
+    address: string;
+    name: string;
+    symbol: string;
+    decimals: number;
+    tags: string[];
+}
+
+// Add this cache object for verified tokens
+let verifiedTokensCache: {
+    data: VerifiedToken[] | null;
+    timestamp: number;
+} = {
+    data: null,
+    timestamp: 0
+};
+
 const rpcEndpoint = 'https://christiane-z5lsaw-fast-mainnet.helius-rpc.com';
 const solanaConnection = new Connection(rpcEndpoint);
 
@@ -104,11 +122,48 @@ export async function getTokenAccountsWithMetadata(wallet: string, solanaConnect
     return enrichedTokens.map(convertToTokenData);
 }
 
-// Rename the original function to Raw
+// Add this function to fetch verified tokens
+async function getVerifiedTokens(): Promise<VerifiedToken[]> {
+    const ONE_HOUR = 3600000; // 1 hour in milliseconds
+    const now = Date.now();
+
+    // Return cached data if it's less than 1 hour old
+    if (verifiedTokensCache.data && (now - verifiedTokensCache.timestamp) < ONE_HOUR) {
+        return verifiedTokensCache.data;
+    }
+
+    try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/jupiter-tokens`);
+        if (!response.ok) {
+            throw new Error('Failed to fetch verified tokens');
+        }
+
+        const tokens = await response.json();
+        
+        // Update cache
+        verifiedTokensCache = {
+            data: tokens,
+            timestamp: now
+        };
+
+        return tokens;
+    } catch (error) {
+        console.error('Error fetching verified tokens:', error);
+        // Return empty array if fetch fails
+        return [];
+    }
+}
+
+// Modify the getTokenAccountsWithMetadataRaw function
 async function getTokenAccountsWithMetadataRaw(wallet: string, solanaConnection: Connection): Promise<EnrichedTokenData[]> {
     const tokenBalances = await getTokenAccounts(wallet, solanaConnection);
+    const verifiedTokens = await getVerifiedTokens();
     
-    const mintAddresses = Object.keys(tokenBalances);
+    // Create a Set of verified token addresses for faster lookup
+    const verifiedTokenAddresses = new Set(verifiedTokens.map(token => token.address));
+    
+    // Filter mintAddresses to only include verified tokens
+    const mintAddresses = Object.keys(tokenBalances).filter(address => verifiedTokenAddresses.has(address));
     
     if (mintAddresses.length === 0) {
         return [];

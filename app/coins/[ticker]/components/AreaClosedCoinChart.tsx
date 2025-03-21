@@ -90,14 +90,14 @@ function Interactions({
       // Get the date range for the x-axis
       const dates = data.map(d => toDate(d))
       const xPositions = dates.map(d => xScale(d))
-      
+
       // Find the closest x position to the pointer
       const closestIndex = d3.bisector((x: number) => x).left(xPositions, pointer.x)
-      
+
       // Get the two closest points
       const d0 = data[Math.max(0, closestIndex - 1)]
       const d1 = data[Math.min(data.length - 1, closestIndex)]
-      
+
       // Determine which point is closer
       let d = d0
       if (d1) {
@@ -106,12 +106,12 @@ function Interactions({
         d = Math.abs(pointer.x - x0) > Math.abs(pointer.x - x1) ? d1 : d0
       }
 
-      dispatch({ 
-        type: "UPDATE", 
-        ...d, 
+      dispatch({
+        type: "UPDATE",
+        ...d,
         x: xScale(toDate(d)), // Use exact x position from scale
         y: pointer.y,
-        width 
+        width
       })
     },
     [xScale, data, dispatch, width]
@@ -149,7 +149,7 @@ function Area({ mask, id, data, x, y, yScale, color }: AreaProps) {
       .y0(yScale.range()[0])
       .y1((d: any) => y(d))
       .curve(d3.curveMonotoneX)
-    
+
     return area(data)
   }, [data, x, y, yScale])
 
@@ -158,13 +158,13 @@ function Area({ mask, id, data, x, y, yScale, color }: AreaProps) {
       .x((d: any) => x(d))
       .y((d: any) => y(d))
       .curve(d3.curveMonotoneX)
-    
+
     return line(data)
   }, [data, x, y])
 
   return (
-    <g 
-      strokeLinecap="round" 
+    <g
+      strokeLinecap="round"
       className="stroke-1 transition-transform duration-200"
       style={{ willChange: 'transform' }}
     >
@@ -183,7 +183,7 @@ function Area({ mask, id, data, x, y, yScale, color }: AreaProps) {
         fill={`url(#${id})`}
         className="transition-opacity duration-200"
       />
-      <path 
+      <path
         d={linePath}
         stroke={color}
         strokeWidth={2}
@@ -198,7 +198,7 @@ function Area({ mask, id, data, x, y, yScale, color }: AreaProps) {
 function MarkerCircle({ cx, cy, color }: { cx: number; cy: number; color: string }) {
   const spring = useSpring({
     to: { cx, cy },
-    config: { 
+    config: {
       tension: 300, // Increased from 170
       friction: 20, // Decreased from 26
       mass: 0.5,    // Decreased from 1
@@ -251,10 +251,10 @@ const useDebounce = <T,>(value: T, delay: number): T => {
 function GraphSlider({ data, width, height, top, state, dispatch, range }: GraphSliderProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
-  
+
   useIsomorphicLayoutEffect(() => {
     if (!containerRef.current) return
-    
+
     const observer = new ResizeObserver(entries => {
       const entry = entries[0]
       if (entry) {
@@ -264,7 +264,7 @@ function GraphSlider({ data, width, height, top, state, dispatch, range }: Graph
         })
       }
     })
-    
+
     observer.observe(containerRef.current)
     return () => observer.disconnect()
   }, [])
@@ -299,9 +299,9 @@ function GraphSlider({ data, width, height, top, state, dispatch, range }: Graph
 
   return (
     <div className="transition-all duration-300 ease-in-out">
-      <svg 
-        height={height} 
-        width="100%" 
+      <svg
+        height={height}
+        width="100%"
         viewBox={`0 0 ${width} ${height}`}
         style={{ overflow: 'visible' }} // Allow hover elements to overflow
       >
@@ -354,10 +354,10 @@ function GraphSlider({ data, width, height, top, state, dispatch, range }: Graph
               stroke={chartColor}
               strokeWidth={2}
             />
-            <MarkerCircle 
-              cx={state.x} 
+            <MarkerCircle
+              cx={state.x}
               cy={yScale(state.close)}
-              color={chartColor} 
+              color={chartColor}
             />
             <text
               suppressHydrationWarning
@@ -401,14 +401,14 @@ interface AreaClosedCoinChartProps {
 import { type KrakenRange } from "@/lib/solana/fetchCoinQuote"
 
 // Add this new component for price display
-const PriceDisplay = memo(function PriceDisplay({ 
-  date, 
-  close, 
-  range 
-}: { 
-  date: Date, 
-  close: number, 
-  range: KrakenRange 
+const PriceDisplay = memo(function PriceDisplay({
+  date,
+  close,
+  range
+}: {
+  date: Date,
+  close: number,
+  range: KrakenRange
 }) {
   const formattedDate = date.toLocaleDateString(undefined, {
     day: "numeric",
@@ -436,8 +436,8 @@ const PriceDisplay = memo(function PriceDisplay({
 const MemoizedArea = memo(Area)
 
 // Optimize the main component
-const AreaClosedCoinChart = memo(function AreaClosedCoinChart({ 
-  chartQuotes, 
+const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
+  chartQuotes,
   range,
   availableRanges
 }: AreaClosedCoinChartProps) {
@@ -458,7 +458,7 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
 
   // Memoize range options and validation
   const rangeOptions = useMemo(() => ["1d", "1w", "1m", "3m", "1y"] as const, [])
-  
+
   const createPageURL = useCallback(
     (range: string) => {
       const params = new URLSearchParams(searchParams)
@@ -480,14 +480,14 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
   }, [createPageURL, replace])
 
   return (
-    <div 
+    <div
       suppressHydrationWarning
       className="w-full min-w-fit transition-opacity duration-300 ease-in-out"
     >
       {state.hovered && (
-        <PriceDisplay 
-          date={new Date(state.date)} 
-          close={state.close} 
+        <PriceDisplay
+          date={new Date(state.date)}
+          close={state.close}
           range={range}
         />
       )}
@@ -535,15 +535,15 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
 })
 
 // Extract range buttons to separate component
-const RangeButtons = memo(function RangeButtons({ 
-  range, 
-  onRangeChange 
-}: { 
+const RangeButtons = memo(function RangeButtons({
+  range,
+  onRangeChange
+}: {
   range: KrakenRange
-  onRangeChange: (range: string) => void 
+  onRangeChange: (range: string) => void
 }) {
   const rangeOptions = ["1d", "1w", "1m", "3m", "1y"]
-  
+
   return (
     <div className="mt-1 flex flex-row">
       {rangeOptions.map((r) => (

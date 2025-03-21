@@ -1,8 +1,6 @@
-import { useTheme } from 'next-themes';
 import { Link } from 'next-view-transitions';
 
 export function TopTweeted({ trends }: { trends: any }) {
-    const { resolvedTheme } = useTheme();
     return (
         trends && trends.topTweetedTickers && trends.topTweetedTickers.length > 0 && (
             <div className="prose prose-sm prose-invert max-w-full py-4">

@@ -1,10 +1,8 @@
 'use client'
 import Link from 'next/link'
-import { useTheme } from 'next-themes';
 import { Fragment } from 'react';
 
 export function WhaleActivity({ trends }: { trends: any }) {
-    const { resolvedTheme } = useTheme();
     {/* Whale Activity Section */ }
     return (
         <div className="prose prose-sm prose-invert max-w-full py-4">
@@ -37,10 +35,6 @@ export function WhaleActivity({ trends }: { trends: any }) {
                             <tbody className="bg-card divide-y divide-border">
                                 {trends.whaleActivity[type as 'bullish' | 'bearish'].map((activity: WhaleActivity) => {
                                     const score = (type === 'bullish' ? activity.bullishScore : activity.bearishScore) ?? 0;
-                                    const scoreColor = type === 'bullish'
-                                        ? `hsl(120, ${Math.min(100, score * 1.2)}%, 50%)`
-                                        : `hsl(0, ${Math.min(100, score * 1.2)}%, 50%)`;
-
                                     return (
                                         <tr key={activity.symbol} className="group">
                                             <td colSpan={3} className="p-0">
@@ -54,7 +48,7 @@ export function WhaleActivity({ trends }: { trends: any }) {
                                                             {activity.symbol}
                                                         </div>
                                                         <div className="px-4 py-3 whitespace-nowrap text-sm text-muted-foreground w-1/3">
-                                                            <span className="block truncate sm:text-clip">
+                                                            <span className="block truncate text-xs max-w-[100px] sm:max-w-full">
                                                                 {activity.name}
                                                             </span>
                                                         </div>

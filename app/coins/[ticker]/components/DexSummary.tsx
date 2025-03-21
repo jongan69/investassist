@@ -213,22 +213,22 @@ export default async function DexSummary({ ticker, ca, hasCa, axiomLink }: { tic
 
             {datiledOfPair?.ti?.headerImage && (
               <div className="w-full flex justify-center">
-             
-                  <Image
-                    src={datiledOfPair.ti.headerImage}
-                    alt={datiledOfPair.ti.name || 'Token header image'}
-                    width={0}
-                    height={0}
-                    sizes="100vw"
-                    className="w-full h-auto max-w-2xl rounded-lg shadow-md"
-                    style={{ objectFit: 'contain' }}
-                  />
-              
+
+                <Image
+                  src={datiledOfPair.ti.headerImage}
+                  alt={datiledOfPair.ti.name || 'Token header image'}
+                  width={0}
+                  height={0}
+                  sizes="100vw"
+                  className="w-full h-auto max-w-2xl rounded-lg shadow-md"
+                  style={{ objectFit: 'contain' }}
+                />
+
               </div>
             )}
-             <AxiomTradeButton axiomLink={axiomLink} />
+            <AxiomTradeButton axiomLink={axiomLink} />
             <SocialLinks dexScreenerData={datiledOfPair} pairDetails={datiledOfPair} hasCmc={hasCmc} />
-           
+
           </div>
 
           {datiledOfPair?.ti?.description && (
@@ -236,15 +236,15 @@ export default async function DexSummary({ ticker, ca, hasCa, axiomLink }: { tic
               {datiledOfPair.ti.description}
             </p>
           )}
-          
+
           <br />
-         
+
         </div>
 
         {/* Stats Grid */}
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          
+
           {keysToDisplay.map(({ key, title, format, tooltip }) => {
             const data = getData(key)
             const formattedData = data !== undefined && !isNaN(data)

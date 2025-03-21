@@ -15,13 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import Link from "next/link"
+// import Link from "next/link"
 
 // Define an interface for the data type
-interface StockData {
-  symbol: string;
-  // Add other properties that are part of TData
-}
+// interface StockData {
+//   symbol: string;
+//   // Add other properties that are part of TData
+// }
 
 // Update the DataTableProps to use StockData
 interface DataTableProps<TData, TValue> {

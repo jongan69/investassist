@@ -218,13 +218,13 @@ export const AllocationChart = ({ allocations }: { allocations: AllocationData[]
     };
 
     return (
-        <div className="w-full h-full" style={{ height: `${dimensions.height}px`, minHeight: '400px' }}>
+        <div className="w-full h-full relative">
             <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                     <Pie
                         data={allocations}
                         cx="50%"
-                        cy="45%"
+                        cy="50%"
                         labelLine={false}
                         label={renderCustomLabel}
                         outerRadius={outer}
@@ -252,7 +252,7 @@ export const AllocationChart = ({ allocations }: { allocations: AllocationData[]
                         content={({ active, payload }) => {
                             if (active && payload?.[0]) {
                                 return (
-                                    <div className="bg-white dark:bg-gray-800 p-2 rounded-md">
+                                    <div className="bg-white dark:bg-gray-800 p-2 rounded-md shadow-lg">
                                         <p className="text-sm font-medium">{payload[0].name}</p>
                                         <p className="text-xs text-gray-500">{(Number(payload[0].value)).toFixed(2)}%</p>
                                     </div>
@@ -263,20 +263,17 @@ export const AllocationChart = ({ allocations }: { allocations: AllocationData[]
                     />
                     <Legend 
                         verticalAlign="bottom"
-                        height={dimensions.height * (isMobile ? 0.25 : 0.2)}
+                        height={36}
                         formatter={(value) => (
-                            <span className="text-[10px] sm:text-xs font-medium px-1 sm:px-2 py-0.5">
+                            <span className="text-[10px] sm:text-xs font-medium">
                                 {value}
                             </span>
                         )}
                         wrapperStyle={{
-                            paddingTop: '4rem',
-                            paddingBottom: '4rem',
-                            marginBottom: '4.5rem',
-                            width: '100%',
+                            paddingTop: '1rem',
                             fontSize: '10px',
                         }}
-                        iconSize={isMobile ? 6 : 12}
+                        iconSize={isMobile ? 8 : 10}
                     />
                 </PieChart>
             </ResponsiveContainer>

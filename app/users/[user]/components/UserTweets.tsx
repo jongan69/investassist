@@ -100,16 +100,18 @@ function TweetCard({ tweet }: { tweet: Tweet }) {
 export default function UserTweets({ tweets }: UserTweetsProps) {
   if (!tweets?.length) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-gray-500 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
         No tweets found
       </div>
     )
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pr-2">
       {tweets.map((tweet) => (
-        <TweetCard key={tweet.id} tweet={tweet} />
+        <div key={tweet.id} className="transform transition-all duration-200 hover:scale-[1.02]">
+          <TweetCard tweet={tweet} />
+        </div>
       ))}
     </div>
   )

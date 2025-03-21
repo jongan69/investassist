@@ -1,11 +1,9 @@
 'use client'
-import { useTheme } from 'next-themes';
 import * as ScrollArea from '@radix-ui/react-scroll-area';
 
 export function LatestTweets({ latestTweets, isTweetsLoading, tweetsError }: { latestTweets: any, isTweetsLoading: boolean, tweetsError: string }) {
-    const { resolvedTheme } = useTheme();
     return (
-        <div className="h-[600px] flex flex-col pt-6">
+        <div className="h-[500px] flex flex-col pt-6">
             <h1 className="text-xl font-bold mb-6 text-foreground">
                 Latest Tweets
             </h1>

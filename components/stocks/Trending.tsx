@@ -6,50 +6,69 @@ export default function TrendingStocks(data: any) {
     const filteredNews = news.filter((item: any) => item.symbols.length > 0)
     return (
         filteredNews && highOiOptions && (
-            <div className="p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
+            <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
                 <h1 className="text-center text-2xl font-bold mb-8 text-gray-800 dark:text-gray-200">Trending Stocks with High Open Interest</h1>
-                <div className="flex flex-wrap justify-center">
-                    {filteredNews && filteredNews?.map((newsItem: any) => {
-                        // Find the corresponding options for the news item
-                        const options = highOiOptions.find((option: any) =>
-                            option?.shortTerm?.root_symbol === newsItem.symbols[0]
-                        );
+                <div className="rounded-lg overflow-hidden border border-gray-300 dark:border-gray-700 shadow-sm">
+                    <div className="max-h-[1000px] overflow-y-auto">
+                        <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
+                            <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0">
+                                <tr>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 dark:text-gray-300 uppercase">Stock</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 dark:text-gray-300 uppercase">News</th>
+                                    <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 dark:text-gray-300 uppercase">Options Data</th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white dark:bg-black divide-y divide-gray-300 dark:divide-gray-700">
+                                {filteredNews?.map((newsItem: any) => {
+                                    const options = highOiOptions.find((option: any) =>
+                                        option?.shortTerm?.root_symbol === newsItem.symbols[0]
+                                    );
 
-                        return (
-                            <a href={`/stocks/${newsItem.symbols[0]}`} target="_blank" rel="noopener noreferrer" key={newsItem.id} className="block text-inherit transition-transform duration-200">
-                                <div className="border border-gray-300 dark:border-black-700 rounded-lg m-2 p-3 w-64 shadow-md bg-white dark:bg-black transition-shadow duration-300 hover:shadow-lg">
-                                    <h2 className="text-md font-semibold mb-1 text-black dark:text-white truncate whitespace-nowrap overflow-hidden">{newsItem.headline}</h2>
-                                    <p className="text-xs mb-1 text-gray-600 dark:text-gray-400">Author: {newsItem.author}</p>
-                                    {/* Display the large image for the news item */}
-                                    {/* {newsItem.images && newsItem.images.length > 0 && (
-                                        <Image
-                                            src={newsItem.images.find((img: any) => img.size === "large")?.url}
-                                            alt={newsItem.headline}
-                                            width={80}
-                                            height={80}
-                                            className="rounded-md mt-1"
-                                        />
-                                    )} */}
-                                    {options && (
-                                        <div className="mt-2">
-                                            {Object.entries(options).map(([key, optionDetails]: [string, any]) => 
-                                                options[key] ? (
-                                                    <div key={key} className="mb-2">
-                                                        <h3 className="text-sm font-medium mb-1 text-gray-800 dark:text-gray-200 capitalize">{key} Options</h3>
-                                                        <p className="text-xs text-gray-600 dark:text-gray-400">Name: {optionDetails?.name}</p>
-                                                        <p className="text-xs text-gray-600 dark:text-gray-400">Expiration Date: {optionDetails?.expiration_date}</p>
-                                                        <p className="text-xs text-gray-600 dark:text-gray-400">Close Price: {optionDetails?.close_price}</p>
-                                                        <p className="text-xs text-gray-600 dark:text-gray-400">Strike Price: {optionDetails?.strike_price}</p>
-                                                        <p className="text-xs text-gray-600 dark:text-gray-400">Open Interest: {optionDetails?.open_interest}</p>
+                                    return (
+                                        <tr key={newsItem.id} className="hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors duration-150">
+                                            <td className="px-4 py-3 whitespace-nowrap">
+                                                <a href={`/stocks/${newsItem.symbols[0]}`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                                                    {newsItem.symbols[0]}
+                                                </a>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                <div className="flex items-start space-x-3">
+                                                    {newsItem.images && newsItem.images.length > 0 && (
+                                                        <Image
+                                                            src={newsItem.images.find((img: any) => img.size === "large")?.url}
+                                                            alt={newsItem.headline}
+                                                            width={60}
+                                                            height={60}
+                                                            className="rounded-md w-[60px] h-auto object-cover"
+                                                        />
+                                                    )}
+                                                    <div>
+                                                        <p className="font-medium text-sm">{newsItem.headline}</p>
+                                                        <p className="text-xs text-gray-600 dark:text-gray-400">By {newsItem.author}</p>
                                                     </div>
-                                                ) : null
-                                            )}
-                                        </div>
-                                    )}
-                                </div>
-                            </a>
-                        );
-                    })}
+                                                </div>
+                                            </td>
+                                            <td className="px-4 py-3">
+                                                {options && Object.entries(options).map(([key, optionDetails]: [string, any]) => 
+                                                    options[key] ? (
+                                                        <div key={key} className="mb-2">
+                                                            <p className="text-sm font-medium text-gray-800 dark:text-gray-200 capitalize">{key}</p>
+                                                            <div className="grid grid-cols-2 gap-x-4 text-xs text-gray-600 dark:text-gray-400">
+                                                                <p>Strike: ${optionDetails?.strike_price}</p>
+                                                                <p>Close: ${optionDetails?.close_price}</p>
+                                                                <p>Exp: {optionDetails?.expiration_date}</p>
+                                                                <p>OI: {optionDetails?.open_interest}</p>
+                                                            </div>
+                                                        </div>
+                                                    ) : null
+                                                )}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         )

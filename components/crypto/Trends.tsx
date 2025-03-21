@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import Link from 'next/link';
+import { RefreshCw } from 'lucide-react';
 
 import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
 import { fetchLatestTweets } from '@/lib/twitter/fetchLatestTweets';
@@ -18,7 +19,6 @@ import { TopTweeted } from './Trends/TopTweeted';
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
     const [isMounted, setIsMounted] = useState(false);
-
 
     const [trends, setTrends] = useState<TrendData | null>(null);
     const [latestTweets, setLatestTweets] = useState<any[]>([]);
@@ -36,6 +36,28 @@ export default function CryptoTrends({ data }: { data: any }) {
 
     // Add a ref to track if we've already fetched data
     const hasFetchedData = useRef(false);
+
+    const refreshTweets = async () => {
+        setIsTweetsLoading(true);
+        setTweetsError(null);
+        try {
+            await fetchLatestTweets(setLatestTweets, setIsTweetsLoading, setTweetsError);
+        } catch (error) {
+            console.error('Error refreshing tweets:', error);
+            setTweetsError('Failed to refresh latest tweets');
+        }
+    };
+
+    const refreshCas = async () => {
+        setIsCasLoading(true);
+        setCasError(null);
+        try {
+            await fetchTweetedCas(setTweetedCas, setIsCasLoading, setCasError);
+        } catch (error) {
+            console.error('Error refreshing CAS:', error);
+            setCasError('Failed to refresh CAS tokens');
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -117,12 +139,40 @@ export default function CryptoTrends({ data }: { data: any }) {
                 <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent z-0" />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 py-6 z-0" />
             </motion.div>
-            {tweetedCas && (
-                <TweetedCas tweetedCas={tweetedCas} isCasLoading={isCasLoading} casError={casError ?? ''} />
+            {(!tweetedCas || tweetedCas.length === 0) && !isCasLoading && (
+                <div className="flex justify-center mt-4">
+                    <button
+                        onClick={refreshCas}
+                        className={cn(
+                            "flex items-center gap-2 px-4 py-2 rounded-lg",
+                            "bg-gray-200 dark:bg-gray-800",
+                            "hover:bg-gray-300 dark:hover:bg-gray-700",
+                            "transition-colors"
+                        )}
+                    >
+                        <RefreshCw className="w-4 h-4" />
+                        <span>Refresh CAs</span>
+                    </button>
+                </div>
             )}
-            {latestTweets && (
-                <LatestTweets latestTweets={latestTweets} isTweetsLoading={isTweetsLoading} tweetsError={tweetsError ?? ''} />
+            <TweetedCas tweetedCas={tweetedCas} isCasLoading={isCasLoading} casError={casError ?? ''} />
+            {(!latestTweets || latestTweets.length === 0) && !isTweetsLoading && (
+                <div className="flex justify-center mt-4">
+                    <button
+                        onClick={refreshTweets}
+                        className={cn(
+                            "flex items-center gap-2 px-4 py-2 rounded-lg",
+                            "bg-gray-200 dark:bg-gray-800",
+                            "hover:bg-gray-300 dark:hover:bg-gray-700",
+                            "transition-colors"
+                        )}
+                    >
+                        <RefreshCw className="w-4 h-4" />
+                        <span>Refresh Tweets</span>
+                    </button>
+                </div>
             )}
+            <LatestTweets latestTweets={latestTweets} isTweetsLoading={isTweetsLoading} tweetsError={tweetsError ?? ''} />
         </>
     );
 } 

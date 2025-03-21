@@ -13,7 +13,7 @@ export const getOptionPrices = async (contract: { symbol: string }): Promise<Opt
     try {
         const url = `https://api.alpaca.markets/v2/options/contracts/${contract.symbol}`;
         
-        console.info(`Fetching current prices for option ${contract.symbol}`);
+        // console.info(`Fetching current prices for option ${contract.symbol}`);
         
         const response = await fetch(url, {
             method: 'GET',

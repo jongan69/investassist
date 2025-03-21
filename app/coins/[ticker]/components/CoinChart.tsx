@@ -24,10 +24,10 @@ function isTimeframeAvailable(timeframeData: Record<any, {
 // Modify the CoinChart component
 const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: CoinChartProps) {
   const upperCaseTicker = useMemo(() => ticker.toUpperCase(), [ticker])
-  
+
   // Add this to check available ranges
   const availableRanges = useMemo(() => {
-    return Object.keys(timeframeData).filter(r => 
+    return Object.keys(timeframeData).filter(r =>
       isTimeframeAvailable(timeframeData, r)
     )
   }, [timeframeData])
@@ -37,11 +37,11 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
     if (isTimeframeAvailable(timeframeData, range)) {
       return range
     }
-    
+
     // Order ranges from shortest to longest
     const rangeOrder: any[] = ['1d', '1w', '1m', '3m', '1y']
     const currentIndex = rangeOrder.indexOf(range)
-    
+
     // Try to find the closest available range
     let closestRange = range
     let distance = 1
@@ -49,7 +49,7 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
       // Try ranges both shorter and longer than current
       const shorterIndex = currentIndex - distance
       const longerIndex = currentIndex + distance
-      
+
       if (shorterIndex >= 0 && availableRanges.includes(rangeOrder[shorterIndex])) {
         closestRange = rangeOrder[shorterIndex]
         break
@@ -60,21 +60,21 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
       }
       distance++
     }
-    
+
     return closestRange
   }, [range, timeframeData, availableRanges])
 
   // Use effectiveRange instead of range for data access
   const { currentData, quotes, priceStats } = useMemo(() => {
     const currentData = timeframeData[effectiveRange]
-    
+
     if (!currentData?.data?.result?.[`${upperCaseTicker}USD`]) {
       return { currentData, quotes: [], priceStats: null }
     }
 
     const data = currentData.data as KrakenOHLCResponse
     const quotes = data.result[`${upperCaseTicker}USD`].map(
-      ([timestamp,,,, close]) => ({
+      ([timestamp, , , , close]) => ({
         date: new Date(timestamp * 1000),
         close: parseFloat(close)
       })
@@ -83,7 +83,7 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
     const lastQuote = data.result[`${upperCaseTicker}USD`][quotes.length - 1]
     const currentPrice = Number(lastQuote[4])
     const firstPrice = Number(quotes[0].close)
-    
+
     const priceStats = {
       priceChangePercentage: ((currentPrice - firstPrice) / firstPrice) * 100,
       priceChangeUsd: currentPrice - firstPrice,
@@ -115,7 +115,7 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
     <div suppressHydrationWarning>
       <div className="flex flex-row items-end justify-between">
         <div className="space-x-1">
-          <PriceHeader 
+          <PriceHeader
             ticker={upperCaseTicker}
             priceStats={priceStats}
           />
@@ -126,8 +126,8 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
             </div>
           )}
 
-          <AreaClosedCoinChart 
-            chartQuotes={quotes} 
+          <AreaClosedCoinChart
+            chartQuotes={quotes}
             range={effectiveRange}
             availableRanges={availableRanges}
           />
@@ -138,15 +138,15 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
 })
 
 // Extract PriceHeader to its own memoized component
-const PriceHeader = memo(function PriceHeader({ 
-  ticker, 
-  priceStats 
-}: { 
+const PriceHeader = memo(function PriceHeader({
+  ticker,
+  priceStats
+}: {
   ticker: string
   priceStats: { currentPrice: number; priceChangeUsd: number; priceChangePercentage: number } | null
 }) {
   if (!priceStats) return null
-  
+
   return (
     <span className="text-nowrap">
       <span className="text-xl font-bold">
@@ -160,14 +160,14 @@ const PriceHeader = memo(function PriceHeader({
 })
 
 // Extract price change display to its own memoized component
-const PriceChange = memo(function PriceChange({ 
-  priceStats 
-}: { 
+const PriceChange = memo(function PriceChange({
+  priceStats
+}: {
   priceStats: { priceChangeUsd: number; priceChangePercentage: number }
 }) {
   const isPositive = priceStats.priceChangePercentage > 0
   const colorClass = isPositive ? "text-green-800 dark:text-green-400" : "text-red-800 dark:text-red-500"
-  
+
   return (
     <span className="font-semibold">
       <span className="text-muted-foreground">·{" "}</span>

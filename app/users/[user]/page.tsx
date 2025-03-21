@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import { useMemo } from "react"
 import type { Metadata } from "next"
 
 import { Connection } from "@solana/web3.js"
@@ -14,6 +15,8 @@ import UserTweets from "./components/UserTweets"
 import { getTokenAccountsWithMetadata } from "@/lib/solana/fetchTokensV2"
 import type { TokenData } from "@/lib/solana/fetchTokens"
 import { fetchUserTweets } from "@/lib/twitter/fetchUserTweets"
+import { Card, CardContent } from "@/components/ui/card"
+import { ClientAllocationChart } from "./components/charts/ClientAllocationChart"
 // Constants
 const RPC_ENDPOINT = 'https://christiane-z5lsaw-fast-mainnet.helius-rpc.com';
 const solanaConnection = new Connection(RPC_ENDPOINT);
@@ -86,7 +89,6 @@ export default async function UserProfilePage({ params }: Props) {
   try {
     const userProfile = await searchUsers(user);
     const userTweets = await fetchUserTweets(userProfile[0]?.username);
-    console.log(userTweets);
     let isWalletAddress = false;
     const tokens = await getTokenAccountsWithMetadata(user, solanaConnection);
     const totalValue = tokens.reduce((sum: number, token: TokenData) => sum + token.usdValue, 0);
@@ -99,7 +101,6 @@ export default async function UserProfilePage({ params }: Props) {
         walletAddress: user,
         holdings: tokens.map(token => ({
           ...token,
-          // Ensure all required fields are present
           name: token.name || 'Unknown Token',
           symbol: token.symbol || '???',
           amount: token.amount || 0,
@@ -116,20 +117,78 @@ export default async function UserProfilePage({ params }: Props) {
       }
     };
 
+    // Calculate current allocations
+    const currentAllocations = profileData.profile.holdings
+      .filter(token => token.usdValue > 0)
+      .sort((a, b) => b.usdValue - a.usdValue)
+      .map(token => ({
+        asset: token.symbol || 'Unknown',
+        percentage: (token.usdValue / totalValue) * 100
+      }));
+
     return (
-      <div className="min-w-full space-y-8" suppressHydrationWarning>
-        <Suspense fallback={<LoadingProfile />}>
-          <UserInvestmentPlan
-            profile={profileData.profile}
-            isWalletAddress={isWalletAddress}
-          />
-        </Suspense>
-        
-        <div className="mt-8">
-          <h2 className="text-2xl font-bold mb-4">Recent Tweets</h2>
-          <Suspense fallback={<LoadingProfile />}>
-            <UserTweets tweets={userTweets} />
-          </Suspense>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900/50">
+        {/* Header Section */}
+        <div className="w-full bg-white dark:bg-gray-800 shadow-sm">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+            <div className="flex flex-col lg:flex-row gap-8">
+              {/* User Info */}
+              <div className="lg:w-1/3">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                  {profileData.profile.username}'s Portfolio
+                </h1>
+                <p className="text-sm text-gray-500 mt-1 break-all">{profileData.profile.walletAddress}</p>
+                <div className="mt-6">
+                  <p className="text-sm text-gray-500">Total Value</p>
+                  <p className="text-3xl font-bold text-pink-500">${profileData.profile.totalValue.toFixed(2)}</p>
+                </div>
+              </div>
+              
+              {/* Allocation Chart */}
+              <div className="lg:w-2/3">
+                <Card className="h-[400px] lg:h-[350px]">
+                  <CardContent className="h-full p-4">
+                    <div className="flex flex-col h-full">
+                      <h2 className="text-lg font-semibold">Portfolio Allocation</h2>
+                      <div className="flex-1 min-h-0 w-full">
+                        <ClientAllocationChart allocations={currentAllocations} />
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
+            {/* Left Column - Holdings */}
+            <div className="space-y-4">
+              <div className="sticky top-4">
+                <h2 className="text-xl font-semibold mb-4">Holdings</h2>
+                <div className="overflow-y-auto max-h-[calc(100vh-300px)]">
+                  <Suspense fallback={<LoadingProfile />}>
+                    <UserInvestmentPlan
+                      profile={profileData.profile}
+                      isWalletAddress={isWalletAddress}
+                    />
+                  </Suspense>
+                </div>
+              </div>
+            </div>
+            
+            {/* Right Column - Tweets */}
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold mb-4">Recent Tweets</h2>
+              <div className="overflow-y-auto max-h-[calc(100vh-300px)] pr-4 rounded-lg">
+                <Suspense fallback={<LoadingProfile />}>
+                  <UserTweets tweets={userTweets} />
+                </Suspense>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     )

@@ -1,6 +1,5 @@
 'use client'
 import Link from 'next/link'
-import { useTheme } from 'next-themes';
 
 const truncateAddress = (address: string) => {
     if (!address) return '';
@@ -14,7 +13,6 @@ const truncateAddressesInText = (text: string) => {
 };
 
 export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas: any, isCasLoading: boolean, casError: string }) {
-    const { resolvedTheme } = useTheme();
     {/* Tweeted CAS Section */ }
     return (
         <div className="prose prose-sm prose-invert max-w-full py-1">
@@ -30,7 +28,7 @@ export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas:
                     Loading CAS tokens...
                 </p>
             ) : tweetedCas && tweetedCas.length > 0 ? (
-                <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground scrollbar-track-transparent hover:scrollbar-thumb-primary transition-all">
+                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground scrollbar-track-transparent hover:scrollbar-thumb-primary transition-all">
                     {tweetedCas.map((cas: any, index: number) => (
                         <div
                             key={index}
