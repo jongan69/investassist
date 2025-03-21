@@ -10,9 +10,9 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Error generating market summary:', error);
+    console.error('Error generating crypto trends:', error);
     return NextResponse.json(
-      { error: 'Failed to generate market summary' },
+      { error: 'Failed to generate crypto trends' },
       { status: 500 }
     );
   }

@@ -10,9 +10,10 @@ import { searchUsers } from "@/lib/users/searchUsers"
 // import { getProfileByWalletAddress } from "@/lib/users/getProfileByWallet"
 
 import UserInvestmentPlan from "./components/UserInvestmentPlan"
+import UserTweets from "./components/UserTweets"
 import { getTokenAccountsWithMetadata } from "@/lib/solana/fetchTokensV2"
 import type { TokenData } from "@/lib/solana/fetchTokens"
-
+import { fetchUserTweets } from "@/lib/twitter/fetchUserTweets"
 // Constants
 const RPC_ENDPOINT = 'https://christiane-z5lsaw-fast-mainnet.helius-rpc.com';
 const solanaConnection = new Connection(RPC_ENDPOINT);
@@ -82,9 +83,10 @@ export default async function UserProfilePage({ params }: Props) {
     return <div>No username or wallet address provided</div>
   }
 
-
   try {
     const userProfile = await searchUsers(user);
+    const userTweets = await fetchUserTweets(user);
+    console.log(userTweets);
     let isWalletAddress = false;
     const tokens = await getTokenAccountsWithMetadata(user, solanaConnection);
     const totalValue = tokens.reduce((sum: number, token: TokenData) => sum + token.usdValue, 0);
@@ -115,13 +117,20 @@ export default async function UserProfilePage({ params }: Props) {
     };
 
     return (
-      <div className="min-w-full" suppressHydrationWarning>
+      <div className="min-w-full space-y-8" suppressHydrationWarning>
         <Suspense fallback={<LoadingProfile />}>
           <UserInvestmentPlan
             profile={profileData.profile}
             isWalletAddress={isWalletAddress}
           />
         </Suspense>
+        
+        <div className="mt-8">
+          <h2 className="text-2xl font-bold mb-4">Recent Tweets</h2>
+          <Suspense fallback={<LoadingProfile />}>
+            <UserTweets tweets={userTweets} />
+          </Suspense>
+        </div>
       </div>
     )
   } catch (error) {

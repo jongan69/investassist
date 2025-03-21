@@ -15,6 +15,7 @@ import tickers from "@/data/tickers.json"
 import { useRouter } from "next/navigation"
 import { fetchCryptoTrends } from "@/lib/solana/fetchTrends"
 import { searchUsers } from "@/lib/users/searchUsers"
+import { getDexScreenerData } from "@/lib/solana/fetchDexData"
 
 // Solana address validation regex
 const SOLANA_ADDRESS_REGEX = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
@@ -22,30 +23,30 @@ const SOLANA_ADDRESS_REGEX = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 const index = tickers.length
 
 const SUGGESTIONS = [
-  { id: index+1, ticker: "BTC-USD", title: "Bitcoin", assetType: "stocks" },
-  { id: index+2, ticker: "ETH-USD", title: "Ethereum", assetType: "stocks" },
-  { id: index+3, ticker: "SOL-USD", title: "Solana", assetType: "stocks" },
-  { id: index+4, ticker: "TSLA", title: "Tesla Inc.", assetType: "stocks" },
-  { id: index+5, ticker: "NVDA", title: "NVIDIA Corporation", assetType: "stocks" },
-  { id: index+6, ticker: "AAPL", title: "Apple Inc.", assetType: "stocks" },
-  { id: index+7, ticker: "MSFT", title: "Microsoft Corporation", assetType: "stocks" },
-  { id: index+8, ticker: "GOOGL", title: "Alphabet Inc.", assetType: "stocks" },
-  { id: index+9, ticker: "AMZN", title: "Amazon.com Inc.", assetType: "stocks" },
-  { id: index+10, ticker: "DOGE-USD", title: "Dogecoin", assetType: "stocks" },
-  { id: index+11, ticker: "SHIB-USD", title: "Shiba Inu", assetType: "stocks" },
-  { id: index+12, ticker: "XRP-USD", title: "XRP", assetType: "stocks" },
-  { id: index+13, ticker: "ADA-USD", title: "Cardano", assetType: "stocks" },
-  { id: index+14, ticker: "DOT-USD", title: "Polkadot", assetType: "stocks" },
-  { id: index+15, ticker: "LINK-USD", title: "Chainlink", assetType: "stocks" },
-  { id: index+16, ticker: "UNI-USD", title: "Uniswap", assetType: "stocks" },
-  { id: index+17, ticker: "LOCKIN", title: "Lockin", assetType: "coins" },
-  { id: index+18, ticker: "MLG", title: "360noscope420blazeit", assetType: "coins" },
-  { id: index+19, ticker: "CRASHOUT", title: "Crashout", assetType: "coins" },
-  { id: index+20, ticker: "RETARDIO", title: "Retardio", assetType: "coins" },
-  { id: index+21, ticker: "GIGACHAD", title: "GigaChad", assetType: "coins" },
-  { id: index+22, ticker: "WIF", title: "DogWifHat", assetType: "coins" },
-  { id: index+23, ticker: "Business", title: "Business Coin", assetType: "coins" },
-  { id: index+24, ticker: "Sidelined", title: "Sidelined", assetType: "coins" },  
+  { id: index + 1, ticker: "BTC-USD", title: "Bitcoin", assetType: "stocks" },
+  { id: index + 2, ticker: "ETH-USD", title: "Ethereum", assetType: "stocks" },
+  { id: index + 3, ticker: "SOL-USD", title: "Solana", assetType: "stocks" },
+  { id: index + 4, ticker: "TSLA", title: "Tesla Inc.", assetType: "stocks" },
+  { id: index + 5, ticker: "NVDA", title: "NVIDIA Corporation", assetType: "stocks" },
+  { id: index + 6, ticker: "AAPL", title: "Apple Inc.", assetType: "stocks" },
+  { id: index + 7, ticker: "MSFT", title: "Microsoft Corporation", assetType: "stocks" },
+  { id: index + 8, ticker: "GOOGL", title: "Alphabet Inc.", assetType: "stocks" },
+  { id: index + 9, ticker: "AMZN", title: "Amazon.com Inc.", assetType: "stocks" },
+  { id: index + 10, ticker: "DOGE-USD", title: "Dogecoin", assetType: "stocks" },
+  { id: index + 11, ticker: "SHIB-USD", title: "Shiba Inu", assetType: "stocks" },
+  { id: index + 12, ticker: "XRP-USD", title: "XRP", assetType: "stocks" },
+  { id: index + 13, ticker: "ADA-USD", title: "Cardano", assetType: "stocks" },
+  { id: index + 14, ticker: "DOT-USD", title: "Polkadot", assetType: "stocks" },
+  { id: index + 15, ticker: "LINK-USD", title: "Chainlink", assetType: "stocks" },
+  { id: index + 16, ticker: "UNI-USD", title: "Uniswap", assetType: "stocks" },
+  { id: index + 17, ticker: "LOCKIN", title: "Lockin", assetType: "coins" },
+  { id: index + 18, ticker: "MLG", title: "360noscope420blazeit", assetType: "coins" },
+  { id: index + 19, ticker: "CRASHOUT", title: "Crashout", assetType: "coins" },
+  { id: index + 20, ticker: "RETARDIO", title: "Retardio", assetType: "coins" },
+  { id: index + 21, ticker: "GIGACHAD", title: "GigaChad", assetType: "coins" },
+  { id: index + 22, ticker: "WIF", title: "DogWifHat", assetType: "coins" },
+  { id: index + 23, ticker: "Business", title: "Business Coin", assetType: "coins" },
+  { id: index + 24, ticker: "Sidelined", title: "Sidelined", assetType: "coins" },
 ]
 
 interface WalletAddresses {
@@ -67,11 +68,29 @@ export default function CommandMenu() {
   const [trends, setTrends] = useState<TrendData | null>(null);
   const [topTweetedTickers, setTopTweetedTickers] = useState<TopTweetedTickers[]>([]);
   const [userResults, setUserResults] = useState<UserResult[]>([]);
+  const [tokenData, setTokenData] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Check if search is a valid Solana address
   const isSolanaAddress = SOLANA_ADDRESS_REGEX.test(search);
+
+  useEffect(() => {
+    if (isSolanaAddress) {
+      const fetchTokenData = async () => {
+        try {
+          const data = await getDexScreenerData(search);
+          setTokenData(data);
+        } catch (error) {
+          console.error("Error fetching token data:", error);
+          setTokenData(null);
+        }
+      };
+      fetchTokenData();
+    } else {
+      setTokenData(null);
+    }
+  }, [search, isSolanaAddress]);
 
   useEffect(() => {
     if (search) {
@@ -95,7 +114,7 @@ export default function CommandMenu() {
 
   useEffect(() => {
     if (!trends) return;
-    
+
     const topTweetedTickers = trends.topTweetedTickers || []
     const whaleTickers = trends.whaleActivity || { bullish: [], bearish: [] }
     const bullishTickers = whaleTickers.bullish.map((ticker) => ({
@@ -132,30 +151,57 @@ export default function CommandMenu() {
         className="group"
       >
         <p className="flex gap-10 text-sm text-muted-foreground group-hover:text-foreground">
-          Search assets or users...
+          Search assets, users, or contract addresses...
           <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 group-hover:text-foreground sm:inline-flex">
             <span className="text-xs">⌘</span>K
           </kbd>
         </p>
       </Button>
-      <CommandDialog 
-        open={open} 
+      <CommandDialog
+        open={open}
         onOpenChange={(isOpen) => {
           setOpen(isOpen);
           if (!isOpen) {
             setSearch("");
+            setTokenData(null);
           }
         }}
       >
         <Command>
           <CommandInput
             title="Search"
-            placeholder="Search assets, users, or wallet addresses..."
+            placeholder="Search assets, users, or contract addresses..."
             value={search}
             onValueChange={setSearch}
           />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
+            {isSolanaAddress && tokenData?.pairs?.length > 0 && (
+              <CommandGroup heading="Token by Contract Address">
+                {tokenData.pairs.slice(0, 3).map((pair: any) => (
+                  <CommandItem
+                    key={pair.pairAddress}
+                    value={pair.baseToken.address}
+                    onSelect={() => {
+                      setOpen(false);
+                      setSearch("");
+                      router.push(`/coins/${pair.baseToken.symbol}?ca=${pair.baseToken.address}`);
+                    }}
+                  >
+                    <div className="flex flex-col">
+                      <div className="flex items-center gap-2">
+                        <p className="font-semibold">{pair.baseToken.symbol}</p>
+                        <p className="text-sm text-muted-foreground">${parseFloat(pair.priceUsd).toFixed(6)}</p>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Vol: ${pair.volume?.h24?.toLocaleString() || '0'} •
+                        MC: ${pair.marketCap?.toLocaleString() || '0'}
+                      </p>
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
             {isSolanaAddress && (
               <CommandGroup heading="Wallet Address">
                 <CommandItem
@@ -177,10 +223,10 @@ export default function CommandMenu() {
                 {userResults.map((result) => {
                   // Get all wallet addresses from different chains
                   const allAddresses = Object.entries(result.walletAddresses || {}).flatMap(
-                    ([chain, addresses]) => 
+                    ([chain, addresses]) =>
                       (addresses as string[]).map(address => ({ chain, address }))
                   );
-                  
+
                   return allAddresses.length > 0 ? (
                     // Map through each address
                     allAddresses.map(({ chain, address }) => (
@@ -198,6 +244,9 @@ export default function CommandMenu() {
                         {result.isTracked && (
                           <p className="ml-2 text-sm text-muted-foreground">Tracked Account</p>
                         )}
+                        <p className="ml-2 text-xs text-muted-foreground">
+                          {address.slice(0, 4)}...{address.slice(-4)}
+                        </p>
                       </CommandItem>
                     ))
                   ) : (

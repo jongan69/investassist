@@ -127,7 +127,7 @@ export const getHighOpenInterestContracts = async (ticker: String, optionType = 
                 const sortedContracts = data.option_contracts.sort((a: OptionContract, b: OptionContract) => b.open_interest - a.open_interest);
                 const bestContract = sortedContracts[0];
 
-                console.info(`Found best ${optionType} contract for ${ticker}: Strike ${bestContract.strike_price}, Expiration ${bestContract.expiration_date}, OI ${bestContract.open_interest}`);
+                // console.info(`Found best ${optionType} contract for ${ticker}: Strike ${bestContract.strike_price}, Expiration ${bestContract.expiration_date}, OI ${bestContract.open_interest}`);
                 
                 // Fetch current prices for the contract
                 const prices = await getOptionPrices(bestContract);

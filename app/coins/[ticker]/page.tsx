@@ -1,4 +1,4 @@
-import News from "@/app/stocks/[ticker]/components/News"
+import CoinNews from "@/app/coins/[ticker]/components/CoinNews"
 import { Card, CardContent } from "@/components/ui/card"
 import { Suspense } from "react"
 import type { Metadata } from "next"
@@ -92,9 +92,9 @@ export default async function CoinsPage({ params, searchParams }: Props) {
 
   const allTimeframeData = await fetchAllTimeframes(`${ticker}USD`)
   return (
-    <div suppressHydrationWarning>
-      <Card>
-        <CardContent className="space-y-10 pt-6 lg:px-40 lg:py-14">
+    <div className="flex justify-center items-center w-full" suppressHydrationWarning>
+      <Card className="w-full max-w-7xl">
+        <CardContent className="space-y-10 pt-6 lg:px-40 lg:py-14 flex flex-col items-center">
           <div className="flex justify-between items-center">
             <Suspense
               fallback={
@@ -128,7 +128,7 @@ export default async function CoinsPage({ params, searchParams }: Props) {
               </div>
             }
           >
-            <News ticker={ticker} />
+            <CoinNews ticker={ticker} />
           </Suspense>
         </CardContent>
       </Card>

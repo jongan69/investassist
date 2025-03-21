@@ -234,18 +234,18 @@ export async function fetchTokenAccounts(publicKey: PublicKey) {
   );
 }
 
-export async function fetchNftPrice(mintAddress: string) {
-  const response = await apiLimiter.schedule(() =>
-    fetch(`api/get-nft-floor`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ ca: mintAddress }),
-    })
-  );
-  return response.json();
-}
+// export async function fetchNftPrice(mintAddress: string) {
+//   const response = await apiLimiter.schedule(() =>
+//     fetch(`api/get-nft-floor`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify({ ca: mintAddress }),
+//     })
+//   );
+//   return response.json();
+// }
 
 export async function handleTokenData(publicKey: PublicKey, tokenAccount: any, apiLimiter: any) {
   const mintAddress = tokenAccount.account.data.parsed.info.mint;
@@ -283,17 +283,17 @@ export async function handleTokenData(publicKey: PublicKey, tokenAccount: any, a
       ...metadata,
     };
   } else {
-    // console.log(`[handleTokenData] Processing NFT price for ${mintAddress}`);
-    const nftData = await fetchNftPrice(mintAddress);
-    // console.log(`[handleTokenData] NFT price data:`, nftData);
-    const nftPrice = nftData.usdValue ?? 0;
-    // console.log(`NFT Floor Price of ${mintAddress}:`, nftPrice);
+    // // console.log(`[handleTokenData] Processing NFT price for ${mintAddress}`);
+    // const nftData = await fetchNftPrice(mintAddress);
+    // // console.log(`[handleTokenData] NFT price data:`, nftData);
+    // const nftPrice = nftData.usdValue ?? 0;
+    // // console.log(`NFT Floor Price of ${mintAddress}:`, nftPrice);
     return {
       mintAddress,
       tokenAddress: tokenAccountAddress.toString(),
       amount,
       decimals,
-      usdValue: nftPrice,
+      usdValue: 0,
       ...metadata,
     };
   }
@@ -394,15 +394,15 @@ async function processTokenBatch(
 
       const metadata = metadataCache.get(mintAddress);
       if (metadata?.isNft) {
-        const nftData = await withExponentialBackoff(() =>
-          fetchNftPrice(mintAddress)
-        );
+        // const nftData = await withExponentialBackoff(() =>
+        //   fetchNftPrice(mintAddress)
+        // );
         results.push({
           mintAddress,
           tokenAddress: tokenAccountAddress.toString(),
           amount,
           decimals,
-          usdValue: nftData.usdValue ?? 0,
+          usdValue: 0,
           ...metadata,
         });
         await new Promise(resolve => setTimeout(resolve, TOKEN_DELAY));
