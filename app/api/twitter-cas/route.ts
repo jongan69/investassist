@@ -2,9 +2,11 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const response = await fetch('https://soltrendio.com/api/premium/twitter-trending-cas', { cache: 'no-store' });
+    // const url = 'https://soltrendio.com/api/premium/twitter-trending-cas';
+    const url = 'https://twitterapi-2cw6.onrender.com/api/twitter/trendingCAs';
+    const response = await fetch(url, { cache: 'no-store' });
     const data = await response.json();
-    // console.log(data);
+    console.log(data);
     return NextResponse.json(data, {
       headers: {
         'Cache-Control': 'public, max-age=3600, stale-while-revalidate=3600',
