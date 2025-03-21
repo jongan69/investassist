@@ -14,6 +14,10 @@ import { Button } from "./button"
 import tickers from "@/data/tickers.json"
 import { useRouter } from "next/navigation"
 import { fetchCryptoTrends } from "@/lib/solana/fetchTrends"
+import { searchUsers } from "@/lib/users/searchUsers"
+
+// Solana address validation regex
+const SOLANA_ADDRESS_REGEX = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
 
 const index = tickers.length
 
@@ -44,6 +48,16 @@ const SUGGESTIONS = [
   { id: index+24, ticker: "Sidelined", title: "Sidelined", assetType: "coins" },  
 ]
 
+interface WalletAddresses {
+  [chain: string]: string[];
+}
+
+interface UserResult {
+  username?: string;
+  walletAddresses?: WalletAddresses;
+  isTracked?: boolean;
+}
+
 const COMBINED_TICKERS = [...SUGGESTIONS, ...tickers]
 
 export default function CommandMenu() {
@@ -52,29 +66,51 @@ export default function CommandMenu() {
   const router = useRouter()
   const [trends, setTrends] = useState<TrendData | null>(null);
   const [topTweetedTickers, setTopTweetedTickers] = useState<TopTweetedTickers[]>([]);
+  const [userResults, setUserResults] = useState<UserResult[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Check if search is a valid Solana address
+  const isSolanaAddress = SOLANA_ADDRESS_REGEX.test(search);
+
+  useEffect(() => {
+    if (search) {
+      searchUsers(search).then(setUserResults);
+    } else {
+      setUserResults([]);
+    }
+  }, [search]);
+
   useEffect(() => {
     if (open) {
       fetchCryptoTrends(setTrends, setIsLoading, setError);
+    } else {
+      // Reset states when closing
+      setTrends(null);
+      setTopTweetedTickers([]);
+      setIsLoading(true);
+      setError(null);
     }
-    if (trends) {
-      const topTweetedTickers = trends.topTweetedTickers
-      const whaleTickers = trends.whaleActivity
-      const bullishTickers = whaleTickers.bullish.map((ticker) => ({
-        ticker: ticker.symbol,
-        count: ticker.bullishScore || 0,
-        ca: ticker.token_address
-      }))
-      const bearishTickers = whaleTickers.bearish.map((ticker) => ({
-        ticker: ticker.symbol,
-        count: ticker.bearishScore || 0,
-        ca: ticker.token_address
-      }))
-      const combinedTickers = [...topTweetedTickers, ...bullishTickers, ...bearishTickers]
-      setTopTweetedTickers(combinedTickers);
-    }
-  }, [open, trends]);
+  }, [open]);
+
+  useEffect(() => {
+    if (!trends) return;
+    
+    const topTweetedTickers = trends.topTweetedTickers || []
+    const whaleTickers = trends.whaleActivity || { bullish: [], bearish: [] }
+    const bullishTickers = whaleTickers.bullish.map((ticker) => ({
+      ticker: ticker.symbol,
+      count: ticker.bullishScore || 0,
+      ca: ticker.token_address
+    }))
+    const bearishTickers = whaleTickers.bearish.map((ticker) => ({
+      ticker: ticker.symbol,
+      count: ticker.bearishScore || 0,
+      ca: ticker.token_address
+    }))
+    const combinedTickers = [...topTweetedTickers, ...bullishTickers, ...bearishTickers]
+    setTopTweetedTickers(combinedTickers);
+  }, [trends]);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -96,22 +132,93 @@ export default function CommandMenu() {
         className="group"
       >
         <p className="flex gap-10 text-sm text-muted-foreground group-hover:text-foreground">
-          Search...
+          Search assets or users...
           <kbd className="pointer-events-none hidden h-5 select-none items-center gap-1 rounded border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100 group-hover:text-foreground sm:inline-flex">
             <span className="text-xs">⌘</span>K
           </kbd>
         </p>
       </Button>
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog 
+        open={open} 
+        onOpenChange={(isOpen) => {
+          setOpen(isOpen);
+          if (!isOpen) {
+            setSearch("");
+          }
+        }}
+      >
         <Command>
           <CommandInput
             title="Search"
-            placeholder="Search by symbols or companies..."
+            placeholder="Search assets, users, or wallet addresses..."
             value={search}
             onValueChange={setSearch}
           />
           <CommandList>
             <CommandEmpty>No results found.</CommandEmpty>
+            {isSolanaAddress && (
+              <CommandGroup heading="Wallet Address">
+                <CommandItem
+                  key={search}
+                  value={search}
+                  onSelect={() => {
+                    setOpen(false)
+                    setSearch("")
+                    router.push(`/users/${search}`)
+                  }}
+                >
+                  <p className="mr-2 font-semibold">{search.slice(0, 8)}...</p>
+                  <p className="text-sm text-muted-foreground">SOL</p>
+                </CommandItem>
+              </CommandGroup>
+            )}
+            {userResults && userResults.length > 0 && (
+              <CommandGroup heading="Users & Wallets">
+                {userResults.map((result) => {
+                  // Get all wallet addresses from different chains
+                  const allAddresses = Object.entries(result.walletAddresses || {}).flatMap(
+                    ([chain, addresses]) => 
+                      (addresses as string[]).map(address => ({ chain, address }))
+                  );
+                  
+                  return allAddresses.length > 0 ? (
+                    // Map through each address
+                    allAddresses.map(({ chain, address }) => (
+                      <CommandItem
+                        key={`${result.username}-${chain}-${address}`}
+                        value={result.username || address}
+                        onSelect={() => {
+                          setOpen(false)
+                          setSearch("")
+                          router.push(`/users/${address}`)
+                        }}
+                      >
+                        <p className="mr-2 font-semibold">{result.username || address.slice(0, 8)}</p>
+                        <p className="text-sm text-muted-foreground">{chain}</p>
+                        {result.isTracked && (
+                          <p className="ml-2 text-sm text-muted-foreground">Tracked Account</p>
+                        )}
+                      </CommandItem>
+                    ))
+                  ) : (
+                    // Fallback for users without addresses
+                    <CommandItem
+                      key={result.username}
+                      value={result.username}
+                      onSelect={() => {
+                        setOpen(false)
+                        setSearch("")
+                      }}
+                    >
+                      <p className="mr-2 font-semibold">{result.username}</p>
+                      {result.isTracked && (
+                        <p className="text-sm text-muted-foreground">Tracked Account</p>
+                      )}
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            )}
             {search.length === 0 && (
               <>
                 <CommandGroup heading="Trending Tickers">
@@ -172,32 +279,35 @@ export default function CommandMenu() {
                 </CommandGroup>
               </>
             )}
-            {search.length > 0 &&
-              COMBINED_TICKERS
-                .filter(
-                  (ticker) =>
-                    ticker.ticker
-                      .toLowerCase()
-                      .includes(search.toLowerCase()) ||
-                    ticker.title.toLowerCase().includes(search.toLowerCase())
-                )
-                .slice(0, 10)
-                .map((ticker) => (
-                  <CommandItem
-                    key={ticker.id}
-                    value={ticker.ticker + "\n \n" + ticker.title}
-                    onSelect={() => {
-                      setOpen(false)
-                      setSearch("")
-                      router.push(`/${ticker.assetType}/${ticker.ticker}`)
-                    }}
-                  >
-                    <p className="mr-2 font-semibold">{ticker.ticker}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {ticker.title}
-                    </p>
-                  </CommandItem>
-                ))}
+            {search.length > 0 && (
+              <CommandGroup heading="Assets">
+                {COMBINED_TICKERS
+                  .filter(
+                    (ticker) =>
+                      ticker.ticker
+                        .toLowerCase()
+                        .includes(search.toLowerCase()) ||
+                      ticker.title.toLowerCase().includes(search.toLowerCase())
+                  )
+                  .slice(0, 10)
+                  .map((ticker) => (
+                    <CommandItem
+                      key={ticker.id}
+                      value={ticker.ticker + "\n \n" + ticker.title}
+                      onSelect={() => {
+                        setOpen(false)
+                        setSearch("")
+                        router.push(`/${ticker.assetType}/${ticker.ticker}`)
+                      }}
+                    >
+                      <p className="mr-2 font-semibold">{ticker.ticker}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {ticker.title}
+                      </p>
+                    </CommandItem>
+                  ))}
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </CommandDialog>

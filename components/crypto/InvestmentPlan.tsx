@@ -80,7 +80,7 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                 setHasFreeAccess(freeAccessResponse);
                 setIsLoading(true);
                 try {
-                    const profileData = await getProfileByWalletAddress(wallet.publicKey.toString());
+                    const profileData = await getProfileByWalletAddress(wallet.publicKey);
                     if (profileData && profileData.exists) {
                         setProfile(profileData.profile);
                         setUsername(profileData.profile.username);
@@ -158,10 +158,46 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
 
     // Add function to generate investment plan
     const generatePlan = async () => {
-        if (!profile || !username) {
-            console.error('Profile or username missing');
+        if (!profile) {
+            if (!wallet.publicKey) {
+                console.error('Wallet not connected');
+                return;
+            }
+            // If no profile but have wallet, create a temporary profile from wallet data
+            const { tokens, totalValue } = await fetchTokenDatafromPublicKey(wallet.publicKey);
+            const tempProfile: Profile = {
+                walletAddress: wallet.publicKey.toString(),
+                holdings: tokens.map(token => ({
+                    ...token,
+                    cid: null // Ensure cid is null to match TokenData type
+                })),
+                totalValue,
+                username: wallet.publicKey.toString().slice(0, 8), // Use truncated wallet address as temp username
+                investmentPlan: undefined
+            };
+            setProfile(tempProfile);
+            setIsGeneratingPlan(true);
+            try {
+                const plan = await generateInvestmentPlan(
+                    fearGreedValue,
+                    sectorPerformance,
+                    initialData,
+                    {
+                        totalValue: tempProfile.totalValue,
+                        holdings: tempProfile.holdings
+                    },
+                    tempProfile.username
+                );
+                setInvestmentPlan(plan);
+            } catch (error) {
+                console.error('Error generating investment plan:', error);
+                setError('Failed to generate investment plan. Please try again.');
+            } finally {
+                setIsGeneratingPlan(false);
+            }
             return;
         }
+
         setIsGeneratingPlan(true);
         try {
             const plan = await generateInvestmentPlan(
@@ -172,12 +208,11 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                     totalValue: profile.totalValue,
                     holdings: profile.holdings
                 },
-                username
+                profile.username
             );
             setInvestmentPlan(plan);
         } catch (error) {
             console.error('Error generating investment plan:', error);
-            // Add error state handling here
             setError('Failed to generate investment plan. Please try again.');
         } finally {
             setIsGeneratingPlan(false);
@@ -414,12 +449,12 @@ const InvestmentPlan: React.FC<InvestmentPlanProps> = ({ initialData, fearGreedV
                         <div className='text-center p-4'>
                             Loading...
                         </div>
-                    ) : profile ? (
+                    ) : profile || investmentPlan ? (
                         <div className="space-y-6">
                             <div className="bg-gray-50 dark:bg-gray-800/50 p-6 rounded-xl">
-                                <p className="text-lg mb-3">Username: <span className="text-pink-600 dark:text-pink-400 font-semibold">{profile.username}</span></p>
-                                <p className="text-sm text-gray-600 dark:text-gray-400">Wallet: {profile.walletAddress}</p>
-                                <p className="text-lg mt-4 font-medium">Total Portfolio Value: ${profile.totalValue.toFixed(2)}</p>
+                                <p className="text-lg mb-3">Username: <span className="text-pink-600 dark:text-pink-400 font-semibold">{profile?.username}</span></p>
+                                <p className="text-sm text-gray-600 dark:text-gray-400">Wallet: {profile?.walletAddress}</p>
+                                <p className="text-lg mt-4 font-medium">Total Portfolio Value: ${profile?.totalValue.toFixed(2)}</p>
                             </div>
                             <div className="space-y-3">
                                 <h3 className="text-xl font-semibold">Your Holdings</h3>

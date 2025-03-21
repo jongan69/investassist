@@ -637,7 +637,7 @@ export default async function Page({ searchParams }: Props) {
         <h2 className="py-4 text-xl font-medium">SMS Alerts</h2>
         <SmsAlert />
       </div> */}
-      <div>
+      {/* <div>
         <h2 className="py-4 text-xl font-medium">Investment Plan</h2>
         <Suspense fallback={<div>Loading...</div>}>
           <InvestmentPlan
@@ -646,7 +646,7 @@ export default async function Page({ searchParams }: Props) {
             sectorPerformance={sectorPerformance}
           />
         </Suspense>
-      </div>
+      </div> */}
     </div>
   )
 }

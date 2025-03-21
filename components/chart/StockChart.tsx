@@ -2,7 +2,6 @@ import { cn } from "@/lib/utils"
 import { fetchChartData } from "@/lib/yahoo-finance/fetchChartData"
 import type { Interval, Range } from "@/types/yahoo-finance"
 import AreaClosedChart from "./AreaClosedChart"
-import yahooFinance from "yahoo-finance2"
 import { fetchQuote } from "@/lib/yahoo-finance/fetchQuote"
 
 interface StockGraphProps {

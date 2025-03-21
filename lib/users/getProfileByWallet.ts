@@ -1,4 +1,6 @@
-export const getProfileByWalletAddress = async (walletAddress: string) => {
+import { PublicKey } from "@solana/web3.js";
+
+export const getProfileByWalletAddress = async (walletAddress: PublicKey) => {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
     try {
@@ -8,7 +10,7 @@ export const getProfileByWalletAddress = async (walletAddress: string) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            walletAddress,
+            walletAddress: walletAddress.toBase58(),
         }),
     });
 

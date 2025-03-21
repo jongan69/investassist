@@ -74,16 +74,16 @@ const calculateOptionPrices = (stock: Stock, contract: Contract) => {
       }
 
       // Log the contract data
-      console.info(`Processing contract data for ${stock.symbol}:`, {
-          strike_price: contract.strike_price,
-          ask_price: contract.ask_price,
-          last_price: contract.last_price,
-          bid_price: contract.bid_price,
-          implied_volatility: contract.implied_volatility,
-          type: contract.type,
-          expiration_date: contract.expiration_date,
-          open_interest: contract.open_interest
-      });
+    //   console.info(`Processing contract data for ${stock.symbol}:`, {
+    //       strike_price: contract.strike_price,
+    //       ask_price: contract.ask_price,
+    //       last_price: contract.last_price,
+    //       bid_price: contract.bid_price,
+    //       implied_volatility: contract.implied_volatility,
+    //       type: contract.type,
+    //       expiration_date: contract.expiration_date,
+    //       open_interest: contract.open_interest
+    //   });
 
       // Safely parse contract values
       const strikePrice = parseFloat(String(contract.strike_price));
@@ -91,25 +91,25 @@ const calculateOptionPrices = (stock: Stock, contract: Contract) => {
       const impliedVolatility = parseFloat(String(contract.implied_volatility || ''));
 
       // Log parsed values
-      console.info(`Parsed values for ${stock.symbol}:`, {
-          currentPrice,
-          strikePrice,
-          optionPrice,
-          impliedVolatility
-      });
+    //   console.info(`Parsed values for ${stock.symbol}:`, {
+    //       currentPrice,
+    //       strikePrice,
+    //       optionPrice,
+    //       impliedVolatility
+    //   });
 
       // Validate required values
       if (isNaN(strikePrice) || isNaN(optionPrice)) {
-          console.warn(`Missing required contract data for ${stock.symbol}:`, {
-              strikePrice,
-              optionPrice,
-              contract: {
-                  strike_price: contract.strike_price,
-                  ask_price: contract.ask_price,
-                  last_price: contract.last_price,
-                  bid_price: contract.bid_price
-              }
-          });
+        //   console.warn(`Missing required contract data for ${stock.symbol}:`, {
+        //       strikePrice,
+        //       optionPrice,
+        //       contract: {
+        //           strike_price: contract.strike_price,
+        //           ask_price: contract.ask_price,
+        //           last_price: contract.last_price,
+        //           bid_price: contract.bid_price
+        //       }
+        //   });
           return null;
       }
 
@@ -348,16 +348,16 @@ const calculateOptionPrices = (stock: Stock, contract: Contract) => {
       };
 
       // Log successful calculation
-      console.info(`Successfully calculated option prices for ${stock.symbol}:`, {
-          strikePrice,
-          optionPrice,
-          impliedVolatility,
-          moneyness,
-          daysToExpiration,
-          timeValue,
-          intrinsicValue,
-          profitMetrics
-      });
+    //   console.info(`Successfully calculated option prices for ${stock.symbol}:`, {
+    //       strikePrice,
+    //       optionPrice,
+    //       impliedVolatility,
+    //       moneyness,
+    //       daysToExpiration,
+    //       timeValue,
+    //       intrinsicValue,
+    //       profitMetrics
+    //   });
 
       return optionMetrics;
   } catch (error) {
@@ -457,23 +457,23 @@ export async function GET(req: Request) {
             console.info(`Processing options for ${stock.symbol}`);
             
             const callOptions = await getHighOpenInterestContracts(stock.symbol, 'call');
-            console.info(`Raw call options data for ${stock.symbol}:`, {
-                shortTerm: callOptions.shortTerm,
-                leap: callOptions.leap
-            });
+            // console.info(`Raw call options data for ${stock.symbol}:`, {
+            //     shortTerm: callOptions.shortTerm,
+            //     leap: callOptions.leap
+            // });
             await delay(100);
             const putOptions = await getHighOpenInterestContracts(stock.symbol, 'put');
-            console.info(`Raw put options data for ${stock.symbol}:`, {
-                shortTerm: putOptions.shortTerm,
-                leap: putOptions.leap
-            });
+            // console.info(`Raw put options data for ${stock.symbol}:`, {
+            //     shortTerm: putOptions.shortTerm,
+            //     leap: putOptions.leap
+            // });
 
-            console.info(`Processing options for ${stock.symbol}:`, {
-                hasShortTermCall: !!callOptions.shortTerm,
-                hasLeapCall: !!callOptions.leap,
-                hasShortTermPut: !!putOptions.shortTerm,
-                hasLeapPut: !!putOptions.leap
-            });
+            // console.info(`Processing options for ${stock.symbol}:`, {
+            //     hasShortTermCall: !!callOptions.shortTerm,
+            //     hasLeapCall: !!callOptions.leap,
+            //     hasShortTermPut: !!putOptions.shortTerm,
+            //     hasLeapPut: !!putOptions.leap
+            // });
 
             const callPrices = calculateOptionPrices(stock, callOptions.shortTerm);
             const leapCallPrices = calculateOptionPrices(stock, callOptions.leap);

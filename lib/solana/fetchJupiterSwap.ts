@@ -1,10 +1,24 @@
 import { JUPITER } from "./constants";
+import { getTokenInfo } from "./fetchDefaultTokenData";
 
 export const fetchJupiterSwap = async (id: string | undefined) => {
   try {
+    if (!id) return null;
+    
     const response = await fetch(`${JUPITER}/price/v2?ids=${id}`);
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const tokenInfo = await getTokenInfo(id);
+      if (tokenInfo) {
+        return {
+          data: {
+            [id]: {
+              price: tokenInfo.price,
+              liquidity: tokenInfo.liquidity?.usd || 0,
+              volume: tokenInfo.volume?.h24 || 0
+            }
+          }
+        };
+      }
     }
     const price = await response.json();
     return price;

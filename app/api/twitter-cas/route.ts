@@ -6,7 +6,7 @@ export async function GET() {
     const url = 'https://twitterapi-2cw6.onrender.com/api/twitter/trendingCAs';
     const response = await fetch(url, { cache: 'no-store' });
     const data = await response.json();
-    console.log(data);
+    // console.log(data);
     return NextResponse.json(data, {
       headers: {
         'Cache-Control': 'public, max-age=3600, stale-while-revalidate=3600',

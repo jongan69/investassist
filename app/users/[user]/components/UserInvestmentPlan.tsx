@@ -1,6 +1,6 @@
 "use client"
 import React, { useState } from 'react';
-import { Profile } from '@/types/users';
+import { Profile, BaseInvestmentPlan } from '@/types/users';
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,13 +10,33 @@ import { HoldingCard } from './HoldingCard';
 import { AnalysisCard } from './AnalysisCard';
 import { Button } from "@/components/ui/button";
 import * as htmlToImage from 'html-to-image';
+import { generateInvestmentPlan } from '@/lib/users/generateInvesmentPlan';
 
 interface UserInvestmentPlanProps {
     profile: Profile;
+    marketData?: any[];
+    fearGreedValue?: {
+        value: number;
+        classification: string;
+    };
+    sectorPerformance?: {
+        sector: string;
+        changesPercentage: string;
+    }[];
+    isWalletAddress?: boolean;
 }
 
-const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
+const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ 
+    profile, 
+    marketData, 
+    fearGreedValue, 
+    sectorPerformance,
+    isWalletAddress 
+}) => {
     const [selectedTab, setSelectedTab] = useState('holdings');
+    const [isGeneratingPlan, setIsGeneratingPlan] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [generatedPlan, setGeneratedPlan] = useState<BaseInvestmentPlan | null>(null);
     const cardRef = React.useRef<HTMLDivElement>(null);
 
     const fadeInUp = {
@@ -27,21 +47,77 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
 
     // Calculate current allocations from holdings
     const currentAllocations = React.useMemo(() => {
-        const total = profile?.holdings.reduce((sum, token) => sum + token.usdValue, 0) ?? 0;
-        return profile?.holdings.map(token => ({
-            asset: token.symbol,
-            percentage: total > 0 ? (token.usdValue / total) * 100 : 0
-        })) ?? [];
+        if (!profile?.holdings || profile.holdings.length === 0) {
+            return [];
+        }
+
+        const total = profile.holdings.reduce((sum, token) => sum + (token.usdValue || 0), 0);
+        if (total === 0) {
+            return [];
+        }
+
+        return profile.holdings
+            .filter(token => token.usdValue > 0) // Only include tokens with value
+            .sort((a, b) => (b.usdValue || 0) - (a.usdValue || 0)) // Sort by value descending
+            .map(token => ({
+                asset: token.symbol || 'Unknown',
+                percentage: (token.usdValue / total) * 100
+            }));
     }, [profile?.holdings]);
 
+    // Sort holdings by value
+    const sortedHoldings = React.useMemo(() => {
+        if (!profile?.holdings) return [];
+        return [...profile.holdings].sort((a, b) => (b.usdValue || 0) - (a.usdValue || 0));
+    }, [profile?.holdings]);
+
+    // Generate investment plan for wallet addresses
+    const handleGeneratePlan = async () => {
+        if (!marketData || !fearGreedValue || !sectorPerformance) {
+            setError('Missing market data required for generating investment plan');
+            return;
+        }
+
+        setIsGeneratingPlan(true);
+        setError(null);
+
+        try {
+            const plan = await generateInvestmentPlan(
+                fearGreedValue,
+                sectorPerformance,
+                marketData,
+                {
+                    totalValue: profile.totalValue,
+                    holdings: profile.holdings
+                },
+                profile.username
+            );
+            setGeneratedPlan(plan);
+            // Add analysis tab if not already present
+            if (!availableTabs.find(tab => tab.value === 'analysis')) {
+                setAvailableTabs(prev => [
+                    ...prev,
+                    { value: 'analysis', icon: TrendingUp, label: 'Analysis' },
+                    { value: 'allocation', icon: PieChartIcon, label: 'Target Allocation' }
+                ]);
+            }
+            setSelectedTab('analysis');
+        } catch (error) {
+            console.error('Error generating investment plan:', error);
+            setError('Failed to generate investment plan. Please try again.');
+        } finally {
+            setIsGeneratingPlan(false);
+        }
+    };
+
     // Define available tabs based on profile data
-    const availableTabs = React.useMemo(() => {
+    const [availableTabs, setAvailableTabs] = useState(() => {
         const tabs = [
             { value: 'holdings', icon: Wallet, label: 'Holdings' },
             { value: 'current-allocation', icon: PieChartIcon, label: 'Current Allocation' },
         ];
 
-        if (profile.investmentPlan) {
+        if (profile.investmentPlan || generatedPlan) {
             tabs.push(
                 { value: 'analysis', icon: TrendingUp, label: 'Analysis' },
                 { value: 'allocation', icon: PieChartIcon, label: 'Target Allocation' }
@@ -49,32 +125,50 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
         }
 
         return tabs;
-    }, [profile.investmentPlan]);
+    });
 
-    const renderTabContent = () => (
-        <>
-            {selectedTab === 'holdings' && (
-                <div className="grid gap-3 sm:gap-4">
-                    {profile.holdings.map((token, index) => (
-                        <HoldingCard key={index} token={token} index={index} />
-                    ))}
-                </div>
-            )}
-            {selectedTab === 'analysis' && profile.investmentPlan !== undefined && (
-                <AnalysisCard investmentPlan={profile.investmentPlan} />
-            )}
-            {selectedTab === 'current-allocation' && (
-                <Card className="w-full flex-1 flex justify-center items-center p-6">
-                    <AllocationChart allocations={currentAllocations} />
-                </Card>
-            )}
-            {selectedTab === 'allocation' && profile.investmentPlan !== undefined && (
-                <Card className="w-full flex-1 flex justify-center items-center p-6">
-                    <AllocationChart allocations={profile.investmentPlan.allocations ?? []} />
-                </Card>
-            )}
-        </>
-    );
+    const renderTabContent = () => {
+        switch (selectedTab) {
+            case 'holdings':
+                return (
+                    <div className="grid gap-4">
+                        {sortedHoldings.map((token, index) => (
+                            <HoldingCard key={index} token={token} />
+                        ))}
+                    </div>
+                );
+            case 'current-allocation':
+                return (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Current Portfolio Allocation</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <AllocationChart allocations={currentAllocations} />
+                        </CardContent>
+                    </Card>
+                );
+            case 'analysis':
+                return (profile.investmentPlan || generatedPlan) && (
+                    <AnalysisCard plan={generatedPlan || profile.investmentPlan} />
+                );
+            case 'allocation':
+                return (profile.investmentPlan || generatedPlan) && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Recommended Portfolio Allocation</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <AllocationChart 
+                                allocations={(generatedPlan || profile.investmentPlan)?.allocations || []} 
+                            />
+                        </CardContent>
+                    </Card>
+                );
+            default:
+                return null;
+        }
+    };
 
     const handleShare = async () => {
         if (cardRef.current) {
@@ -121,6 +215,19 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
                 <CardContent className="p-6">
                     <div className='text-center p-4 dark:bg-yellow-900/30 bg-yellow-100 dark:text-yellow-100 text-yellow-800 rounded-lg'>
                         Please connect your wallet to continue
+                    </div>
+                </CardContent>
+            </Card>
+        );
+    }
+
+    // Add check for empty holdings
+    if (!profile.holdings || profile.holdings.length === 0) {
+        return (
+            <Card className="border-2 border-yellow-500/30">
+                <CardContent className="p-6">
+                    <div className='text-center p-4 dark:bg-yellow-900/30 bg-yellow-100 dark:text-yellow-100 text-yellow-800 rounded-lg'>
+                        No tokens found in this wallet
                     </div>
                 </CardContent>
             </Card>
@@ -183,9 +290,7 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
                                             </TabsTrigger>
                                         ))}
                                     </TabsList>
-                                    <TabsContent value={selectedTab}>
-                                        {renderTabContent()}
-                                    </TabsContent>
+                                    {renderTabContent()}
                                 </Tabs>
                             </div>
 
@@ -200,7 +305,7 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({ profile }) => {
                                         <option key={value} value={value}>{label}</option>
                                     ))}
                                 </select>
-                                <div className="mt-2 p-6">
+                                <div className="mt-2">
                                     {renderTabContent()}
                                 </div>
                             </div>

@@ -39,7 +39,7 @@ export default function Navigation() {
   useEffect(() => {
     const getUsername = async () => {
       if (publicKey) {
-        const profile = await getProfileByWalletAddress(publicKey.toBase58());
+        const profile = await getProfileByWalletAddress(publicKey);
         if (profile.exists) {
           setUsername(profile.profile.username);
         }

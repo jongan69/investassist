@@ -35,7 +35,7 @@ export const getOptionPrices = async (contract: { symbol: string }): Promise<Opt
         const data = await response.json();
         
         // Log the raw response data for debugging
-        console.info(`Raw option price data for ${contract.symbol}:`, data);
+        // console.info(`Raw option price data for ${contract.symbol}:`, data);
 
         // Check if we have valid price data
         if (!data.close_price) {
@@ -44,12 +44,12 @@ export const getOptionPrices = async (contract: { symbol: string }): Promise<Opt
         }
 
         // Log the processed price data
-        console.info(`Successfully fetched prices for option ${contract.symbol}:`, {
-            close_price: data.close_price,
-            close_price_date: data.close_price_date,
-            open_interest: data.open_interest,
-            open_interest_date: data.open_interest_date
-        });
+        // console.info(`Successfully fetched prices for option ${contract.symbol}:`, {
+        //     close_price: data.close_price,
+        //     close_price_date: data.close_price_date,
+        //     open_interest: data.open_interest,
+        //     open_interest_date: data.open_interest_date
+        // });
 
         // Return the price data in the format expected by calculateOptionPrices
         return {
@@ -92,7 +92,7 @@ export const getHighOpenInterestContracts = async (ticker: String, optionType = 
                 `&type=${optionType}` +
                 `&limit=100`;
 
-            console.info(`Fetching ${optionType} options for ${ticker} with expiration range ${expiration.start} to ${expiration.end}`);
+            // console.info(`Fetching ${optionType} options for ${ticker} with expiration range ${expiration.start} to ${expiration.end}`);
 
             try {
                 const response = await fetch(url, {
@@ -134,13 +134,13 @@ export const getHighOpenInterestContracts = async (ticker: String, optionType = 
                 if (prices) {
                     // Merge the price data with the contract data
                     Object.assign(bestContract, prices);
-                    console.info(`Updated contract with price data:`, {
-                        symbol: bestContract.symbol,
-                        ask_price: bestContract.ask_price,
-                        bid_price: bestContract.bid_price,
-                        last_price: bestContract.last_price,
-                        implied_volatility: bestContract.implied_volatility
-                    });
+                    // console.info(`Updated contract with price data:`, {
+                    //     symbol: bestContract.symbol,
+                    //     ask_price: bestContract.ask_price,
+                    //     bid_price: bestContract.bid_price,
+                    //     last_price: bestContract.last_price,
+                    //     implied_volatility: bestContract.implied_volatility
+                    // });
                 } else {
                     console.warn(`Failed to get price data for contract ${bestContract.symbol}`);
                 }
