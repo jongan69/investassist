@@ -135,7 +135,7 @@ export default async function UserProfilePage({ params }: Props) {
               {/* User Info */}
               <div className="lg:w-1/3">
                 <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  {profileData.profile.username}'s Portfolio
+                  {profileData.profile.username}&apos;s Portfolio
                 </h1>
                 <p className="text-sm text-gray-500 mt-1 break-all">{profileData.profile.walletAddress}</p>
                 <div className="mt-6">
