@@ -85,7 +85,7 @@ export default async function UserProfilePage({ params }: Props) {
 
   try {
     const userProfile = await searchUsers(user);
-    const userTweets = await fetchUserTweets(user);
+    const userTweets = await fetchUserTweets(userProfile[0]?.username);
     console.log(userTweets);
     let isWalletAddress = false;
     const tokens = await getTokenAccountsWithMetadata(user, solanaConnection);
