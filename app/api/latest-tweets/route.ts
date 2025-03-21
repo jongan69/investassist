@@ -3,7 +3,8 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     // const url = 'https://soltrendio.com/api/premium/latest-tweets';
-    const url = 'https://twitterapi-2cw6.onrender.com/api/twitter/latestTweets';
+    const BASE_URL = process.env.TWITTER_API_ENDPOINT;
+    const url = `${BASE_URL}/latestTweets`;
     const response = await fetch(url, { cache: 'no-store' });
     const data = await response.json();
     return NextResponse.json(data, {

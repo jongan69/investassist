@@ -4,7 +4,8 @@ export async function POST(req: Request) {
   try {
     const { username } = await req.json();
     console.log(username);
-    const url = `https://twitterapi-2cw6.onrender.com/api/twitter/userTweets/${username}`;
+    const BASE_URL = process.env.TWITTER_API_ENDPOINT;
+    const url = `${BASE_URL}/userTweets/${username}`;
     const response = await fetch(url, { cache: 'no-store' });
     const data = await response.json();
     // console.log(data);
