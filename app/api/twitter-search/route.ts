@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(req: Request, res: Response) {
+export async function POST(req: Request) {
   try {
     const { searchQuery } = await req.json();
     console.log(searchQuery);
