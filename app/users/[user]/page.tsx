@@ -6,7 +6,7 @@ import { Connection } from "@solana/web3.js"
 
 import { Skeleton } from "@/components/ui/skeleton"
 import { searchUsers } from "@/lib/users/searchUsers"
-
+import { getSolBalance } from "@/lib/solana/fetchSolBalance"
 // import { getProfileByUsername } from "@/lib/users/getProfileByUsername"
 // import { getProfileByWalletAddress } from "@/lib/users/getProfileByWallet"
 
@@ -92,27 +92,47 @@ export default async function UserProfilePage({ params }: Props) {
     let isWalletAddress = false;
     const tokens = await getTokenAccountsWithMetadata(user, solanaConnection);
     const totalValue = tokens.reduce((sum: number, token: TokenData) => sum + token.usdValue, 0);
-
+    const solBalance = await getSolBalance(user);
+    
+    // Add SOL balance to total value
+    const updatedTotalValue = totalValue + (solBalance ? parseFloat(solBalance.solUsdValue) : 0);
+    
     // Format the data to match the Profile type
     const profileData: ProfileData = {
       exists: true,
       profile: {
         username: userProfile[0]?.username,
         walletAddress: user,
-        holdings: tokens.map(token => ({
-          ...token,
-          name: token.name || 'Unknown Token',
-          symbol: token.symbol || '???',
-          amount: token.amount || 0,
-          usdValue: token.usdValue || 0,
-          decimals: token.decimals || 0,
-          logo: token.logo || '',
-          isNft: token.isNft || false,
-          description: token.description || '',
-          tokenAddress: token.tokenAddress || '',
-          cid: token.cid || null
-        })),
-        totalValue,
+        holdings: [
+          // Add SOL as the first token in holdings if balance exists
+          ...(solBalance ? [{
+            name: 'Solana',
+            symbol: 'SOL',
+            amount: parseFloat(solBalance.solBalance),
+            usdValue: parseFloat(solBalance.solUsdValue),
+            decimals: 9,
+            logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+            isNft: false,
+            description: 'Solana Native Token',
+            tokenAddress: 'So11111111111111111111111111111111111111112',
+            mintAddress: 'So11111111111111111111111111111111111111112',
+            cid: null
+          }] : []),
+          ...tokens.map(token => ({
+            ...token,
+            name: token.name || 'Unknown Token',
+            symbol: token.symbol || '???',
+            amount: token.amount || 0,
+            usdValue: token.usdValue || 0,
+            decimals: token.decimals || 0,
+            logo: token.logo || '',
+            isNft: token.isNft || false,
+            description: token.description || '',
+            tokenAddress: token.tokenAddress || '',
+            cid: token.cid || null
+          }))
+        ],
+        totalValue: updatedTotalValue,
         investmentPlan: undefined
       }
     };
@@ -123,7 +143,7 @@ export default async function UserProfilePage({ params }: Props) {
       .sort((a, b) => b.usdValue - a.usdValue)
       .map(token => ({
         asset: token.symbol || 'Unknown',
-        percentage: (token.usdValue / totalValue) * 100
+        percentage: (token.usdValue / updatedTotalValue) * 100
       }));
 
     return (
@@ -140,7 +160,7 @@ export default async function UserProfilePage({ params }: Props) {
                 <p className="text-sm text-gray-500 mt-1 break-all">{profileData.profile.walletAddress}</p>
                 <div className="mt-6">
                   <p className="text-sm text-gray-500">Total Value</p>
-                  <p className="text-3xl font-bold text-pink-500">${profileData.profile.totalValue.toFixed(2)}</p>
+                  <p className="text-3xl font-bold text-pink-500">${updatedTotalValue.toFixed(2)}</p>
                 </div>
               </div>
               

@@ -13,6 +13,7 @@ export const JUPITER = "https://api.jup.ag";
 export const DEFAULT_IMAGE_URL = process.env.UNKNOWN_IMAGE_URL || "https://s3.coinmarketcap.com/static-gravity/image/5cc0b99a8dd84fbfa4e150d84b5531f2.png";
 
 export const JUPITER_QUOTE = "https://quote-api.jup.ag/v6";
+export const SOL_MINT = "So11111111111111111111111111111111111111112";
 
 export const BLOCKENGINE = `mainnet.block-engine.jito.wtf`
 export const INVEST_ASSIST_MINT = "8KxEiudmUF5tpJKK4uHzjDuJPGKUz9hYUDBEVcfdpump";
