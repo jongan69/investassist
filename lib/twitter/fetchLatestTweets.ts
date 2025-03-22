@@ -2,7 +2,7 @@ export const fetchLatestTweets = async (setLatestTweets: (latestTweets: any) => 
     try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch('/api/latest-tweets');
+        const response = await fetch('/api/latest-tweets', { cache: 'no-store' });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

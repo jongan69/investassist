@@ -3,6 +3,7 @@ export async function fetchUserTweets(username: string) {
     const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify({ username: username }),
+        cache: 'no-store',
     });
     const data = await response.json();
     return data.tweets;

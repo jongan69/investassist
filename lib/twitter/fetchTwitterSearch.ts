@@ -3,6 +3,7 @@ export async function fetchTwitterSearch(query: string) {
     const response = await fetch(url, {
         method: 'POST',
         body: JSON.stringify({ searchQuery: query }),
+        cache: 'no-store',
     });
     const data = await response.json();
     return data;
