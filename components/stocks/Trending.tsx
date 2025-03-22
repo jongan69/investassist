@@ -32,7 +32,7 @@ export default function TrendingStocks(data: any) {
                                                 </a>
                                             </td>
                                             <td className="px-4 py-3">
-                                                <div className="flex items-start space-x-3">
+                                                <div className="flex items-start space-x-3 items-center justify-center">
                                                     {newsItem.images && newsItem.images.length > 0 && (
                                                         <Image
                                                             src={newsItem.images.find((img: any) => img.size === "large")?.url}

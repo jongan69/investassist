@@ -4,7 +4,6 @@ import { useEffect, useState, Fragment, useRef } from 'react';
 import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import Link from 'next/link';
 import { RefreshCw } from 'lucide-react';
 
 import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
@@ -39,41 +38,19 @@ export default function CryptoTrends({ data }: { data: any }) {
 
     const refreshTweets = async () => {
         try {
-            console.log('Starting tweet refresh...');
-            setIsTweetsLoading(true);
-            setTweetsError(null);
-            const response = await fetch('/api/latest-tweets');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            console.log('Tweets refresh response:', data);
-            setLatestTweets(data?.data?.clusters?.filter((clusters: any) => clusters.size > 1) || []);
+            await fetchLatestTweets(setLatestTweets, setIsTweetsLoading, setTweetsError);
         } catch (error) {
             console.error('Error refreshing tweets:', error);
             setTweetsError('Failed to refresh latest tweets');
-        } finally {
-            setIsTweetsLoading(false);
         }
     };
 
     const refreshCas = async () => {
         try {
-            console.log('Starting CAs refresh...');
-            setIsCasLoading(true);
-            setCasError(null);
-            const response = await fetch('/api/twitter-cas');
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            console.log('CAs refresh response:', data);
-            setTweetedCas(data?.data || []);
+            await fetchTweetedCas(setTweetedCas, setIsCasLoading, setCasError);
         } catch (error) {
             console.error('Error refreshing CAS:', error);
             setCasError('Failed to refresh CAS tokens');
-        } finally {
-            setIsCasLoading(false);
         }
     };
 
@@ -157,7 +134,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                 <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent z-0" />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 py-6 z-0" />
             </motion.div>
-            {(!tweetedCas || tweetedCas.length === 0) && !isCasLoading && (
+            {(!isCasLoading && tweetedCas && tweetedCas.length === 0) && (
                 <div className="flex justify-center mt-4">
                     <button
                         onClick={refreshCas}
@@ -174,7 +151,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                 </div>
             )}
             <TweetedCas tweetedCas={tweetedCas} isCasLoading={isCasLoading} casError={casError ?? ''} />
-            {(!latestTweets || latestTweets.length === 0) && !isTweetsLoading && (
+            {(!isTweetsLoading && latestTweets && latestTweets.length === 0) && (
                 <div className="flex justify-center mt-4">
                     <button
                         onClick={refreshTweets}
