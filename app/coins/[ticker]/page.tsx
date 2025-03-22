@@ -28,8 +28,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ca = (await params).ca
   const hasCa = ca ? true : false
   const decodedTicker = decodeURIComponent(ticker)
-  const price = hasCa ? await getDexScreenerData(ca) : await getTokenInfoFromTicker(decodedTicker)
-  const latestPrice = price?.pairs[0]?.priceUsd || 'N/A'
+  
+  let latestPrice = 'N/A'
+  try {
+    const price = hasCa ? await getDexScreenerData(ca) : await getTokenInfoFromTicker(decodedTicker)
+    if (price && Array.isArray(price.pairs) && price.pairs.length > 0 && typeof price.pairs[0]?.priceUsd === 'string') {
+      latestPrice = price.pairs[0].priceUsd
+    }
+  } catch (error) {
+    console.error("Error fetching price data:", error)
+  }
+
   return {
     title: `${decodedTicker} Price: $${latestPrice}`,
     description: `Coin page for ${decodedTicker}`,

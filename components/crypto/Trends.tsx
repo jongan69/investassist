@@ -38,24 +38,42 @@ export default function CryptoTrends({ data }: { data: any }) {
     const hasFetchedData = useRef(false);
 
     const refreshTweets = async () => {
-        setIsTweetsLoading(true);
-        setTweetsError(null);
         try {
-            await fetchLatestTweets(setLatestTweets, setIsTweetsLoading, setTweetsError);
+            console.log('Starting tweet refresh...');
+            setIsTweetsLoading(true);
+            setTweetsError(null);
+            const response = await fetch('/api/latest-tweets');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log('Tweets refresh response:', data);
+            setLatestTweets(data?.data?.clusters?.filter((clusters: any) => clusters.size > 1) || []);
         } catch (error) {
             console.error('Error refreshing tweets:', error);
             setTweetsError('Failed to refresh latest tweets');
+        } finally {
+            setIsTweetsLoading(false);
         }
     };
 
     const refreshCas = async () => {
-        setIsCasLoading(true);
-        setCasError(null);
         try {
-            await fetchTweetedCas(setTweetedCas, setIsCasLoading, setCasError);
+            console.log('Starting CAs refresh...');
+            setIsCasLoading(true);
+            setCasError(null);
+            const response = await fetch('/api/twitter-cas');
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            console.log('CAs refresh response:', data);
+            setTweetedCas(data?.data || []);
         } catch (error) {
             console.error('Error refreshing CAS:', error);
             setCasError('Failed to refresh CAS tokens');
+        } finally {
+            setIsCasLoading(false);
         }
     };
 
