@@ -67,7 +67,8 @@ export async function getTokenInfo(address: string): Promise<TokenInfo | null> {
                 headers: {
                     'Accept': 'application/json',
                     'User-Agent': 'Mozilla/5.0' // Some APIs require a user agent
-                }
+                },
+                cache: 'no-store'
             });
             
             clearTimeout(timeoutId);

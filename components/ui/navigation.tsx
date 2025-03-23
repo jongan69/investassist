@@ -26,7 +26,7 @@ const NAVIGATION = [
   { title: "Markets", href: "/" },
   { title: "Screener", href: "/screener" },
   { title: "About", href: "/about" },
-  { title: "Learn", href: "/learn" },
+  { title: "Learn", href: "/learn" }
 ]
 
 export default function Navigation() {
@@ -75,8 +75,8 @@ export default function Navigation() {
                   {item.title}
                 </Link>
               ))}
-              {username && (
-                <Link href={`/users/${username}`} className={`${navigationMenuTriggerStyle()} whitespace-nowrap`}>
+              {publicKey && (
+                <Link href={`/users/${publicKey}`} className={`${navigationMenuTriggerStyle()} whitespace-nowrap`}>
                   Profile
                 </Link>
               )}

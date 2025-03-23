@@ -7,6 +7,7 @@ import Navigation from "@/components/ui/navigation"
 import Footer from "@/components/ui/footer"
 import WalletContextProvider from "@/components/contexts/WalletContextProvider"
 import toast, { Toaster } from 'react-hot-toast';
+import ProfileForm from '@/components/profile/ProfileForm'
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
@@ -66,6 +67,7 @@ export default function RootLayout({
             <WalletContextProvider>
               <Navigation />
               <main className="container">{children}</main>
+              <ProfileForm />
               <Toaster />
               <Footer />
             </WalletContextProvider>

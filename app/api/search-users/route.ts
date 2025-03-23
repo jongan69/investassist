@@ -13,29 +13,30 @@ type WalletAddresses = {
 export async function GET(req: Request) {
     try {
         const { searchParams } = new URL(req.url);
-        const query = searchParams.get('q')?.toLowerCase();
-
+        let query = searchParams.get('q');
         if (!query) {
             return NextResponse.json({ error: "Query parameter required" }, { status: 400 });
         }
 
-        const client = await clientPromise;
-        const db = client.db("investassist");
-        const collection = db.collection("profiles");
-
-        // Check if query is a valid Solana address
+        // Only convert to lowercase if it's not a wallet address
         let isWalletAddress = false;
         try {
             new PublicKey(query);
             isWalletAddress = true;
         } catch {}
 
+        const searchQuery = isWalletAddress ? query : query.toLowerCase();
+
+        const client = await clientPromise;
+        const db = client.db("investassist");
+        const collection = db.collection("profiles");
+
         let results = [];
 
         // Search in database
         const dbResults = await collection.find({
             $or: [
-                { username: { $regex: query, $options: 'i' } },
+                { username: { $regex: searchQuery, $options: 'i' } },
                 ...(isWalletAddress ? [{ walletAddress: query }] : [])
             ]
         }).limit(5).toArray();
@@ -54,7 +55,7 @@ export async function GET(req: Request) {
         const trackedMatches = allUsernames
             .filter(account => {
                 // Check username match
-                if (!isWalletAddress && account.toLowerCase().includes(query)) {
+                if (!isWalletAddress && account.toLowerCase().includes(searchQuery)) {
                     return true;
                 }
                 
@@ -63,7 +64,7 @@ export async function GET(req: Request) {
                 if (addresses) {
                     const ethAddresses = addresses.ETH?.map(addr => addr.toLowerCase()) || [];
                     const solAddresses = addresses.SOL?.map(addr => addr.toLowerCase()) || [];
-                    return ethAddresses.includes(query) || solAddresses.includes(query);
+                    return ethAddresses.includes(searchQuery) || solAddresses.includes(searchQuery);
                 }
                 return false;
             })

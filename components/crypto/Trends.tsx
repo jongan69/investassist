@@ -4,7 +4,6 @@ import { useEffect, useState, Fragment, useRef } from 'react';
 import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import Link from 'next/link';
 import { RefreshCw } from 'lucide-react';
 
 import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
@@ -38,8 +37,6 @@ export default function CryptoTrends({ data }: { data: any }) {
     const hasFetchedData = useRef(false);
 
     const refreshTweets = async () => {
-        setIsTweetsLoading(true);
-        setTweetsError(null);
         try {
             await fetchLatestTweets(setLatestTweets, setIsTweetsLoading, setTweetsError);
         } catch (error) {
@@ -49,8 +46,6 @@ export default function CryptoTrends({ data }: { data: any }) {
     };
 
     const refreshCas = async () => {
-        setIsCasLoading(true);
-        setCasError(null);
         try {
             await fetchTweetedCas(setTweetedCas, setIsCasLoading, setCasError);
         } catch (error) {
@@ -139,7 +134,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                 <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent z-0" />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 py-6 z-0" />
             </motion.div>
-            {(!tweetedCas || tweetedCas.length === 0) && !isCasLoading && (
+            {(!isCasLoading && tweetedCas && tweetedCas.length === 0) && (
                 <div className="flex justify-center mt-4">
                     <button
                         onClick={refreshCas}
@@ -156,7 +151,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                 </div>
             )}
             <TweetedCas tweetedCas={tweetedCas} isCasLoading={isCasLoading} casError={casError ?? ''} />
-            {(!latestTweets || latestTweets.length === 0) && !isTweetsLoading && (
+            {(!isTweetsLoading && latestTweets && latestTweets.length === 0) && (
                 <div className="flex justify-center mt-4">
                     <button
                         onClick={refreshTweets}
