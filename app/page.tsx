@@ -270,7 +270,26 @@ export default async function Page({ searchParams }: Props) {
     (Array.isArray(params?.range) ? params.range[0] : params.range) || DEFAULT_RANGE
   )
 
-  const latestNews = await fetchStockNews()
+  // Parallel data fetching
+  const [
+    latestNews,
+    news,
+    fearGreedValue,
+    sectorPerformance,
+    marketData
+  ] = await Promise.all([
+    fetchStockNews(),
+    fetchStockSearch("^DJI", 100),
+    fetchFearGreedIndex(),
+    fetchSectorPerformance(),
+    Promise.allSettled(
+      tickers.map(({ symbol }) => yahooFinance.quoteCombine(symbol))
+    ).then(results => results
+      .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+      .map(result => result.value)
+    )
+  ])
+
   const latestNewsSymbols = latestNews.filter((newsArticle: any) => newsArticle.symbols.length > 0)
   const highOiOptions = await Promise.all(
     latestNewsSymbols.flatMap((newsArticle: any) =>
@@ -278,25 +297,12 @@ export default async function Page({ searchParams }: Props) {
     )
   )
 
-  // console.log(latestNews)
-
   const interval = validateInterval(
     range,
     ((Array.isArray(params?.interval) ? params.interval[0] : params.interval) || DEFAULT_INTERVAL) as Interval
   )
 
-  const news = await fetchStockSearch("^DJI", 100)
-
-  const promises = tickers.map(({ symbol }) =>
-    yahooFinance.quoteCombine(symbol)
-  )
-  const results = await Promise.allSettled(promises)
-    .then(results => results
-      .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
-      .map(result => result.value)
-    );
-
-  const resultsWithTitles = results.map((result, index) => ({
+  const resultsWithTitles = marketData.map((result, index) => ({
     ...result,
     shortName: tickers[index].shortName,
   }))
@@ -328,8 +334,6 @@ export default async function Page({ searchParams }: Props) {
         ? "bg-red-300/50 dark:bg-red-950/50"
         : "bg-neutral-500/10"
 
-  const fearGreedValue = await fetchFearGreedIndex()
-  const sectorPerformance = await fetchSectorPerformance()
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-bold">Invest Assist</h1>
@@ -338,16 +342,18 @@ export default async function Page({ searchParams }: Props) {
           <Card className="relative flex h-full min-h-[15rem] flex-col justify-between overflow-hidden">
             <CardHeader>
               <CardTitle className="z-50 w-fit rounded-full px-4 py-2 font-medium dark:bg-neutral-100/5">
-                The markets are{" "}
-                <strong className={sentimentColor}>{marketSentiment}</strong>
-                {btcData && (
-                  <span className="ml-2">and Bitcoin is <strong className={bitcoinColor}>{bitcoinWeekly.trend}</strong>{" "}
-                    <span className={bitcoinColor}>
-                      ({bitcoinWeekly.percentage > 0 ? "+" : ""}
-                      {bitcoinWeekly.percentage.toFixed(2)}%)
+                <Suspense fallback={<div className="animate-pulse h-6 w-32 bg-muted rounded" />}>
+                  The markets are{" "}
+                  <strong className={sentimentColor}>{marketSentiment}</strong>
+                  {btcData && (
+                    <span className="ml-2">and Bitcoin is <strong className={bitcoinColor}>{bitcoinWeekly.trend}</strong>{" "}
+                      <span className={bitcoinColor}>
+                        ({bitcoinWeekly.percentage > 0 ? "+" : ""}
+                        {bitcoinWeekly.percentage.toFixed(2)}%)
+                      </span>
                     </span>
-                  </span>
-                )}
+                  )}
+                </Suspense>
               </CardTitle>
             </CardHeader>
 

@@ -24,6 +24,8 @@ export const metadata: Metadata = {
     "InvestAssist is a source of free stock quotes, business and finance news, portfolio management tools, and international market data.",
 }
 
+export const revalidate = 300 // Revalidate every 5 minutes
+
 export default function RootLayout({
   children,
 }: Readonly<{

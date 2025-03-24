@@ -12,7 +12,7 @@ export async function GET() {
     }
 
     const url = `${BASE_URL}/trendingCAs`;
-    console.log('Fetching from URL:', url);
+    // console.log('Fetching from URL:', url);
     
     const response = await fetch(url, { 
       cache: 'no-store',
@@ -34,7 +34,7 @@ export async function GET() {
     }
 
     const data = await response.json();
-    console.log('Twitter API response:', data);
+    // console.log('Twitter API response:', data);
 
     if (!data.success) {
       console.error('Twitter API returned unsuccessful response:', data);

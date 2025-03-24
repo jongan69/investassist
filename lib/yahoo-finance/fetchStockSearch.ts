@@ -16,7 +16,19 @@ export async function fetchStockSearch(ticker: string, newsCount: number = 5) {
       ticker,
       queryOptions
     )
-    return response
+    
+    // Only return necessary fields
+    return {
+      news: response.news?.map(news => ({
+        title: news.title,
+        link: news.link,
+        publisher: news.publisher,
+        publishedAt: news.providerPublishTime,
+        type: news.type,
+        relatedTickers: news.relatedTickers,
+        thumbnail: news.thumbnail
+      }))
+    }
   } catch (error) {
     console.error("Failed to fetch stock search", error)
     throw new Error("Failed to fetch stock search.")
