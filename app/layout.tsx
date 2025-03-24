@@ -2,11 +2,12 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ViewTransitions } from "next-view-transitions"
+import { SpeedInsights } from "@vercel/speed-insights/next"
 import { ThemeProvider } from "@/components/ui/theme-provider"
 import Navigation from "@/components/ui/navigation"
 import Footer from "@/components/ui/footer"
 import WalletContextProvider from "@/components/contexts/WalletContextProvider"
-import toast, { Toaster } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import ProfileForm from '@/components/profile/ProfileForm'
 import Script from "next/script"
 
@@ -76,6 +77,7 @@ export default function RootLayout({
             <WalletContextProvider>
               <Navigation />
               <main className="container">{children}</main>
+              <SpeedInsights />
               <ProfileForm />
               <Toaster />
               <Footer />
