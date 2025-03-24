@@ -39,6 +39,7 @@ const PumpIcon = () => (
     alt="Pump.fun"
     className="w-5 h-5 mr-2"
     priority={false}
+    placeholder="blur"
   />
 )
 

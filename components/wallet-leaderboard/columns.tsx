@@ -19,6 +19,7 @@ export const columns: ColumnDef<Wallet>[] = [
           src={`https://avatar.iran.liara.run/username?username=${row.getValue("username")}`}
           alt="Profile Pic" width={32} height={32}
           priority={false}
+          placeholder="blur"
         />
       </>;
     },

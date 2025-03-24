@@ -57,6 +57,7 @@ function TweetCard({ tweet }: { tweet: Tweet }) {
                 height={300}
                 className="object-cover"
                 priority={false}
+                placeholder="blur"
               />
             </div>
           ))}
