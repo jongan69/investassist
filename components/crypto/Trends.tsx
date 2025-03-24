@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, Fragment, useRef } from 'react';
+import { useEffect, useState, Fragment, useRef, useCallback, useMemo } from 'react';
 import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
@@ -18,46 +18,67 @@ import { TopTweeted } from './Trends/TopTweeted';
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
     const [isMounted, setIsMounted] = useState(false);
+    const isMountedRef = useRef(false);
 
+    // State management
     const [trends, setTrends] = useState<TrendData | null>(null);
     const [latestTweets, setLatestTweets] = useState<any[]>([]);
     const [tweetedCas, setTweetedCas] = useState<any[]>([]);
 
-    // Separate loading states
+    // Loading states
     const [isTrendsLoading, setIsTrendsLoading] = useState(true);
     const [isTweetsLoading, setIsTweetsLoading] = useState(true);
     const [isCasLoading, setIsCasLoading] = useState(true);
 
-    // Separate error states
+    // Error states
     const [trendsError, setTrendsError] = useState<string | null>(null);
     const [tweetsError, setTweetsError] = useState<string | null>(null);
     const [casError, setCasError] = useState<string | null>(null);
 
-    // Add a ref to track if we've already fetched data
+    // Data fetching ref
     const hasFetchedData = useRef(false);
+    const abortControllerRef = useRef<AbortController | null>(null);
 
-    const refreshTweets = async () => {
+    // Memoized refresh functions
+    const refreshTweets = useCallback(async () => {
+        if (!isMountedRef.current) return;
         try {
+            setIsTweetsLoading(true);
+            setTweetsError(null);
             await fetchLatestTweets(setLatestTweets, setIsTweetsLoading, setTweetsError);
         } catch (error) {
             console.error('Error refreshing tweets:', error);
-            setTweetsError('Failed to refresh latest tweets');
+            if (isMountedRef.current) {
+                setTweetsError('Failed to refresh latest tweets');
+            }
         }
-    };
+    }, []);
 
-    const refreshCas = async () => {
+    const refreshCas = useCallback(async () => {
+        if (!isMountedRef.current) return;
         try {
+            setIsCasLoading(true);
+            setCasError(null);
             await fetchTweetedCas(setTweetedCas, setIsCasLoading, setCasError);
         } catch (error) {
             console.error('Error refreshing CAS:', error);
-            setCasError('Failed to refresh CAS tokens');
+            if (isMountedRef.current) {
+                setCasError('Failed to refresh CAS tokens');
+            }
         }
-    };
+    }, []);
 
+    // Initial data fetch
     useEffect(() => {
+        isMountedRef.current = true;
+        setIsMounted(true);
+
         const fetchData = async () => {
-            if (hasFetchedData.current) return;
+            if (hasFetchedData.current || !isMountedRef.current) return;
             hasFetchedData.current = true;
+
+            // Create new AbortController for this fetch
+            abortControllerRef.current = new AbortController();
 
             try {
                 await Promise.all([
@@ -66,21 +87,36 @@ export default function CryptoTrends({ data }: { data: any }) {
                     fetchTweetedCas(setTweetedCas, setIsCasLoading, setCasError)
                 ]);
             } catch (error) {
+                if (error instanceof Error && error.name === 'AbortError') {
+                    console.log('Fetch aborted');
+                    return;
+                }
                 console.error('Error fetching data:', error);
-                setTrendsError('Failed to load crypto trends');
-                setTweetsError('Failed to load latest tweets');
-                setCasError('Failed to load CAS tokens');
+                if (isMountedRef.current) {
+                    setTrendsError('Failed to load crypto trends');
+                    setTweetsError('Failed to load latest tweets');
+                    setCasError('Failed to load CAS tokens');
+                }
             }
         };
 
         fetchData();
-    }, []); // Empty dependency array since these functions are stable
 
-    useEffect(() => {
-        setIsMounted(true);
-    }, []); // Empty dependency array since this only needs to run once
+        return () => {
+            isMountedRef.current = false;
+            if (abortControllerRef.current) {
+                abortControllerRef.current.abort();
+            }
+        };
+    }, []);
 
-    // Ensure the component only renders after the theme is resolved and the component is mounted
+    // Memoized loading state
+    const isLoading = useMemo(() => 
+        isTrendsLoading || isTweetsLoading || isCasLoading,
+        [isTrendsLoading, isTweetsLoading, isCasLoading]
+    );
+
+    // Early return if not mounted or theme not resolved
     if (!resolvedTheme || !isMounted) return null;
 
     return (
@@ -100,7 +136,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                         <h2 className={`text-xl font-bold ${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} transition-colors`}>
                             Crypto Trends
                         </h2>
-                        {(isTrendsLoading || isTweetsLoading || isCasLoading) && (
+                        {isLoading && (
                             <div className="flex gap-1 px-1">
                                 {[0, 0.2, 0.4].map((delay) => (
                                     <motion.span

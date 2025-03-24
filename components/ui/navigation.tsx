@@ -35,17 +35,44 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const { publicKey } = useWallet();
   const [username, setUsername] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
+    let isMounted = true;
+
     const getUsername = async () => {
-      if (publicKey) {
+      if (!publicKey) {
+        setUsername('');
+        setIsLoading(false);
+        return;
+      }
+
+      try {
         const profile = await getProfileByWalletAddress(publicKey);
-        if (profile.exists) {
-          setUsername(profile.profile.username);
+        if (isMounted) {
+          if (profile.exists) {
+            setUsername(profile.profile.username);
+          } else {
+            setUsername('');
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching username:', error);
+        if (isMounted) {
+          setUsername('');
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
         }
       }
-    }
+    };
+
     getUsername();
+
+    return () => {
+      isMounted = false;
+    };
   }, [publicKey]);
 
   return (

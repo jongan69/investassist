@@ -3,7 +3,7 @@ import { ConnectionProvider, WalletProvider, useWallet as useSolanaWallet } from
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui"
 import * as walletAdapterWallets from '@solana/wallet-adapter-wallets'
 import * as web3 from '@solana/web3.js';
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { HELIUS } from '@/lib/solana/constants';
 import '../../styles/custom-wallet-styles.css'; // Custom wallet Button styles
 import { getProfileByWalletAddress } from '@/lib/users/getProfileByWallet';
@@ -34,8 +34,11 @@ const WalletConnectionHandler = ({
     const solanaWallet = useSolanaWallet();
     const hasCheckedProfile = useRef<string | null>(null);
 
-    // Extract complex expression to a variable
-    const walletAddress = solanaWallet.publicKey?.toString();
+    // Memoize the wallet address to prevent unnecessary re-renders
+    const walletAddress = useMemo(() => 
+        solanaWallet.publicKey?.toString(), 
+        [solanaWallet.publicKey]
+    );
 
     useEffect(() => {
         // Set wallet regardless of connection status
@@ -67,7 +70,7 @@ const WalletConnectionHandler = ({
             hasCheckedProfile.current = null;
             setShowProfileForm(false);
         }
-    }, [solanaWallet.connected, walletAddress, setWallet, setShowProfileForm, solanaWallet]);
+    }, [solanaWallet.connected, walletAddress, setWallet, setShowProfileForm]);
 
     return <>{children}</>;
 };
