@@ -173,3 +173,40 @@ export const validateTicker = (ticker: string): boolean => {
   // Note: This is a simple check - in a production environment, you might want to use a more efficient data structure
   return tickers.some((t: { ticker: string }) => t.ticker === upperTicker);
 };
+
+export async function fetchWithTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number = 10000
+): Promise<T> {
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`Request timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+  });
+
+  try {
+    return await Promise.race([promise, timeoutPromise]);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message.includes('timed out')) {
+        throw new Error('Request timed out. Please try again.');
+      }
+    }
+    throw error;
+  }
+}
+
+export function handleApiError(error: unknown): { message: string; isTimeout: boolean } {
+  if (error instanceof Error) {
+    return {
+      message: error.message.includes('timed out') 
+        ? 'Request timed out. Please try again.'
+        : error.message || 'An unexpected error occurred.',
+      isTimeout: error.message.includes('timed out')
+    };
+  }
+  return {
+    message: 'An unexpected error occurred.',
+    isTimeout: false
+  };
+}

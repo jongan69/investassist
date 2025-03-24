@@ -29,6 +29,7 @@ import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest
 import TrendingStocks from "@/components/stocks/Trending"
 // import SmsAlert from "@/components/ui/sms-alert/SmsAlert"
 import { LiveTrades } from "@/components/crypto/LiveTrades/LiveTrades"
+import { fetchWithTimeout, handleApiError } from "@/lib/utils"
 
 // Add route segment config
 export const dynamic = 'force-dynamic'
@@ -634,22 +635,72 @@ async function MarketSummaryWrapper({
 }: { 
   sentimentColor: string
 }) {
-  const [fearGreedValue, sectorPerformance] = await Promise.all([
-    fetchFearGreedIndex(),
-    fetchSectorPerformance()
-  ])
+  try {
+    const [fearGreedValue, sectorPerformance] = await Promise.allSettled([
+      fetchWithTimeout(fetchFearGreedIndex(), 5000),
+      fetchWithTimeout(fetchSectorPerformance(), 5000)
+    ]);
 
-  if (!fearGreedValue || !sectorPerformance || sectorPerformance?.length === 0) {
-    return null
+    // Handle individual failures
+    if (fearGreedValue.status === 'rejected') {
+      console.error('Failed to fetch fear greed index:', fearGreedValue.reason);
+    }
+    if (sectorPerformance.status === 'rejected') {
+      console.error('Failed to fetch sector performance:', sectorPerformance.reason);
+    }
+
+    // If both requests failed, show error message
+    if (fearGreedValue.status === 'rejected' && sectorPerformance.status === 'rejected') {
+      return (
+        <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
+          <div className="text-center text-gray-600 dark:text-gray-400">
+            Unable to load market summary data. Please try again later.
+          </div>
+        </div>
+      );
+    }
+
+    // Use available data even if one request failed
+    const validFearGreedValue = fearGreedValue.status === 'fulfilled' ? fearGreedValue.value : null;
+    const validSectorPerformance = sectorPerformance.status === 'fulfilled' ? sectorPerformance.value : null;
+
+    if (!validFearGreedValue || !validSectorPerformance || validSectorPerformance.length === 0) {
+      return (
+        <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
+          <div className="text-center text-gray-600 dark:text-gray-400">
+            Market summary data is incomplete. Please try again later.
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <MarketSummary
+        sentimentColor={sentimentColor}
+        fearGreedValue={validFearGreedValue}
+        sectorPerformance={validSectorPerformance}
+      />
+    );
+  } catch (error) {
+    const { message, isTimeout } = handleApiError(error);
+    console.error('Error in MarketSummaryWrapper:', error);
+    
+    return (
+      <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
+        <div className="text-center text-gray-600 dark:text-gray-400">
+          {message}
+          {isTimeout && (
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-2 px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Retry
+            </button>
+          )}
+        </div>
+      </div>
+    );
   }
-
-  return (
-    <MarketSummary
-      sentimentColor={sentimentColor}
-      fearGreedValue={fearGreedValue}
-      sectorPerformance={sectorPerformance}
-    />
-  )
 }
 
 async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] }) {
@@ -676,22 +727,54 @@ async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] }) {
       );
     }
 
+    // Use Promise.allSettled with timeout for each request
     const highOiOptionsPromises = latestNewsSymbols.flatMap((newsArticle: any) =>
-      newsArticle.symbols.map((symbol: string) => getHighOpenInterestContracts(symbol, 'call'))
+      newsArticle.symbols.map((symbol: string) => 
+        fetchWithTimeout(getHighOpenInterestContracts(symbol, 'call'), 5000)
+      )
     );
 
     const highOiOptions = await Promise.allSettled(highOiOptionsPromises);
+    
+    // Filter out failed requests and log errors
     const validHighOiOptions = highOiOptions
-      .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+      .filter((result): result is PromiseFulfilledResult<any> => {
+        if (result.status === 'rejected') {
+          console.error('Failed to fetch options data:', result.reason);
+          return false;
+        }
+        return true;
+      })
       .map(result => result.value);
+
+    // If all requests failed, show error message
+    if (validHighOiOptions.length === 0) {
+      return (
+        <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
+          <div className="text-center text-gray-600 dark:text-gray-400">
+            Unable to load options data. Please try again later.
+          </div>
+        </div>
+      );
+    }
 
     return <TrendingStocks data={{ news: latestNews, highOiOptions: validHighOiOptions }} />;
   } catch (error) {
+    const { message, isTimeout } = handleApiError(error);
     console.error('Error in TrendingStocksWrapper:', error);
+    
     return (
       <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
         <div className="text-center text-gray-600 dark:text-gray-400">
-          An error occurred while loading trending stocks data. Please try again later.
+          {message}
+          {isTimeout && (
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-2 px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            >
+              Retry
+            </button>
+          )}
         </div>
       </div>
     );
