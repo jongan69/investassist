@@ -30,6 +30,11 @@ import TrendingStocks from "@/components/stocks/Trending"
 // import SmsAlert from "@/components/ui/sms-alert/SmsAlert"
 import { LiveTrades } from "@/components/crypto/LiveTrades/LiveTrades"
 
+// Add route segment config
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const maxDuration = 30 // Increase timeout to 30 seconds
+
 function getMarketSentiment(changePercentage: number | undefined) {
   if (!changePercentage) {
     return "neutral"
@@ -270,37 +275,21 @@ export default async function Page({ searchParams }: Props) {
     (Array.isArray(params?.range) ? params.range[0] : params.range) || DEFAULT_RANGE
   )
 
-  // Parallel data fetching
-  const [
-    latestNews,
-    news,
-    fearGreedValue,
-    sectorPerformance,
-    marketData
-  ] = await Promise.all([
-    fetchStockNews(),
-    fetchStockSearch("^DJI", 100),
-    fetchFearGreedIndex(),
-    fetchSectorPerformance(),
+  const interval = validateInterval(
+    range,
+    ((Array.isArray(params?.interval) ? params.interval[0] : params.interval) || DEFAULT_INTERVAL) as Interval
+  )
+
+  // Split data fetching into smaller chunks
+  const [marketData, latestNews] = await Promise.all([
     Promise.allSettled(
       tickers.map(({ symbol }) => yahooFinance.quoteCombine(symbol))
     ).then(results => results
       .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
       .map(result => result.value)
-    )
+    ),
+    fetchStockNews()
   ])
-
-  const latestNewsSymbols = latestNews.filter((newsArticle: any) => newsArticle.symbols.length > 0)
-  const highOiOptions = await Promise.all(
-    latestNewsSymbols.flatMap((newsArticle: any) =>
-      newsArticle.symbols.map((symbol: string) => getHighOpenInterestContracts(symbol, 'call'))
-    )
-  )
-
-  const interval = validateInterval(
-    range,
-    ((Array.isArray(params?.interval) ? params.interval[0] : params.interval) || DEFAULT_INTERVAL) as Interval
-  )
 
   const resultsWithTitles = marketData.map((result, index) => ({
     ...result,
@@ -580,35 +569,29 @@ export default async function Page({ searchParams }: Props) {
               </div>
             )}
 
-            {fearGreedValue && sectorPerformance && sectorPerformance?.length > 0 && (
-              <MarketSummary
-                sentimentColor={sentimentColor}
-                fearGreedValue={fearGreedValue}
-                sectorPerformance={sectorPerformance}
-              />
-            )}
             <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
-              {latestNews && highOiOptions && <TrendingStocks data={{ news: latestNews, highOiOptions }} />}
+              <MarketSummaryWrapper 
+                sentimentColor={sentimentColor}
+              />
             </Suspense>
+
+            <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
+              <TrendingStocksWrapper latestNews={latestNews} />
+            </Suspense>
+
             <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
-              <NewsSection news={news.news} />
+              <NewsSectionWrapper ticker={ticker} />
             </Suspense>
+
             <div
               className={`pointer-events-none absolute inset-0 z-0 h-[65%] w-[65%] -translate-x-[10%] -translate-y-[30%] rounded-full blur-3xl ${sentimentBackground}`}
             />
           </Card>
         </div>
         <div className="w-full lg:w-1/2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Sector Performance</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
-                <SectorPerformance />
-              </Suspense>
-            </CardContent>
-          </Card>
+          <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+            <SectorPerformanceWrapper />
+          </Suspense>
 
           <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded-lg" />}>
             <CryptoTrends data={resultsWithTitles} />
@@ -641,20 +624,63 @@ export default async function Page({ searchParams }: Props) {
           </div>
         </Card>
       </div>
-      {/* <div>
-        <h2 className="py-4 text-xl font-medium">SMS Alerts</h2>
-        <SmsAlert />
-      </div> */}
-      {/* <div>
-        <h2 className="py-4 text-xl font-medium">Investment Plan</h2>
-        <Suspense fallback={<div>Loading...</div>}>
-          <InvestmentPlan
-            initialData={resultsWithTitles}
-            fearGreedValue={fearGreedValue}
-            sectorPerformance={sectorPerformance}
-          />
-        </Suspense>
-      </div> */}
     </div>
+  )
+}
+
+// Wrapper components for streaming
+async function MarketSummaryWrapper({ 
+  sentimentColor
+}: { 
+  sentimentColor: string
+}) {
+  const [fearGreedValue, sectorPerformance] = await Promise.all([
+    fetchFearGreedIndex(),
+    fetchSectorPerformance()
+  ])
+
+  if (!fearGreedValue || !sectorPerformance || sectorPerformance?.length === 0) {
+    return null
+  }
+
+  return (
+    <MarketSummary
+      sentimentColor={sentimentColor}
+      fearGreedValue={fearGreedValue}
+      sectorPerformance={sectorPerformance}
+    />
+  )
+}
+
+async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] }) {
+  const latestNewsSymbols = latestNews.filter((newsArticle: any) => newsArticle.symbols.length > 0)
+  const highOiOptions = await Promise.all(
+    latestNewsSymbols.flatMap((newsArticle: any) =>
+      newsArticle.symbols.map((symbol: string) => getHighOpenInterestContracts(symbol, 'call'))
+    )
+  )
+
+  if (!latestNews || !highOiOptions) {
+    return null
+  }
+
+  return <TrendingStocks data={{ news: latestNews, highOiOptions }} />
+}
+
+async function NewsSectionWrapper({ ticker }: { ticker: string }) {
+  const news = await fetchStockSearch(ticker, 100)
+  return <NewsSection news={news.news} />
+}
+
+async function SectorPerformanceWrapper() {
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-lg">Sector Performance</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <SectorPerformance />
+      </CardContent>
+    </Card>
   )
 }
