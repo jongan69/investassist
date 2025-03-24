@@ -14,6 +14,7 @@ import { WhaleActivity } from './Trends/WhaleActivity';
 import { LatestTweets } from './Trends/LatestTweets';
 import { Overview } from './Trends/Overview';
 import { TopTweeted } from './Trends/TopTweeted';
+import { TrendingTopics } from './Trends/TrendingTopics';
 
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
@@ -159,6 +160,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                             <Overview trends={trends} data={data} />
                             <TopTweeted trends={trends} />
                             <WhaleActivity trends={trends} />
+                            <TrendingTopics />
                         </Fragment>
                     ) : (
                         <p className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed text-xs`}>
