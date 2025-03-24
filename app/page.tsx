@@ -715,13 +715,22 @@ async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] }) {
       );
     }
 
-    // Limit the number of news items to process
-    const limitedNews = latestNews.slice(0, 5); // Process only top 5 news items
-    const latestNewsSymbols = limitedNews.filter((newsArticle: any) => 
-      newsArticle.symbols && newsArticle.symbols.length > 0
-    );
+    // Limit the number of news items to process and filter out invalid ones
+    const limitedNews = latestNews
+      .filter((newsArticle: any) => 
+        newsArticle.symbols && 
+        newsArticle.symbols.length > 0 &&
+        // Filter out crypto and other non-stock symbols
+        !newsArticle.symbols.some((symbol: string) => 
+          symbol.includes('USD') || 
+          symbol.includes('BTC') || 
+          symbol.includes('ETH') ||
+          symbol.length > 5
+        )
+      )
+      .slice(0, 2); // Process only top 2 valid news items to ensure we stay within time limit
     
-    if (latestNewsSymbols.length === 0) {
+    if (limitedNews.length === 0) {
       return (
         <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
           <div className="text-center text-gray-600 dark:text-gray-400">
@@ -733,15 +742,18 @@ async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] }) {
 
     // Get unique symbols to avoid duplicate API calls
     const uniqueSymbols = Array.from(new Set(
-      latestNewsSymbols.flatMap((newsArticle: any) => newsArticle.symbols)
+      limitedNews.flatMap((newsArticle: any) => newsArticle.symbols)
     ));
 
-    // Process symbols in batches
+    // Process symbols in smaller batches with strict timeouts
     const highOiOptions = await processBatch(
       uniqueSymbols,
       (symbol: string) => getHighOpenInterestContracts(symbol, 'call'),
-      3, // Process 3 symbols at a time
-      5000 // 5 second timeout per call
+      1, // Process 1 symbol at a time to minimize failures
+      5000, // 5 second timeout per call
+      2, // Max 2 retries
+      1000, // Start with 1 second delay
+      25000 // Global timeout of 25 seconds
     );
 
     // If no valid options data, show error message

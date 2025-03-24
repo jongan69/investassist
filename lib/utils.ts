@@ -215,21 +215,91 @@ export async function processBatch<T>(
   items: T[],
   processFn: (item: T) => Promise<any>,
   batchSize: number = 3,
-  timeoutMs: number = 5000
+  timeoutMs: number = 5000,
+  maxRetries: number = 3,
+  initialDelay: number = 1000,
+  globalTimeoutMs: number = 25000 // Global timeout of 25 seconds (leaving 5s buffer)
 ): Promise<any[]> {
   const results = [];
-  for (let i = 0; i < items.length; i += batchSize) {
-    const batch = items.slice(i, i + batchSize);
-    const batchPromises = batch.map(item => 
-      fetchWithTimeout(processFn(item), timeoutMs)
-    );
-    
-    const batchResults = await Promise.allSettled(batchPromises);
-    const validResults = batchResults
-      .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
-      .map(result => result.value);
-    
-    results.push(...validResults);
+  let currentDelay = initialDelay;
+  const startTime = Date.now();
+
+  // Create a promise that rejects after global timeout
+  const globalTimeoutPromise = new Promise<never>((_, reject) => {
+    setTimeout(() => {
+      reject(new Error('Global timeout reached. Operation cancelled.'));
+    }, globalTimeoutMs);
+  });
+
+  try {
+    for (let i = 0; i < items.length; i += batchSize) {
+      // Check if we've exceeded global timeout
+      if (Date.now() - startTime >= globalTimeoutMs) {
+        console.warn('Global timeout reached, stopping batch processing');
+        break;
+      }
+
+      const batch = items.slice(i, i + batchSize);
+      let retryCount = 0;
+      let batchSuccess = false;
+
+      while (!batchSuccess && retryCount < maxRetries) {
+        try {
+          // Race between batch processing and global timeout
+          const batchPromise = Promise.allSettled(
+            batch.map(item => fetchWithTimeout(processFn(item), timeoutMs))
+          );
+
+          const batchResults = await Promise.race([
+            batchPromise,
+            globalTimeoutPromise
+          ]);
+
+          const validResults = batchResults
+            .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+            .map(result => result.value);
+          
+          results.push(...validResults);
+          batchSuccess = true;
+          
+          // If successful, reduce delay for next batch
+          currentDelay = Math.max(initialDelay, currentDelay / 2);
+        } catch (error) {
+          if (error instanceof Error) {
+            if (error.message.includes('Global timeout')) {
+              console.warn('Global timeout reached during batch processing');
+              break;
+            }
+            if (error.message.includes('Rate limit')) {
+              retryCount++;
+              console.log(`Rate limit hit, waiting ${currentDelay}ms before retry ${retryCount}/${maxRetries}`);
+              await new Promise(resolve => setTimeout(resolve, currentDelay));
+              currentDelay *= 2;
+            } else {
+              console.error(`Error processing batch:`, error);
+              break;
+            }
+          }
+        }
+      }
+
+      if (!batchSuccess) {
+        console.warn(`Failed to process batch after ${retryCount} retries`);
+      }
+    }
+
+    // If we have no results at all, throw an error
+    if (results.length === 0) {
+      throw new Error('No data could be processed within the time limit');
+    }
+
+    return results;
+  } catch (error) {
+    // If we have partial results, return them
+    if (results.length > 0) {
+      console.warn('Returning partial results due to error:', error);
+      return results;
+    }
+    throw error;
   }
-  return results;
 }
