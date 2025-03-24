@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Pusher from 'pusher-js'
 import { AnimatePresence } from 'framer-motion'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
@@ -11,6 +11,8 @@ import { Trade } from '@/types/trades'
 export function LiveTrades() {
   const [trades, setTrades] = useState<Trade[]>([])
   const [status, setStatus] = useState<'connecting' | 'connected' | 'error' | 'disabled'>('connecting')
+  const pusherRef = useRef<Pusher | null>(null)
+  const channelRef = useRef<any>(null)
 
   useEffect(() => {
     // Check if Pusher is configured
@@ -23,31 +25,37 @@ export function LiveTrades() {
       return
     }
 
-    let pusher: Pusher | null = null
-    let channel: any = null
-
     try {
-      pusher = new Pusher(pusherKey, {
+      // Clean up existing connection if any
+      if (pusherRef.current) {
+        pusherRef.current.disconnect()
+      }
+
+      // Create new Pusher instance
+      pusherRef.current = new Pusher(pusherKey, {
         cluster: pusherCluster,
         forceTLS: true,
         enabledTransports: ['ws', 'wss']
       })
 
-      channel = pusher.subscribe('trades')
+      // Subscribe to channel
+      channelRef.current = pusherRef.current.subscribe('trades')
 
-      channel.bind('new-trade', (trade: Trade) => {
+      // Bind to events
+      channelRef.current.bind('new-trade', (trade: Trade) => {
         setTrades(prevTrades => [...prevTrades, trade]
           .sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0))
           .slice(0, 15)
         )
       })
 
-      pusher.connection.bind('connected', () => {
+      // Handle connection events
+      pusherRef.current.connection.bind('connected', () => {
         console.log('Pusher connected successfully')
         setStatus('connected')
       })
 
-      pusher.connection.bind('error', (error: any) => {
+      pusherRef.current.connection.bind('error', (error: any) => {
         console.error('Pusher connection error:', error)
         setStatus('error')
       })
@@ -61,12 +69,12 @@ export function LiveTrades() {
       }, 1000)
 
       return () => {
-        if (channel) {
-          channel.unbind_all()
-          channel.unsubscribe()
+        if (channelRef.current) {
+          channelRef.current.unbind_all()
+          channelRef.current.unsubscribe()
         }
-        if (pusher) {
-          pusher.disconnect()
+        if (pusherRef.current) {
+          pusherRef.current.disconnect()
         }
         clearInterval(cleanupInterval)
       }
