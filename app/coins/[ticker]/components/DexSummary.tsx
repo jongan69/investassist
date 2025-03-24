@@ -206,6 +206,7 @@ export default async function DexSummary({ ticker, ca, hasCa, axiomLink }: { tic
                     width={80}
                     height={80}
                     className="rounded-full"
+                    priority={false}
                   />
                 </a>
               </div>
@@ -222,6 +223,7 @@ export default async function DexSummary({ ticker, ca, hasCa, axiomLink }: { tic
                   sizes="100vw"
                   className="w-full h-auto max-w-2xl rounded-lg shadow-md"
                   style={{ objectFit: 'contain' }}
+                  priority={false}
                 />
 
               </div>

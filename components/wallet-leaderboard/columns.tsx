@@ -14,8 +14,12 @@ export const columns: ColumnDef<Wallet>[] = [
     header: () => <h1> User </h1>,
     cell: ({ row }) => {
       return <>
-      <h1>{row.getValue("username")}</h1>
-      <Image src={`https://avatar.iran.liara.run/username?username=${row.getValue("username")}`} alt="Profile Pic" width={32} height={32} />
+        <h1>{row.getValue("username")}</h1>
+        <Image
+          src={`https://avatar.iran.liara.run/username?username=${row.getValue("username")}`}
+          alt="Profile Pic" width={32} height={32}
+          priority={false}
+        />
       </>;
     },
   },

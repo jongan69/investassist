@@ -56,6 +56,7 @@ function TweetCard({ tweet }: { tweet: Tweet }) {
                 width={500}
                 height={300}
                 className="object-cover"
+                priority={false}
               />
             </div>
           ))}
