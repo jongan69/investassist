@@ -210,3 +210,26 @@ export function handleApiError(error: unknown): { message: string; isTimeout: bo
     isTimeout: false
   };
 }
+
+export async function processBatch<T>(
+  items: T[],
+  processFn: (item: T) => Promise<any>,
+  batchSize: number = 3,
+  timeoutMs: number = 5000
+): Promise<any[]> {
+  const results = [];
+  for (let i = 0; i < items.length; i += batchSize) {
+    const batch = items.slice(i, i + batchSize);
+    const batchPromises = batch.map(item => 
+      fetchWithTimeout(processFn(item), timeoutMs)
+    );
+    
+    const batchResults = await Promise.allSettled(batchPromises);
+    const validResults = batchResults
+      .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+      .map(result => result.value);
+    
+    results.push(...validResults);
+  }
+  return results;
+}

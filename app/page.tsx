@@ -22,7 +22,7 @@ import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
 import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
 import CryptoTrends from "@/components/crypto/Trends"
 import NewsSection from "@/components/NewsSection"
-import { tickersFutures, tickerAfterOpen, isMarketOpen } from "@/lib/utils"
+import { tickersFutures, tickerAfterOpen, isMarketOpen, processBatch } from "@/lib/utils"
 import InvestmentPlan from "@/components/crypto/InvestmentPlan"
 import { fetchStockNews } from "@/lib/alpaca/fetchStockNews"
 import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest"
@@ -715,7 +715,11 @@ async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] }) {
       );
     }
 
-    const latestNewsSymbols = latestNews.filter((newsArticle: any) => newsArticle.symbols && newsArticle.symbols.length > 0);
+    // Limit the number of news items to process
+    const limitedNews = latestNews.slice(0, 5); // Process only top 5 news items
+    const latestNewsSymbols = limitedNews.filter((newsArticle: any) => 
+      newsArticle.symbols && newsArticle.symbols.length > 0
+    );
     
     if (latestNewsSymbols.length === 0) {
       return (
@@ -727,28 +731,21 @@ async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] }) {
       );
     }
 
-    // Use Promise.allSettled with timeout for each request
-    const highOiOptionsPromises = latestNewsSymbols.flatMap((newsArticle: any) =>
-      newsArticle.symbols.map((symbol: string) => 
-        fetchWithTimeout(getHighOpenInterestContracts(symbol, 'call'), 5000)
-      )
+    // Get unique symbols to avoid duplicate API calls
+    const uniqueSymbols = Array.from(new Set(
+      latestNewsSymbols.flatMap((newsArticle: any) => newsArticle.symbols)
+    ));
+
+    // Process symbols in batches
+    const highOiOptions = await processBatch(
+      uniqueSymbols,
+      (symbol: string) => getHighOpenInterestContracts(symbol, 'call'),
+      3, // Process 3 symbols at a time
+      5000 // 5 second timeout per call
     );
 
-    const highOiOptions = await Promise.allSettled(highOiOptionsPromises);
-    
-    // Filter out failed requests and log errors
-    const validHighOiOptions = highOiOptions
-      .filter((result): result is PromiseFulfilledResult<any> => {
-        if (result.status === 'rejected') {
-          console.error('Failed to fetch options data:', result.reason);
-          return false;
-        }
-        return true;
-      })
-      .map(result => result.value);
-
-    // If all requests failed, show error message
-    if (validHighOiOptions.length === 0) {
+    // If no valid options data, show error message
+    if (highOiOptions.length === 0) {
       return (
         <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
           <div className="text-center text-gray-600 dark:text-gray-400">
@@ -758,7 +755,7 @@ async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] }) {
       );
     }
 
-    return <TrendingStocks data={{ news: latestNews, highOiOptions: validHighOiOptions }} />;
+    return <TrendingStocks data={{ news: limitedNews, highOiOptions }} />;
   } catch (error) {
     const { message, isTimeout } = handleApiError(error);
     console.error('Error in TrendingStocksWrapper:', error);
