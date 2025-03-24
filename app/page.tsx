@@ -23,11 +23,9 @@ import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerforman
 import CryptoTrends from "@/components/crypto/Trends"
 import NewsSection from "@/components/NewsSection"
 import { tickersFutures, tickerAfterOpen, isMarketOpen, processBatch } from "@/lib/utils"
-import InvestmentPlan from "@/components/crypto/InvestmentPlan"
 import { fetchStockNews } from "@/lib/alpaca/fetchStockNews"
 import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest"
 import TrendingStocks from "@/components/stocks/Trending"
-// import SmsAlert from "@/components/ui/sms-alert/SmsAlert"
 import { LiveTrades } from "@/components/crypto/LiveTrades/LiveTrades"
 import { fetchWithTimeout, handleApiError } from "@/lib/utils"
 
@@ -571,7 +569,7 @@ export default async function Page({ searchParams }: Props) {
             )}
 
             <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
-              <MarketSummaryWrapper 
+              <MarketSummaryWrapper
                 sentimentColor={sentimentColor}
               />
             </Suspense>
@@ -597,7 +595,7 @@ export default async function Page({ searchParams }: Props) {
           <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded-lg" />}>
             <CryptoTrends data={resultsWithTitles} />
           </Suspense>
-          
+
           <Card className="mt-4">
             <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
               <CardHeader>
@@ -630,9 +628,9 @@ export default async function Page({ searchParams }: Props) {
 }
 
 // Wrapper components for streaming
-async function MarketSummaryWrapper({ 
+async function MarketSummaryWrapper({
   sentimentColor
-}: { 
+}: {
   sentimentColor: string
 }) {
   try {
@@ -684,14 +682,14 @@ async function MarketSummaryWrapper({
   } catch (error) {
     const { message, isTimeout } = handleApiError(error);
     console.error('Error in MarketSummaryWrapper:', error);
-    
+
     return (
       <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
         <div className="text-center text-gray-600 dark:text-gray-400">
           {message}
           {isTimeout && (
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className="mt-2 px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
             >
               Retry
@@ -717,19 +715,19 @@ async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] }) {
 
     // Limit the number of news items to process and filter out invalid ones
     const limitedNews = latestNews
-      .filter((newsArticle: any) => 
-        newsArticle.symbols && 
+      .filter((newsArticle: any) =>
+        newsArticle.symbols &&
         newsArticle.symbols.length > 0 &&
         // Filter out crypto and other non-stock symbols
-        !newsArticle.symbols.some((symbol: string) => 
-          symbol.includes('USD') || 
-          symbol.includes('BTC') || 
+        !newsArticle.symbols.some((symbol: string) =>
+          symbol.includes('USD') ||
+          symbol.includes('BTC') ||
           symbol.includes('ETH') ||
           symbol.length > 5
         )
       )
       .slice(0, 2); // Process only top 2 valid news items to ensure we stay within time limit
-    
+
     if (limitedNews.length === 0) {
       return (
         <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
@@ -771,14 +769,14 @@ async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] }) {
   } catch (error) {
     const { message, isTimeout } = handleApiError(error);
     console.error('Error in TrendingStocksWrapper:', error);
-    
+
     return (
       <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
         <div className="text-center text-gray-600 dark:text-gray-400">
           {message}
           {isTimeout && (
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className="mt-2 px-4 py-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
             >
               Retry

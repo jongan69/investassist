@@ -10,6 +10,7 @@ import WalletContextProvider from "@/components/contexts/WalletContextProvider"
 import { Toaster } from 'react-hot-toast';
 import ProfileForm from '@/components/profile/ProfileForm'
 import Script from "next/script"
+import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({
   subsets: ["latin"],
@@ -79,6 +80,7 @@ export default function RootLayout({
               <main className="container">
                 {children}
                 <SpeedInsights />
+                <Analytics />
               </main>
               <ProfileForm />
               <Toaster />
