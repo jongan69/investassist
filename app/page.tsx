@@ -653,18 +653,49 @@ async function MarketSummaryWrapper({
 }
 
 async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] }) {
-  const latestNewsSymbols = latestNews.filter((newsArticle: any) => newsArticle.symbols.length > 0)
-  const highOiOptions = await Promise.all(
-    latestNewsSymbols.flatMap((newsArticle: any) =>
+  try {
+    if (!latestNews || !Array.isArray(latestNews)) {
+      return (
+        <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
+          <div className="text-center text-gray-600 dark:text-gray-400">
+            Unable to load trending stocks data.
+          </div>
+        </div>
+      );
+    }
+
+    const latestNewsSymbols = latestNews.filter((newsArticle: any) => newsArticle.symbols && newsArticle.symbols.length > 0);
+    
+    if (latestNewsSymbols.length === 0) {
+      return (
+        <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
+          <div className="text-center text-gray-600 dark:text-gray-400">
+            No trending stocks with news available at the moment.
+          </div>
+        </div>
+      );
+    }
+
+    const highOiOptionsPromises = latestNewsSymbols.flatMap((newsArticle: any) =>
       newsArticle.symbols.map((symbol: string) => getHighOpenInterestContracts(symbol, 'call'))
-    )
-  )
+    );
 
-  if (!latestNews || !highOiOptions) {
-    return null
+    const highOiOptions = await Promise.allSettled(highOiOptionsPromises);
+    const validHighOiOptions = highOiOptions
+      .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+      .map(result => result.value);
+
+    return <TrendingStocks data={{ news: latestNews, highOiOptions: validHighOiOptions }} />;
+  } catch (error) {
+    console.error('Error in TrendingStocksWrapper:', error);
+    return (
+      <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
+        <div className="text-center text-gray-600 dark:text-gray-400">
+          An error occurred while loading trending stocks data. Please try again later.
+        </div>
+      </div>
+    );
   }
-
-  return <TrendingStocks data={{ news: latestNews, highOiOptions }} />
 }
 
 async function NewsSectionWrapper({ ticker }: { ticker: string }) {
