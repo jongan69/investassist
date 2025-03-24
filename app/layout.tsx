@@ -36,8 +36,6 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <Script
           async
-          defer
-          strategy="lazyOnload"
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6202902142885850"
           crossOrigin="anonymous"
         />
