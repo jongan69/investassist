@@ -578,7 +578,7 @@ export default async function Page({ searchParams }: Props) {
               <TrendingStocksWrapper latestNews={latestNews} />
             </Suspense>
 
-            <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
+            <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
               <NewsSectionWrapper ticker={ticker} />
             </Suspense>
 
@@ -596,7 +596,7 @@ export default async function Page({ searchParams }: Props) {
             <CryptoTrends data={resultsWithTitles} />
           </Suspense>
 
-          <Card className="mt-4">
+          <Card className="mt-4 rounded-md border-none">
             <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
               <CardHeader>
                 <CardTitle className="text-lg">Live Trades</CardTitle>
@@ -616,7 +616,7 @@ export default async function Page({ searchParams }: Props) {
               <DataTable columns={columns as any} data={resultsWithTitles} />
             </Suspense>
           </div>
-          <div className="w-full lg:w-3/4">
+          <div className="w-full lg:w-1/2 p-2">
             <Suspense fallback={<div>Loading...</div>}>
               <MarketsChart ticker={ticker} range={range} interval={interval} />
             </Suspense>

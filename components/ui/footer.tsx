@@ -12,7 +12,7 @@ const XIcon = () => (
     width="20"
     height="20"
     viewBox="0 0 24 24"
-    className="fill-current w-5 h-5 mr-2"
+    className="fill-current w-5 h-5 mr-2 translate-y-[8px] md:translate-y-0"
     aria-hidden="true"
   >
     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
@@ -37,6 +37,7 @@ const PumpIcon = () => (
     width={20}
     height={20}
     alt="Pump.fun"
+    className="w-5 h-5 mr-2"
   />
 )
 
@@ -54,16 +55,18 @@ export default function Footer() {
 
   return (
     <footer className={`container py-8 md:px-10 md:py-4 ${resolvedTheme === 'dark' ? 'bg-black-800' : 'bg-gray-100'}`}>
-      <div className="flex flex-col items-center justify-center space-y-4 md:space-y-0 md:space-x-8 md:flex-row">
+      <div className="flex items-center justify-center space-y-4 md:space-y-0 md:space-x-8 md:flex-row">
         <Link
           prefetch={false}
           href="https://x.com/invest_ass"
           target="_blank"
           rel="noreferrer"
           aria-label="Visit InvestAssist on X"
-          className={`font-semibold ${resolvedTheme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors duration-200 flex items-center`}
+          className={`font-semibold text-sm ${resolvedTheme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors duration-200 flex items-center`}
         >
-          <XIcon />
+          <div className="h-5 flex items-center">
+            <XIcon />
+          </div>
         </Link>
         <Link
           prefetch={false}
@@ -73,16 +76,20 @@ export default function Footer() {
           aria-label="Visit Bandz Capital"
           className={`font-semibold ${resolvedTheme === 'dark' ? 'text-gray-300 hover:text-white' : 'text-gray-700 hover:text-gray-900'} transition-colors duration-200 flex items-center`}
         >
-          <TelegramIcon />
+          <div className="h-5 flex items-center">
+            <TelegramIcon />
+          </div>
         </Link>
         <Link
           href="https://pump.fun/coin/8KxEiudmUF5tpJKK4uHzjDuJPGKUz9hYUDBEVcfdpump"
           target="_blank"
           rel="noreferrer"
-          className="hover:opacity-70 transition-opacity"
+          className="hover:opacity-70 transition-opacity flex items-center"
           aria-label="Pump.fun"
         >
-          <PumpIcon />
+          <div className="h-5 flex items-center">
+            <PumpIcon />
+          </div>
         </Link>
       </div>
     </footer>

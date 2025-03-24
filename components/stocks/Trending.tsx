@@ -1,4 +1,7 @@
-import Image from "next/image"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { NewsItemCard } from "./NewsItemCard"
+import { Skeleton } from "@/components/ui/skeleton"
 
 // Function to normalize ticker symbols
 const normalizeTicker = (ticker: string) => {
@@ -41,16 +44,75 @@ interface TrendingStocksProps {
             };
         }>;
     };
+    isLoading?: boolean;
 }
 
-export default function TrendingStocks({ data }: TrendingStocksProps) {
+function LoadingSkeleton() {
+    return (
+        <div className="space-y-3 p-3 max-w-xl mx-auto">
+            {[...Array(5)].map((_, i) => (
+                <Card key={i} className="hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors duration-150">
+                    <CardContent className="p-4">
+                        <div className="grid grid-cols-1 gap-3">
+                            <div className="flex items-center">
+                                <Skeleton className="h-5 w-16" />
+                            </div>
+                            <div className="flex justify-center">
+                                <div className="flex flex-col gap-1.5 items-center">
+                                    <Skeleton className="h-3 w-24" />
+                                    <Skeleton className="h-2.5 w-16" />
+                                    <Skeleton className="h-[60px] w-[60px] rounded-lg" />
+                                </div>
+                            </div>
+                            <div className="space-y-1.5">
+                                {[...Array(3)].map((_, j) => (
+                                    <div key={j} className="bg-gray-50 dark:bg-gray-800/50 p-1.5 rounded-lg">
+                                        <Skeleton className="h-3 w-16 mb-1" />
+                                        <div className="grid grid-cols-2 gap-x-3">
+                                            {[...Array(4)].map((_, k) => (
+                                                <Skeleton key={k} className="h-2.5 w-12" />
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+    );
+}
+
+export default function TrendingStocks({ data, isLoading = false }: TrendingStocksProps) {
+    if (isLoading) {
+        return (
+            <Card className="rounded-md border-none">
+                <CardHeader>
+                    <CardTitle className="text-2xl font-bold text-center text-gray-800 dark:text-gray-200">
+                        Trending Stocks with High Open Interest
+                    </CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <ScrollArea className="h-[500px] rounded-md border border-none">
+                        <div className="p-4 space-x-4">
+                            <LoadingSkeleton />
+                        </div>
+                    </ScrollArea>
+                </CardContent>
+            </Card>
+        );
+    }
+
     if (!data || !data.news || !data.highOiOptions) {
         return (
-            <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
-                <div className="text-center text-gray-600 dark:text-gray-400">
-                    No trending stocks data available at the moment.
-                </div>
-            </div>
+            <Card>
+                <CardContent className="p-6">
+                    <div className="text-center text-gray-600 dark:text-gray-400">
+                        No trending stocks data available at the moment.
+                    </div>
+                </CardContent>
+            </Card>
         );
     }
 
@@ -59,28 +121,31 @@ export default function TrendingStocks({ data }: TrendingStocksProps) {
 
     if (filteredNews.length === 0) {
         return (
-            <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
-                <div className="text-center text-gray-600 dark:text-gray-400">
-                    No trending stocks with news available at the moment.
-                </div>
-            </div>
+            <Card>
+                <CardContent className="p-6">
+                    <div className="text-center text-gray-600 dark:text-gray-400">
+                        No trending stocks with news available at the moment.
+                    </div>
+                </CardContent>
+            </Card>
         );
     }
 
     return (
-        <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
-            <h1 className="text-center text-2xl font-bold mb-8 text-gray-800 dark:text-gray-200">Trending Stocks with High Open Interest</h1>
-            <div className="rounded-lg overflow-hidden border border-gray-300 dark:border-gray-700 shadow-sm">
-                <div className="max-h-[1000px] overflow-y-auto">
-                    <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
-                        <thead className="bg-gray-100 dark:bg-gray-800 sticky top-0">
-                            <tr>
-                                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 dark:text-gray-300 uppercase">Stock</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 dark:text-gray-300 uppercase">News</th>
-                                <th className="px-4 py-3 text-left text-xs font-semibold tracking-wider text-gray-600 dark:text-gray-300 uppercase">Options Data</th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white dark:bg-black divide-y divide-gray-300 dark:divide-gray-700">
+        <Card className="rounded-md border-none">
+            <CardHeader>
+                <CardTitle className="text-2xl font-bold text-center text-gray-800 dark:text-gray-200">
+                    Trending Stocks with High Open Interest
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <ScrollArea 
+                    className="h-[500px] rounded-md border border-none"
+                    role="region"
+                    aria-label="Trending stocks list"
+                >
+                    <div className="p-4">
+                        <div className="space-y-4">
                             {filteredNews.map((newsItem) => {
                                 const normalizedTicker = normalizeTicker(newsItem.symbols[0]);
                                 const options = highOiOptions.find((option) =>
@@ -88,54 +153,18 @@ export default function TrendingStocks({ data }: TrendingStocksProps) {
                                 );
 
                                 return (
-                                    <tr key={newsItem.id} className="hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors duration-150">
-                                        <td className="px-4 py-3 whitespace-nowrap">
-                                            <a href={`/stocks/${normalizedTicker}`} className="text-blue-600 dark:text-blue-400 hover:underline">
-                                                {normalizedTicker}
-                                            </a>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            <div className="flex items-start space-x-3 items-center justify-center">
-                                                {newsItem.images && newsItem.images.length > 0 && (
-                                                    <Image
-                                                        src={newsItem.images.find((img) => img.size === "large")?.url || ''}
-                                                        alt={newsItem.headline}
-                                                        width={100}
-                                                        height={100}
-                                                        className="rounded-lg object-cover"
-                                                        loading="lazy"
-                                                        placeholder="blur"
-                                                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlhZWiAAAAAAAABvogAAOPUAAAOQWFlaIAAAAAAAAGKZAAC3hQAAGNpYWVogAAAAAAAAJKAAAA+EAAC2z2Rlc2MAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWFlaIAAAAAAAAPbWAAEAAAAA0y1tbHVjAAAAAAAAAAAAAAAAAAAEZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDABQODxIPDRQSEBIXFRQdHx4eHRoaHSQtJSAyVC08MTY3LjIyOUFTRjo/Tj4yMkhiSk46NjU1VkRARkA6QkA6QED/2wBDAR4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAb/xAAUEAEAAAAAAAAAAAAAAAAAAAAA/8QAFQEBAQAAAAAAAAAAAAAAAAAAAAb/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCdABmX/9k="
-                                                    />
-                                                )}
-                                                <div>
-                                                    <p className="font-medium text-sm">{newsItem.headline}</p>
-                                                    <p className="text-xs text-gray-600 dark:text-gray-400">By {newsItem.author}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-3">
-                                            {options && Object.entries(options).map(([key, optionDetails]) => 
-                                                optionDetails ? (
-                                                    <div key={key} className="mb-2">
-                                                        <p className="text-sm font-medium text-gray-800 dark:text-gray-200 capitalize">{key}</p>
-                                                        <div className="grid grid-cols-2 gap-x-4 text-xs text-gray-600 dark:text-gray-400">
-                                                            <p>Strike: ${optionDetails.strike_price}</p>
-                                                            <p>Close: ${optionDetails.close_price}</p>
-                                                            <p>Exp: {optionDetails.expiration_date}</p>
-                                                            <p>OI: {optionDetails.open_interest}</p>
-                                                        </div>
-                                                    </div>
-                                                ) : null
-                                            )}
-                                        </td>
-                                    </tr>
+                                    <NewsItemCard
+                                        key={newsItem.id}
+                                        newsItem={newsItem}
+                                        options={options || {}}
+                                        normalizedTicker={normalizedTicker}
+                                    />
                                 );
                             })}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+                        </div>
+                    </div>
+                </ScrollArea>
+            </CardContent>
+        </Card>
     );
 }
