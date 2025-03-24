@@ -47,7 +47,7 @@ export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas:
                                                         ${cas.tokenInfo.price}
                                                     </span>
                                                     <span className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-blue-500">
-                                                        MC: ${cas.tokenInfo.marketCap.toLocaleString()}
+                                                        MC: ${cas?.tokenInfo?.marketCap?.toLocaleString() ?? 'N/A'}
                                                     </span>
                                                 </div>
                                             </>
