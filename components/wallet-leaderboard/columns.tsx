@@ -20,6 +20,7 @@ export const columns: ColumnDef<Wallet>[] = [
           alt="Profile Pic" width={32} height={32}
           priority={false}
           placeholder="blur"
+          blurDataURL={`https://placehold.co/32x32`}
         />
       </>;
     },

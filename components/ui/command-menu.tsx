@@ -26,27 +26,21 @@ const SUGGESTIONS = [
   { id: index + 1, ticker: "BTC-USD", title: "Bitcoin", assetType: "stocks" },
   { id: index + 2, ticker: "ETH-USD", title: "Ethereum", assetType: "stocks" },
   { id: index + 3, ticker: "SOL-USD", title: "Solana", assetType: "stocks" },
-  { id: index + 4, ticker: "TSLA", title: "Tesla Inc.", assetType: "stocks" },
-  { id: index + 5, ticker: "NVDA", title: "NVIDIA Corporation", assetType: "stocks" },
-  { id: index + 6, ticker: "AAPL", title: "Apple Inc.", assetType: "stocks" },
-  { id: index + 7, ticker: "MSFT", title: "Microsoft Corporation", assetType: "stocks" },
-  { id: index + 8, ticker: "GOOGL", title: "Alphabet Inc.", assetType: "stocks" },
-  { id: index + 9, ticker: "AMZN", title: "Amazon.com Inc.", assetType: "stocks" },
-  { id: index + 10, ticker: "DOGE-USD", title: "Dogecoin", assetType: "stocks" },
-  { id: index + 11, ticker: "SHIB-USD", title: "Shiba Inu", assetType: "stocks" },
-  { id: index + 12, ticker: "XRP-USD", title: "XRP", assetType: "stocks" },
-  { id: index + 13, ticker: "ADA-USD", title: "Cardano", assetType: "stocks" },
-  { id: index + 14, ticker: "DOT-USD", title: "Polkadot", assetType: "stocks" },
-  { id: index + 15, ticker: "LINK-USD", title: "Chainlink", assetType: "stocks" },
-  { id: index + 16, ticker: "UNI-USD", title: "Uniswap", assetType: "stocks" },
-  { id: index + 17, ticker: "LOCKIN", title: "Lockin", assetType: "coins" },
-  { id: index + 18, ticker: "MLG", title: "360noscope420blazeit", assetType: "coins" },
-  { id: index + 19, ticker: "CRASHOUT", title: "Crashout", assetType: "coins" },
-  { id: index + 20, ticker: "RETARDIO", title: "Retardio", assetType: "coins" },
-  { id: index + 21, ticker: "GIGACHAD", title: "GigaChad", assetType: "coins" },
-  { id: index + 22, ticker: "WIF", title: "DogWifHat", assetType: "coins" },
-  { id: index + 23, ticker: "Business", title: "Business Coin", assetType: "coins" },
-  { id: index + 24, ticker: "Sidelined", title: "Sidelined", assetType: "coins" },
+  { id: index + 4, ticker: "DOGE-USD", title: "Dogecoin", assetType: "stocks" },
+  { id: index + 5, ticker: "SHIB-USD", title: "Shiba Inu", assetType: "stocks" },
+  { id: index + 6, ticker: "XRP-USD", title: "XRP", assetType: "stocks" },
+  { id: index + 7, ticker: "ADA-USD", title: "Cardano", assetType: "stocks" },
+  { id: index + 8, ticker: "DOT-USD", title: "Polkadot", assetType: "stocks" },
+  { id: index + 9, ticker: "LINK-USD", title: "Chainlink", assetType: "stocks" },
+  { id: index + 10, ticker: "UNI-USD", title: "Uniswap", assetType: "stocks" },
+  { id: index + 11, ticker: "LOCKIN", title: "Lockin", assetType: "coins" },
+  { id: index + 12, ticker: "MLG", title: "360noscope420blazeit", assetType: "coins" },
+  { id: index + 13, ticker: "CRASHOUT", title: "Crashout", assetType: "coins" },
+  { id: index + 14, ticker: "RETARDIO", title: "Retardio", assetType: "coins" },
+  { id: index + 15, ticker: "GIGACHAD", title: "GigaChad", assetType: "coins" },
+  { id: index + 16, ticker: "WIF", title: "DogWifHat", assetType: "coins" },
+  { id: index + 17, ticker: "Business", title: "Business Coin", assetType: "coins" },
+  { id: index + 18, ticker: "Sidelined", title: "Sidelined", assetType: "coins" },
 ]
 
 interface WalletAddresses {
@@ -59,7 +53,12 @@ interface UserResult {
   isTracked?: boolean;
 }
 
-const COMBINED_TICKERS = [...SUGGESTIONS, ...tickers]
+// Filter out suggestions that already exist in tickers
+const filteredSuggestions = SUGGESTIONS.filter(suggestion => 
+  !tickers.some(ticker => ticker.ticker === suggestion.ticker)
+);
+
+const COMBINED_TICKERS = [...filteredSuggestions, ...tickers]
 
 export default function CommandMenu() {
   const [open, setOpen] = useState(false)

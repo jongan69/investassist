@@ -58,6 +58,7 @@ function TweetCard({ tweet }: { tweet: Tweet }) {
                 className="object-cover"
                 priority={false}
                 placeholder="blur"
+                blurDataURL={photo.url}
               />
             </div>
           ))}

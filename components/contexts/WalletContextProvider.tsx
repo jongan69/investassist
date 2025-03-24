@@ -40,6 +40,7 @@ const WalletConnectionHandler = ({
         [solanaWallet.publicKey]
     );
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     useEffect(() => {
         // Set wallet regardless of connection status
         setWallet(solanaWallet);

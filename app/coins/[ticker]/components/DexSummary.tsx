@@ -208,6 +208,7 @@ export default async function DexSummary({ ticker, ca, hasCa, axiomLink }: { tic
                     className="rounded-full"
                     priority={false}
                     placeholder="blur"
+                    blurDataURL={datiledOfPair.cg.imageUrl}
                   />
                 </a>
               </div>
@@ -226,6 +227,7 @@ export default async function DexSummary({ ticker, ca, hasCa, axiomLink }: { tic
                   style={{ objectFit: 'contain' }}
                   priority={false}
                   placeholder="blur"
+                  blurDataURL={datiledOfPair.ti.headerImage}
                 />
 
               </div>
