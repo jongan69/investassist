@@ -581,10 +581,12 @@ export default async function Page({ searchParams }: Props) {
                 sectorPerformance={sectorPerformance}
               />
             )}
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
               {latestNews && highOiOptions && <TrendingStocks data={{ news: latestNews, highOiOptions }} />}
             </Suspense>
-            <NewsSection news={news.news} />
+            <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
+              <NewsSection news={news.news} />
+            </Suspense>
             <div
               className={`pointer-events-none absolute inset-0 z-0 h-[65%] w-[65%] -translate-x-[10%] -translate-y-[30%] rounded-full blur-3xl ${sentimentBackground}`}
             />
@@ -596,18 +598,18 @@ export default async function Page({ searchParams }: Props) {
               <CardTitle className="text-lg">Sector Performance</CardTitle>
             </CardHeader>
             <CardContent>
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
                 <SectorPerformance />
               </Suspense>
             </CardContent>
           </Card>
 
-          <Suspense fallback={<div>Loading...</div>}>
+          <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded-lg" />}>
             <CryptoTrends data={resultsWithTitles} />
           </Suspense>
           
           <Card className="mt-4">
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
               <CardHeader>
                 <CardTitle className="text-lg">Live Trades</CardTitle>
               </CardHeader>

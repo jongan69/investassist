@@ -8,7 +8,14 @@ import Footer from "@/components/ui/footer"
 import WalletContextProvider from "@/components/contexts/WalletContextProvider"
 import toast, { Toaster } from 'react-hot-toast';
 import ProfileForm from '@/components/profile/ProfileForm'
-const inter = Inter({ subsets: ["latin"] })
+import Script from "next/script"
+
+const inter = Inter({ 
+  subsets: ["latin"],
+  display: 'swap',
+  preload: true,
+  adjustFontFallback: true
+})
 
 export const metadata: Metadata = {
   title: "InvestAssist: Stock Quotes, Market News, & Analysis",
@@ -24,12 +31,14 @@ export default function RootLayout({
   return (
     <ViewTransitions>
       <html lang="en" suppressHydrationWarning>
+        <Script
+          async
+          defer
+          strategy="lazyOnload"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6202902142885850"
+          crossOrigin="anonymous"
+        />
         <head>
-          <script
-            async
-            src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6202902142885850"
-            crossOrigin="anonymous">
-            </script>
           <meta
             name="description"
             content="InvestAssist is a source of free stock quotes, business and finance news, portfolio management tools, and international market data."

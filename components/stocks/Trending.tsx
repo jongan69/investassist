@@ -1,9 +1,16 @@
 import Image from "next/image"
 
+// Function to normalize ticker symbols
+const normalizeTicker = (ticker: string) => {
+    return ticker === 'FB' ? 'META' : ticker;
+};
+
 export default function TrendingStocks(data: any) {
     // console.log(data)
     const { news, highOiOptions } = data.data
     const filteredNews = news.filter((item: any) => item.symbols.length > 0)
+    // console.log(filteredNews)
+    // console.log(highOiOptions)
     return (
         filteredNews && highOiOptions && (
             <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
@@ -20,15 +27,20 @@ export default function TrendingStocks(data: any) {
                             </thead>
                             <tbody className="bg-white dark:bg-black divide-y divide-gray-300 dark:divide-gray-700">
                                 {filteredNews?.map((newsItem: any) => {
+                                    // Normalize the ticker symbol before finding options
+                                    const normalizedTicker = normalizeTicker(newsItem.symbols[0]);
                                     const options = highOiOptions.find((option: any) =>
-                                        option?.shortTerm?.root_symbol === newsItem.symbols[0]
+                                        option?.shortTerm?.root_symbol === normalizedTicker
                                     );
+
+                                    // Display the normalized ticker in the link
+                                    const displayTicker = normalizedTicker;
 
                                     return (
                                         <tr key={newsItem.id} className="hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors duration-150">
                                             <td className="px-4 py-3 whitespace-nowrap">
-                                                <a href={`/stocks/${newsItem.symbols[0]}`} className="text-blue-600 dark:text-blue-400 hover:underline">
-                                                    {newsItem.symbols[0]}
+                                                <a href={`/stocks/${displayTicker}`} className="text-blue-600 dark:text-blue-400 hover:underline">
+                                                    {displayTicker}
                                                 </a>
                                             </td>
                                             <td className="px-4 py-3">

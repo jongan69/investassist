@@ -1,3 +1,17 @@
+/* Critical CSS */
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 3.9%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+/* Rest of the CSS */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

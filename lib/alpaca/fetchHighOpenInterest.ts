@@ -10,8 +10,9 @@ if (!ALPACA_API_KEY || !ALPACA_API_SECRET) {
 
 // Helper function to fetch current option prices
 export const getOptionPrices = async (contract: { symbol: string }): Promise<OptionPrices | null> => {
+    const normalizedSymbol = contract.symbol === 'FB' ? 'META' : contract.symbol;
     try {
-        const url = `https://api.alpaca.markets/v2/options/contracts/${contract.symbol}`;
+        const url = `https://api.alpaca.markets/v2/options/contracts/${normalizedSymbol}`;
         
         // console.info(`Fetching current prices for option ${contract.symbol}`);
         
@@ -73,6 +74,9 @@ export const getOptionPrices = async (contract: { symbol: string }): Promise<Opt
 // Fetch high open-interest contracts
 export const getHighOpenInterestContracts = async (ticker: String, optionType = 'call') => {
     try {
+        // Convert FB to META if needed
+        const normalizedTicker = ticker === 'FB' ? 'META' : ticker;
+
         const shortTermExpiration = {
             start: DateTime.utc().plus({ days: 1 }).toISODate(),
             end: DateTime.utc().plus({ days: 60 }).toISODate(),
@@ -85,14 +89,14 @@ export const getHighOpenInterestContracts = async (ticker: String, optionType = 
 
         const fetchContracts = async (expiration: { start: string, end: string }) => {
             const url = `https://api.alpaca.markets/v2/options/contracts?` +
-                `underlying_symbol=${ticker}` +
+                `underlying_symbol=${normalizedTicker}` +
                 `&status=active` +
                 `&expiration_date_gte=${expiration.start}` +
                 `&expiration_date_lte=${expiration.end}` +
                 `&type=${optionType}` +
                 `&limit=100`;
 
-            // console.info(`Fetching ${optionType} options for ${ticker} with expiration range ${expiration.start} to ${expiration.end}`);
+            // console.info(`Fetching ${optionType} options for ${normalizedTicker} with expiration range ${expiration.start} to ${expiration.end}`);
 
             try {
                 const response = await fetch(url, {
@@ -105,7 +109,7 @@ export const getHighOpenInterestContracts = async (ticker: String, optionType = 
 
                 if (!response.ok) {
                     if (response.status === 422) {
-                        const errorMessage = ticker === 'FB' 
+                        const errorMessage = normalizedTicker === 'META' 
                             ? `Invalid ticker symbol: ${ticker} (Note: Meta's ticker changed from FB to META in June 2022)`
                             : `Invalid ticker symbol: ${ticker}`;
                         console.error(errorMessage);
