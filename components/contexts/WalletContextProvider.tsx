@@ -34,6 +34,9 @@ const WalletConnectionHandler = ({
     const solanaWallet = useSolanaWallet();
     const hasCheckedProfile = useRef<string | null>(null);
 
+    // Extract complex expression to a variable
+    const walletAddress = solanaWallet.publicKey?.toString();
+
     useEffect(() => {
         // Set wallet regardless of connection status
         setWallet(solanaWallet);
@@ -64,7 +67,7 @@ const WalletConnectionHandler = ({
             hasCheckedProfile.current = null;
             setShowProfileForm(false);
         }
-    }, [solanaWallet.connected, solanaWallet.publicKey?.toString()]);
+    }, [solanaWallet.connected, walletAddress, setWallet, setShowProfileForm, solanaWallet]);
 
     return <>{children}</>;
 };

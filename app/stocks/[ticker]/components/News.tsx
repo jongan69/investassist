@@ -70,11 +70,11 @@ export default async function News({ ticker }: { ticker: string }) {
               >
                 <span className="text-sm font-medium text-muted-foreground">
                   {article.publisher} -{" "}
-                  {timeAgo(article.providerPublishTime.toISOString())}
+                  {timeAgo(article.publishedAt.toISOString())}
                 </span>
                 <span className="font-semibold">{article.title}</span>
                 <span className="text-sm font-medium text-muted-foreground">
-                  {article.providerPublishTime.toISOString()}
+                  {article.publishedAt.toISOString()}
                 </span>
               </Link>
             ))}

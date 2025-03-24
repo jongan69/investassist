@@ -20,6 +20,7 @@ export async function fetchStockSearch(ticker: string, newsCount: number = 5) {
     // Only return necessary fields
     return {
       news: response.news?.map(news => ({
+        uuid: news.uuid,
         title: news.title,
         link: news.link,
         publisher: news.publisher,
