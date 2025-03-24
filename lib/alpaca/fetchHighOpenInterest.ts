@@ -105,12 +105,15 @@ export const getHighOpenInterestContracts = async (ticker: String, optionType = 
 
                 if (!response.ok) {
                     if (response.status === 422) {
-                        console.error(`Invalid ticker symbol: ${ticker}`);
+                        const errorMessage = ticker === 'FB' 
+                            ? `Invalid ticker symbol: ${ticker} (Note: Meta's ticker changed from FB to META in June 2022)`
+                            : `Invalid ticker symbol: ${ticker}`;
+                        console.error(errorMessage);
                         return null;
                     }
                     if (response.status === 429) {
-                        console.warn(`Rate limit hit for ${ticker}, waiting before retry`);
-                        return fetchContracts(expiration);
+                        console.warn(`Rate limit hit for ${ticker}, skipping ticker after one attempt`);
+                        return null;
                     }
                     console.error(`Error fetching contracts for ${ticker}: ${response.status} ${response.statusText}`);
                     return null;
