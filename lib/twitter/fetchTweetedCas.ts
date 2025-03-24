@@ -4,7 +4,7 @@ export const fetchTweetedCas = async (setTweetedCas: (tweetedCas: any) => void, 
     try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch('/api/twitter-cas', { cache: 'no-store' });
+        const response = await fetch('/api/twitter-cas');
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

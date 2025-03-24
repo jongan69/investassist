@@ -11,7 +11,7 @@ import { Toaster } from 'react-hot-toast';
 import ProfileForm from '@/components/profile/ProfileForm'
 import Script from "next/script"
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ["latin"],
   display: 'swap',
   preload: true,
@@ -76,8 +76,10 @@ export default function RootLayout({
           >
             <WalletContextProvider>
               <Navigation />
-              <main className="container">{children}</main>
-              <SpeedInsights />
+              <main className="container">
+                {children}
+                <SpeedInsights />
+              </main>
               <ProfileForm />
               <Toaster />
               <Footer />
