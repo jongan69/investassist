@@ -1,7 +1,6 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { fetchTrendingTopics } from "@/lib/twitter/fetchTrendingTopics";
 import { useState } from "react";
 import { TrendingUp } from "lucide-react"
@@ -68,30 +67,24 @@ export function TrendingTopics() {
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <ScrollArea className="h-[400px] rounded-md">
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {topics.map((topic, index) => {
-                            const url = `https://x.com/search?q=${encodeURIComponent(topic)}`;
-                            return (
-                                <a
-                                    key={index}
-                                    href={url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        window.open(url, '_blank', 'noopener,noreferrer');
-                                    }}
-                                    className="block w-full bg-gray-100 dark:bg-gray-800 rounded-lg p-4 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 cursor-pointer z-10 relative"
-                                >
-                                    <span className="text-sm font-medium text-gray-900 dark:text-gray-100 text-center block">
-                                        {topic}
-                                    </span>
-                                </a>
-                            );
-                        })}
-                    </div>
-                </ScrollArea>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 relative z-10">
+                    {topics.map((topic, index) => {
+                        const url = `https://x.com/search?q=${encodeURIComponent(topic)}`;
+                        return (
+                            <a
+                                key={index}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block w-full h-full min-h-[80px] bg-gray-100 dark:bg-gray-800 rounded-lg p-4 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200 relative z-20"
+                            >
+                                <span className="text-sm font-medium text-gray-900 dark:text-gray-100 text-center block">
+                                    {topic}
+                                </span>
+                            </a>
+                        );
+                    })}
+                </div>
             </CardContent>
         </Card>
     );

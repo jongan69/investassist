@@ -25,7 +25,7 @@ export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas:
                 </p>
             ) : isCasLoading ? (
                 <p className="leading-relaxed text-sm animate-pulse text-muted-foreground">
-                    Loading CAS tokens...
+                    Loading Contract Addresses...
                 </p>
             ) : tweetedCas && tweetedCas.length > 0 ? (
                 <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground scrollbar-track-transparent hover:scrollbar-thumb-primary transition-all">
