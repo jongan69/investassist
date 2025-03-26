@@ -3,6 +3,7 @@ export const fetchCryptoTrends = async (setTrends: (trends: any) => void, setIsL
         setIsLoading(true);
         setError(null);
         const response = await fetch('/api/crypto-trends');
+        // console.log(response);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

@@ -9,7 +9,7 @@ import Footer from "@/components/ui/footer"
 import WalletContextProvider from "@/components/contexts/WalletContextProvider"
 import { Toaster } from 'react-hot-toast';
 import ProfileForm from '@/components/profile/ProfileForm'
-import Script from "next/script"
+// import Script from "next/script"
 import { Analytics } from '@vercel/analytics/next';
 
 const inter = Inter({
@@ -35,7 +35,7 @@ export default function RootLayout({
   return (
     <ViewTransitions>
       <html lang="en" suppressHydrationWarning>
-        <Script
+        <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6202902142885850"
           crossOrigin="anonymous"
