@@ -93,7 +93,7 @@ export function DataTable<TData, TValue>({
   )
 
   return (
-    <div className="w-full">
+    <div className="w-full pt-4">
       <div className="flex items-center pb-4">
         <Select onValueChange={(value) => handleSelect(value)}>
           <SelectTrigger className="w-[180px] bg-card">

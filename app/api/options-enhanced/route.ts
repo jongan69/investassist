@@ -1,8 +1,6 @@
 // api/get-high-oi-options?ticker=AAPL&optionType=call
 import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest";
 import { NextResponse } from "next/server";
-import { validateTicker } from "@/lib/utils";
-import { DateTime } from 'luxon';
 import yahooFinance from 'yahoo-finance2';
 
 // Define types for Yahoo Finance data
@@ -50,9 +48,6 @@ type ScreenerType =
     | 'top_mutual_funds'
     | 'undervalued_growth_stocks'
     | 'solid_midcap_growth_funds';
-
-// Helper function to delay execution
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Helper function to calculate options-enhanced income
 const calculateOptionsEnhancedIncome = async (stock: YahooQuote, investmentAmount: number) => {
