@@ -2,7 +2,7 @@ export const fetchTrendingTopics = async (setTrendingTopics: (trendingTopics: st
     try {
         setIsLoading(true);
         setError(null);
-        const response = await fetch('/api/twitter-trending', { cache: 'no-store' });
+        const response = await fetch('/api/twitter/twitter-trending', { cache: 'no-store' });
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
