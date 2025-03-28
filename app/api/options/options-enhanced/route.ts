@@ -160,14 +160,16 @@ async function calculateFairMarketValue(stock: YahooQuote): Promise<number> {
         const valuation = insights.instrumentInfo?.valuation;
         if (valuation?.discount && typeof valuation.discount === 'string') {
             const currentPrice = stock.regularMarketPrice;
-            const discountValue = parseFloat(valuation.discount.replace('%', '')) / 100;
+            const discountStr = valuation.discount.replace('%', '');
+            const discountValue = parseFloat(discountStr) / 100;
             
-            // Calculate FMV based on the discount
-            const fmv = currentPrice / (1 - discountValue);
+            // Calculate FMV based on the discount, but apply additional conservatism
+            const fmv = (currentPrice / (1 - discountValue)) * 0.85; // Apply 15% additional discount
             console.log('FMV from Trading Central:', fmv, {
                 currentPrice,
                 discountValue,
-                description: valuation.description
+                description: valuation.description,
+                additionalDiscount: 0.85
             });
             return fmv;
         }
@@ -177,7 +179,7 @@ async function calculateFairMarketValue(stock: YahooQuote): Promise<number> {
 
         // 1. PE-based valuation (using both trailing and forward PE)
         if (stock.epsTrailingTwelveMonths && stock.epsTrailingTwelveMonths > 0) {
-            const industryPE = 12; // More conservative industry average
+            const industryPE = 10; // More conservative industry average
             const peValue = stock.epsTrailingTwelveMonths * industryPE;
             console.log('PE-based value:', peValue, {
                 eps: stock.epsTrailingTwelveMonths,
@@ -185,26 +187,26 @@ async function calculateFairMarketValue(stock: YahooQuote): Promise<number> {
                 growthAdj: 1,
                 riskAdj: 1
             });
-            methods.push({ value: peValue, weight: 0.25 });
+            methods.push({ value: peValue, weight: 0.3 });
         }
 
         // 2. Asset-based valuation (using book value and price-to-book)
         if (stock.bookValue && stock.bookValue > 0) {
-            const pbRatio = 1.0; // More conservative P/B ratio
+            const pbRatio = 0.8; // More conservative P/B ratio
             const assetValue = stock.bookValue * pbRatio;
             console.log('Asset-based value:', assetValue, {
                 bookValue: stock.bookValue,
                 pbRatio,
                 debtToEquityAdj: 1
             });
-            methods.push({ value: assetValue, weight: 0.25 });
+            methods.push({ value: assetValue, weight: 0.3 });
         }
 
         // 3. Income-based valuation (using dividend rate)
         if (stock.dividendRate && stock.dividendRate > 0) {
-            const requiredReturn = 0.12; // Higher required return (12%)
+            const requiredReturn = 0.15; // Higher required return (15%)
             const growthRate = 0.01; // Lower growth rate (1%)
-            const sustainableDividend = stock.dividendRate * 0.7; // More conservative (70% of current dividend)
+            const sustainableDividend = stock.dividendRate * 0.6; // More conservative (60% of current dividend)
             const incomeValue = sustainableDividend / (requiredReturn - growthRate);
             console.log('Income-based value:', incomeValue, {
                 sustainableDividend,
@@ -212,25 +214,27 @@ async function calculateFairMarketValue(stock: YahooQuote): Promise<number> {
                 growthRate,
                 profitabilityAdj: 1
             });
-            methods.push({ value: incomeValue, weight: 0.25 });
+            methods.push({ value: incomeValue, weight: 0.2 });
         }
 
         // 4. Technical analysis based valuation (using moving averages)
         if (stock.fiftyDayAverage && stock.twoHundredDayAverage) {
-            const technicalValue = Math.min(stock.fiftyDayAverage, stock.twoHundredDayAverage);
+            const technicalValue = Math.min(stock.fiftyDayAverage, stock.twoHundredDayAverage) * 0.9; // 10% discount
             console.log('Technical value:', technicalValue, {
                 fiftyDayAvg: stock.fiftyDayAverage,
-                twoHundredDayAvg: stock.twoHundredDayAverage
+                twoHundredDayAvg: stock.twoHundredDayAverage,
+                discount: 0.9
             });
-            methods.push({ value: technicalValue, weight: 0.15 });
+            methods.push({ value: technicalValue, weight: 0.1 });
         }
 
         // 5. Price range based valuation (using 52-week range)
         if (stock.fiftyTwoWeekHigh && stock.fiftyTwoWeekLow) {
-            const rangeValue = stock.fiftyTwoWeekLow * 1.1; // Use low + 10% as conservative estimate
+            const rangeValue = stock.fiftyTwoWeekLow * 1.05; // Use low + 5% as conservative estimate
             console.log('Range-based value:', rangeValue, {
                 fiftyTwoWeekHigh: stock.fiftyTwoWeekHigh,
-                fiftyTwoWeekLow: stock.fiftyTwoWeekLow
+                fiftyTwoWeekLow: stock.fiftyTwoWeekLow,
+                adjustment: 1.05
             });
             methods.push({ value: rangeValue, weight: 0.1 });
         }
@@ -255,9 +259,9 @@ async function calculateFairMarketValue(stock: YahooQuote): Promise<number> {
             weights: validMethods.map(m => m.weight)
         });
 
-        // Apply final market adjustment (15% discount for conservative estimate)
-        const finalFMV = weightedAverage * 0.85;
-        console.log('Final FMV:', finalFMV, { marketAdjustment: 0.85 });
+        // Apply final market adjustment (20% discount for conservative estimate)
+        const finalFMV = weightedAverage * 0.8;
+        console.log('Final FMV:', finalFMV, { marketAdjustment: 0.8 });
 
         return finalFMV;
     } catch (error) {
@@ -501,7 +505,9 @@ export async function POST(request: Request) {
                 beta: stock.beta,
                 dividendCoverage: stock.epsTrailingTwelveMonths / (stock.dividendRate || 0),
                 priceToBook: stock.regularMarketPrice / (stock.bookValue || 0),
-                currentRatio: stock.currentAssets / (stock.currentLiabilities || 0),
+                currentRatio: stock.currentAssets && stock.currentLiabilities ? 
+                    stock.currentAssets / stock.currentLiabilities : 
+                    undefined,
                 dividendGrowthRate: stock.dividendGrowthRate || 0,
                 fiftyTwoWeekHigh: stock.fiftyTwoWeekHigh,
                 fiftyTwoWeekLow: stock.fiftyTwoWeekLow,
