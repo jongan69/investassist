@@ -65,9 +65,9 @@ export const TrendingMetas: React.FC = () => {
             href={meta.url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`block p-4 rounded-lg border transition-all duration-200 hover:shadow-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 ${
+            className={`block p-4 rounded-lg border transition-all duration-200 hover:shadow-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 ${
               meta.isTrendingTwitterTopic 
-                ? 'border-blue-500 bg-blue-50/80 dark:bg-blue-900/30 hover:bg-blue-100/90 dark:hover:bg-blue-900/50' 
+                ? 'border-green-500 bg-green-50/80 dark:bg-green-900/30 hover:bg-green-100/90 dark:hover:bg-green-900/50' 
                 : 'border-black/20 dark:border-white/20 bg-white/80 dark:bg-black/80 hover:bg-black/5 dark:hover:bg-white/5'
             }`}
             onClick={(e) => {
@@ -78,7 +78,7 @@ export const TrendingMetas: React.FC = () => {
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-lg font-semibold text-black dark:text-white">{meta.word_with_strength}</h3>
               {meta.isTrendingTwitterTopic && (
-                <span className="px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 bg-blue-100/80 dark:bg-blue-900/50 rounded-full">
+                <span className="px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 bg-green-100/80 dark:bg-green-900/50 rounded-full">
                   Trending on Twitter
                 </span>
               )}
