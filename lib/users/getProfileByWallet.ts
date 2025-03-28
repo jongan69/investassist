@@ -4,7 +4,7 @@ export const getProfileByWalletAddress = async (walletAddress: PublicKey) => {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
 
     try {
-        const response = await fetch(`${baseUrl}/api/get-profile`, {
+        const response = await fetch(`${baseUrl}/api/database/get-profile`, {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',

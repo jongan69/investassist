@@ -1,7 +1,7 @@
 export async function saveUser(username: string, walletAddress: string) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
     try {
-        const response = await fetch(`${baseUrl}/api/save-user`, {
+        const response = await fetch(`${baseUrl}/api/database/save-user`, {
             method: 'POST',
             body: JSON.stringify({ username, walletAddress })
         })
