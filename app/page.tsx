@@ -28,6 +28,7 @@ import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest
 import TrendingStocks from "@/components/stocks/Trending"
 import { LiveTrades } from "@/components/crypto/LiveTrades/LiveTrades"
 import { fetchWithTimeout, handleApiError } from "@/lib/utils"
+// import { TrendingMetas } from '../components/TrendingMetas';
 
 // Add route segment config
 export const dynamic = 'force-dynamic'

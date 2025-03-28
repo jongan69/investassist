@@ -15,6 +15,7 @@ import { LatestTweets } from './Trends/LatestTweets';
 import { Overview } from './Trends/Overview';
 import { TopTweeted } from './Trends/TopTweeted';
 import { TrendingTopics } from './Trends/TrendingTopics';
+import { TrendingMetas } from './Trends/TrendingMetas';
 
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
@@ -158,6 +159,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                     ) : trends ? (
                         <Fragment>
                             <Overview trends={trends} data={data} />
+                            <TrendingMetas />
                             <TopTweeted trends={trends} />
                             <WhaleActivity trends={trends} />
                             <TrendingTopics />
