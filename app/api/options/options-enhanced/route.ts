@@ -26,6 +26,31 @@ interface YahooQuote {
     currentAssets: number;
     currentLiabilities: number;
     dividendGrowthRate: number;
+    fairMarketValue?: number;
+    // Add missing fields for better FMV calculation
+    revenueGrowth: number;
+    operatingMargin: number;
+    returnOnEquity: number;
+    freeCashflow: number;
+    totalCash: number;
+    totalDebt: number;
+    enterpriseValue: number;
+    forwardPE: number;
+    pegRatio: number;
+    priceToSales: number;
+    revenue: number;
+    grossProfit: number;
+    operatingIncome: number;
+    netIncome: number;
+    totalAssets: number;
+    totalLiabilities: number;
+    shortTermDebt: number;
+    longTermDebt: number;
+    cashPerShare: number;
+    revenuePerShare: number;
+    fiftyDayAverage: number;
+    twoHundredDayAverage: number;
+    priceToBook: number;
 }
 
 interface YahooQuoteResponse {
@@ -103,8 +128,146 @@ const calculateOptionsEnhancedIncome = async (stock: YahooQuote, investmentAmoun
     }
 };
 
+// Helper function to calculate fair market value
+async function calculateFairMarketValue(stock: YahooQuote): Promise<number> {
+    console.log('Calculating FMV for', stock.symbol + ':');
+    console.log('Input data:', {
+        price: stock.regularMarketPrice,
+        eps: stock.epsTrailingTwelveMonths,
+        pe: stock.trailingPE,
+        bookValue: stock.bookValue,
+        dividendRate: stock.dividendRate,
+        forwardPE: stock.forwardPE,
+        priceToBook: stock.priceToBook,
+        marketCap: stock.marketCap,
+        fiftyTwoWeekHigh: stock.fiftyTwoWeekHigh,
+        fiftyTwoWeekLow: stock.fiftyTwoWeekLow,
+        fiftyDayAverage: stock.fiftyDayAverage,
+        twoHundredDayAverage: stock.twoHundredDayAverage
+    });
+
+    try {
+        // Get insights data from Yahoo Finance
+        const insights = await yahooFinance.insights(stock.symbol, {
+            lang: 'en-US',
+            reportsCount: 2,
+            region: 'US'
+        });
+
+        console.log('Insights data:', JSON.stringify(insights, null, 2));
+
+        // Use Trading Central's valuation data if available
+        const valuation = insights.instrumentInfo?.valuation;
+        if (valuation?.discount && typeof valuation.discount === 'string') {
+            const currentPrice = stock.regularMarketPrice;
+            const discountValue = parseFloat(valuation.discount.replace('%', '')) / 100;
+            
+            // Calculate FMV based on the discount
+            const fmv = currentPrice / (1 - discountValue);
+            console.log('FMV from Trading Central:', fmv, {
+                currentPrice,
+                discountValue,
+                description: valuation.description
+            });
+            return fmv;
+        }
+
+        // Fallback to our original calculation if insights data is not available
+        const methods: { value: number; weight: number }[] = [];
+
+        // 1. PE-based valuation (using both trailing and forward PE)
+        if (stock.epsTrailingTwelveMonths && stock.epsTrailingTwelveMonths > 0) {
+            const industryPE = 12; // More conservative industry average
+            const peValue = stock.epsTrailingTwelveMonths * industryPE;
+            console.log('PE-based value:', peValue, {
+                eps: stock.epsTrailingTwelveMonths,
+                industryPE,
+                growthAdj: 1,
+                riskAdj: 1
+            });
+            methods.push({ value: peValue, weight: 0.25 });
+        }
+
+        // 2. Asset-based valuation (using book value and price-to-book)
+        if (stock.bookValue && stock.bookValue > 0) {
+            const pbRatio = 1.0; // More conservative P/B ratio
+            const assetValue = stock.bookValue * pbRatio;
+            console.log('Asset-based value:', assetValue, {
+                bookValue: stock.bookValue,
+                pbRatio,
+                debtToEquityAdj: 1
+            });
+            methods.push({ value: assetValue, weight: 0.25 });
+        }
+
+        // 3. Income-based valuation (using dividend rate)
+        if (stock.dividendRate && stock.dividendRate > 0) {
+            const requiredReturn = 0.12; // Higher required return (12%)
+            const growthRate = 0.01; // Lower growth rate (1%)
+            const sustainableDividend = stock.dividendRate * 0.7; // More conservative (70% of current dividend)
+            const incomeValue = sustainableDividend / (requiredReturn - growthRate);
+            console.log('Income-based value:', incomeValue, {
+                sustainableDividend,
+                requiredReturn,
+                growthRate,
+                profitabilityAdj: 1
+            });
+            methods.push({ value: incomeValue, weight: 0.25 });
+        }
+
+        // 4. Technical analysis based valuation (using moving averages)
+        if (stock.fiftyDayAverage && stock.twoHundredDayAverage) {
+            const technicalValue = Math.min(stock.fiftyDayAverage, stock.twoHundredDayAverage);
+            console.log('Technical value:', technicalValue, {
+                fiftyDayAvg: stock.fiftyDayAverage,
+                twoHundredDayAvg: stock.twoHundredDayAverage
+            });
+            methods.push({ value: technicalValue, weight: 0.15 });
+        }
+
+        // 5. Price range based valuation (using 52-week range)
+        if (stock.fiftyTwoWeekHigh && stock.fiftyTwoWeekLow) {
+            const rangeValue = stock.fiftyTwoWeekLow * 1.1; // Use low + 10% as conservative estimate
+            console.log('Range-based value:', rangeValue, {
+                fiftyTwoWeekHigh: stock.fiftyTwoWeekHigh,
+                fiftyTwoWeekLow: stock.fiftyTwoWeekLow
+            });
+            methods.push({ value: rangeValue, weight: 0.1 });
+        }
+
+        // Filter out any invalid methods and adjust weights
+        const validMethods = methods.filter(m => !isNaN(m.value) && isFinite(m.value));
+        console.log('Valid methods:', validMethods.map(m => m.value));
+
+        if (validMethods.length === 0) {
+            console.log('No valid methods available for FMV calculation');
+            return 0;
+        }
+
+        // Calculate weighted average
+        const totalWeight = validMethods.reduce((sum, m) => sum + m.weight, 0);
+        const weightedSum = validMethods.reduce((sum, m) => sum + (m.value * m.weight), 0);
+        const weightedAverage = weightedSum / totalWeight;
+
+        console.log('Weighted average FMV:', weightedAverage, {
+            weightedSum,
+            totalWeight,
+            weights: validMethods.map(m => m.weight)
+        });
+
+        // Apply final market adjustment (15% discount for conservative estimate)
+        const finalFMV = weightedAverage * 0.85;
+        console.log('Final FMV:', finalFMV, { marketAdjustment: 0.85 });
+
+        return finalFMV;
+    } catch (error) {
+        console.error(`Error getting insights for ${stock.symbol}:`, error);
+        return 0;
+    }
+}
+
 // Helper function to check if stock meets quality criteria
-const meetsQualityCriteria = (stock: YahooQuote) => {
+const meetsQualityCriteria = async (stock: YahooQuote) => {
     // Must be a common stock (not a fund or ETF)
     if (stock.quoteType !== 'EQUITY') return false;
     
@@ -144,6 +307,16 @@ const meetsQualityCriteria = (stock: YahooQuote) => {
     
     // Must be trading within 20% of 52-week low
     if (stock.fiftyTwoWeekLow && stock.regularMarketPrice > stock.fiftyTwoWeekLow * 1.2) return false;
+
+    // Calculate and check FMV
+    const fmv = await calculateFairMarketValue(stock);
+    if (fmv <= 0) return false;
+    
+    // Current price must be below FMV
+    if (stock.regularMarketPrice >= fmv) return false;
+    
+    // Store FMV in the stock object
+    stock.fairMarketValue = fmv;
     
     return true;
 };
@@ -200,6 +373,7 @@ export async function POST(request: Request) {
         // Fetch data from all screeners
         for (const screener of screeners) {
             try {
+                console.log(`\nFetching data from screener: ${screener}`);
                 const response = await yahooFinance.screener({
                     scrIds: screener,
                     count: 40,
@@ -209,15 +383,28 @@ export async function POST(request: Request) {
                     validateResult: false,
                 });
 
+                // Log raw data for first stock in each screener
+                if (response.quotes.length > 0) {
+                    console.log(`\nSample stock data from ${screener}:`);
+                    console.log(JSON.stringify(response.quotes[0], null, 2));
+                }
+
                 // Process each stock from the screener
-                response.quotes.forEach((stock: YahooQuote) => {
-                    if (!allStocks.has(stock.symbol) && meetsQualityCriteria(stock)) {
+                for (const stock of response.quotes) {
+                    if (!allStocks.has(stock.symbol) && await meetsQualityCriteria(stock)) {
                         allStocks.set(stock.symbol, stock);
                     }
-                });
+                }
             } catch (error) {
                 console.error(`Failed to fetch ${screener} screener:`, error);
             }
+        }
+
+        console.log(`\nTotal unique stocks found: ${allStocks.size}`);
+        console.log('Sample of processed stock data:');
+        const sampleStock = Array.from(allStocks.values())[0];
+        if (sampleStock) {
+            console.log(JSON.stringify(sampleStock, null, 2));
         }
 
         // Convert Map to array and calculate options-enhanced income for each stock
@@ -296,6 +483,8 @@ export async function POST(request: Request) {
                 sector: stock.sector,
                 industry: stock.industry,
                 currentPrice: stock.regularMarketPrice,
+                fairMarketValue: stock.fairMarketValue,
+                priceToFairValue: stock.regularMarketPrice / (stock.fairMarketValue || 1),
                 dividendYield: stock.dividendYield,
                 dividendRate: stock.dividendRate,
                 shares: stock.optionsAnalysis.shares,
