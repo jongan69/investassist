@@ -436,15 +436,15 @@ export default async function Page({ searchParams }: Props) {
                               </span>
                             </div>
                             <p className="text-[10px] text-muted-foreground/80">
-                              {signal === 'priceVs50dma' && "Price compared to 50-day moving average - indicates short-term trend"}
-                              {signal === 'priceVs200dma' && "Price compared to 200-day moving average - indicates long-term trend"}
-                              {signal === 'goldenCross' && "50-day MA vs 200-day MA - classic trend reversal indicator"}
-                              {signal === 'weeklyMomentum' && "Weekly price movement - shows short-term momentum"}
-                              {signal === 'yearlyPerformance' && "Year-over-year performance - long-term market direction"}
-                              {signal === 'volumeTrend' && "Volume compared to 10-day average - shows trading activity strength"}
-                              {signal === 'priceAboveOpen' && "Current price vs today&apos;s opening - shows intraday momentum"}
-                              {signal === 'dailyMomentum' && "Daily price change in absolute terms - short-term strength"}
-                              {signal === 'volatility' && "Price range relative to opening - market stability indicator"}
+                              {signal === 'priceVs50dma' && `${value === 'bullish' ? 'Price is above' : 'Price is below'} the 50-day average - ${value === 'bullish' ? 'indicating' : 'suggesting'} short-term ${value === 'bullish' ? 'strength' : 'weakness'}`}
+                              {signal === 'priceVs200dma' && `${value === 'bullish' ? 'Price is above' : 'Price is below'} the 200-day average - ${value === 'bullish' ? 'indicating' : 'suggesting'} long-term ${value === 'bullish' ? 'strength' : 'weakness'}`}
+                              {signal === 'goldenCross' && `${value === 'bullish' ? 'Golden Cross pattern active' : 'Death Cross pattern active'} - ${value === 'bullish' ? 'suggesting' : 'indicating'} a ${value === 'bullish' ? 'bullish' : 'bearish'} trend`}
+                              {signal === 'weeklyMomentum' && `${value === 'bullish' ? 'Strong' : value === 'bearish' ? 'Weak' : 'Neutral'} weekly momentum - ${value === 'bullish' ? 'showing' : value === 'bearish' ? 'indicating' : 'suggesting'} ${value === 'bullish' ? 'positive' : value === 'bearish' ? 'negative' : 'stable'} short-term movement`}
+                              {signal === 'yearlyPerformance' && `${value === 'bullish' ? 'Positive' : 'Negative'} year-over-year performance - ${value === 'bullish' ? 'showing' : 'indicating'} ${value === 'bullish' ? 'strong' : 'weak'} long-term growth`}
+                              {signal === 'volumeTrend' && `${value === 'bullish' ? 'Above' : value === 'bearish' ? 'Below' : 'Near'} average trading volume - ${value === 'bullish' ? 'indicating' : value === 'bearish' ? 'suggesting' : 'showing'} ${value === 'bullish' ? 'strong' : value === 'bearish' ? 'weak' : 'normal'} market interest`}
+                              {signal === 'priceAboveOpen' && `${value === 'bullish' ? 'Price is above' : 'Price is below'} today's opening - ${value === 'bullish' ? 'showing' : 'indicating'} ${value === 'bullish' ? 'positive' : 'negative'} daily momentum`}
+                              {signal === 'dailyMomentum' && `${value === 'bullish' ? 'Strong' : value === 'bearish' ? 'Weak' : 'Moderate'} daily price movement - ${value === 'bullish' ? 'showing' : value === 'bearish' ? 'indicating' : 'suggesting'} ${value === 'bullish' ? 'positive' : value === 'bearish' ? 'negative' : 'stable'} immediate strength`}
+                              {signal === 'volatility' && `${value === 'high' ? 'High' : value === 'low' ? 'Low' : 'Normal'} price volatility - ${value === 'high' ? 'indicating' : value === 'low' ? 'suggesting' : 'showing'} ${value === 'high' ? 'increased' : value === 'low' ? 'reduced' : 'stable'} market uncertainty`}
                             </p>
                           </div>
                         ))}
