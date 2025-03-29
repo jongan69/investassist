@@ -36,6 +36,8 @@ import { fetchStockNews } from "@/lib/alpaca/fetchStockNews"
 import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest"
 import { fetchWithTimeout, handleApiError } from "@/lib/utils"
 import { TrendingTopics } from "@/components/crypto/Trends/TrendingTopics"
+import RealEstateMarketTrends from "@/components/realestate/RealEstateMarketTrends"
+import { CarPriceIndex } from "@/components/automotive/CarPriceIndex"
 
 // Add route segment config
 export const dynamic = 'force-dynamic'
@@ -437,14 +439,14 @@ export default async function Page({ searchParams }: Props) {
                                     {signal.replace(/([A-Z])/g, ' $1').trim()}
                                   </span>
                                   <span className={`transition-colors duration-300 ${value === 'high'
-                                      ? 'text-yellow-500'
-                                      : value === 'low'
-                                        ? 'text-blue-500'
-                                        : value === 'bullish'
-                                          ? 'text-green-500 dark:text-green-400'
-                                          : value === 'bearish'
-                                            ? 'text-red-500 dark:text-red-400'
-                                            : 'text-muted-foreground'
+                                    ? 'text-yellow-500'
+                                    : value === 'low'
+                                      ? 'text-blue-500'
+                                      : value === 'bullish'
+                                        ? 'text-green-500 dark:text-green-400'
+                                        : value === 'bearish'
+                                          ? 'text-red-500 dark:text-red-400'
+                                          : 'text-muted-foreground'
                                     }`}>
                                     {value}
                                   </span>
@@ -475,10 +477,10 @@ export default async function Page({ searchParams }: Props) {
                               <div className="flex items-center justify-between text-xs">
                                 <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
                                 <span className={`transition-colors duration-300 ${typeof value === 'number' && value > 0
-                                    ? 'text-green-500 dark:text-green-400'
-                                    : typeof value === 'number' && value < 0
-                                      ? 'text-red-500 dark:text-red-400'
-                                      : 'text-muted-foreground'
+                                  ? 'text-green-500 dark:text-green-400'
+                                  : typeof value === 'number' && value < 0
+                                    ? 'text-red-500 dark:text-red-400'
+                                    : 'text-muted-foreground'
                                   }`}>
                                   {typeof value === 'number' && value > 0 ? '+' : ''}
                                   {typeof value === 'number' ? value.toFixed(2) : value}
@@ -497,6 +499,12 @@ export default async function Page({ searchParams }: Props) {
                 </div>
               )}
             </div>
+            <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+              <RealEstateMarketTrends />
+            </Suspense>
+            <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+              <CarPriceIndex />
+            </Suspense>
             <TrendingTopics />
             <div className="flex flex-col">
               <div className="px-6 sm:px-4">
