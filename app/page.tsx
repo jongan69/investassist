@@ -272,6 +272,14 @@ function getBitcoinWeeklyTrend(btcData: any): BitcoinTrendResult {
   }
 }
 
+function formatNumber(num: number): string {
+  if (num >= 1e12) return (num / 1e12).toFixed(2) + 'T';
+  if (num >= 1e9) return (num / 1e9).toFixed(2) + 'B';
+  if (num >= 1e6) return (num / 1e6).toFixed(2) + 'M';
+  if (num >= 1e3) return (num / 1e3).toFixed(2) + 'K';
+  return num.toFixed(2);
+}
+
 interface Props {
   searchParams: Promise<any>
 }
@@ -482,9 +490,11 @@ export default async function Page({ searchParams }: Props) {
                                     ? 'text-red-500 dark:text-red-400'
                                     : 'text-muted-foreground'
                                   }`}>
-                                  {typeof value === 'number' && value > 0 ? '+' : ''}
-                                  {typeof value === 'number' ? value.toFixed(2) : value}
-                                  {key === 'marketCap' ? 'B' : '%'}
+                                  {key === 'averageDailyVolume' || key === 'marketCap' 
+                                    ? formatNumber(value)
+                                    : typeof value === 'number' 
+                                      ? `${value > 0 ? '+' : ''}${value.toFixed(2)}%`
+                                      : value}
                                 </span>
                               </div>
                               <p className="text-[10px] text-muted-foreground/80">

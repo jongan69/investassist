@@ -63,7 +63,19 @@ export default function RealEstateMarketTrends() {
   const [data, setData] = useState<MarketTrendsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isMobile, setIsMobile] = useState(false);
   const { resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,17 +128,26 @@ export default function RealEstateMarketTrends() {
 
   const chartOptions = {
     responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top' as const,
         labels: {
           color: isDark ? '#e5e7eb' : '#374151',
+          boxWidth: isMobile ? 8 : 12,
+          padding: isMobile ? 4 : 8,
+          font: {
+            size: isMobile ? 10 : 12
+          }
         },
       },
       title: {
         display: true,
         text: 'Mortgage Rate Trends',
         color: isDark ? '#e5e7eb' : '#374151',
+        font: {
+          size: isMobile ? 14 : 16
+        }
       },
     },
     scales: {
@@ -136,12 +157,20 @@ export default function RealEstateMarketTrends() {
           display: true,
           text: 'Interest Rate (%)',
           color: isDark ? '#e5e7eb' : '#374151',
+          font: {
+            size: isMobile ? 10 : 12
+          }
         },
         grid: {
           color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
         },
         ticks: {
           color: isDark ? '#e5e7eb' : '#374151',
+          font: {
+            size: isMobile ? 10 : 12
+          },
+          maxRotation: isMobile ? 0 : 45,
+          minRotation: isMobile ? 0 : 45,
         },
       },
       x: {
@@ -150,57 +179,58 @@ export default function RealEstateMarketTrends() {
         },
         ticks: {
           color: isDark ? '#e5e7eb' : '#374151',
+          font: {
+            size: isMobile ? 10 : 12
+          },
+          maxRotation: isMobile ? 45 : 45,
+          minRotation: isMobile ? 45 : 45,
         },
       },
     },
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-4 space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="max-w-7xl mx-auto p-4 space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Current Rates Cards */}
         <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
           <CardHeader className="border-b dark:border-gray-700/50">
-            <CardTitle className="text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
+            <CardTitle className="text-lg font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
               Current 30-Year Fixed Rate
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Rate:</span>
-                <span className="text-2xl font-bold text-blue-500">{data.currentRates.thirtyYear.rate}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">APR:</span>
-                <span className="text-xl font-semibold text-blue-500">{data.currentRates.thirtyYear.apr}%</span>
-              </div>
-              <div className="text-sm text-muted-foreground mt-2">
-                Updated: {new Date(data.currentRates.thirtyYear.timestamp).toLocaleString()}
-              </div>
+          <CardContent className="space-y-4">
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Rate:</span>
+              <span className="text-2xl font-bold text-blue-500">{data.currentRates.thirtyYear.rate}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">APR:</span>
+              <span className="text-xl font-semibold text-blue-500">{data.currentRates.thirtyYear.apr}%</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Updated: {new Date(data.currentRates.thirtyYear.timestamp).toLocaleString()}
             </div>
           </CardContent>
         </Card>
 
         <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
           <CardHeader className="border-b dark:border-gray-700/50">
-            <CardTitle className="text-xl font-bold bg-gradient-to-r from-green-500 to-green-600 bg-clip-text text-transparent">
+            <CardTitle className="text-lg font-bold bg-gradient-to-r from-green-500 to-green-600 bg-clip-text text-transparent">
               Current 15-Year Fixed Rate
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Rate:</span>
-                <span className="text-2xl font-bold text-green-500">{data.currentRates.fifteenYear.rate}%</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">APR:</span>
-                <span className="text-xl font-semibold text-green-500">{data.currentRates.fifteenYear.apr}%</span>
-              </div>
-              <div className="text-sm text-muted-foreground mt-2">
-                Updated: {new Date(data.currentRates.fifteenYear.timestamp).toLocaleString()}
-              </div>
+          <CardContent className="space-y-4">
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">Rate:</span>
+              <span className="text-2xl font-bold text-green-500">{data.currentRates.fifteenYear.rate}%</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-sm text-muted-foreground">APR:</span>
+              <span className="text-xl font-semibold text-green-500">{data.currentRates.fifteenYear.apr}%</span>
+            </div>
+            <div className="text-xs text-muted-foreground">
+              Updated: {new Date(data.currentRates.fifteenYear.timestamp).toLocaleString()}
             </div>
           </CardContent>
         </Card>
@@ -209,12 +239,12 @@ export default function RealEstateMarketTrends() {
       {/* Chart */}
       <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
         <CardHeader className="border-b dark:border-gray-700/50">
-          <CardTitle className="text-xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+          <CardTitle className="text-lg font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
             Mortgage Rate Trends
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="h-[400px]">
+        <CardContent>
+          <div className="h-[300px] sm:h-[400px]">
             <Line options={chartOptions} data={chartData} />
           </div>
         </CardContent>
@@ -223,27 +253,27 @@ export default function RealEstateMarketTrends() {
       {/* Loan Details */}
       <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
         <CardHeader className="border-b dark:border-gray-700/50">
-          <CardTitle className="text-xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
+          <CardTitle className="text-lg font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
             Loan Details
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <CardContent>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             <div>
-              <span className="text-muted-foreground">Credit Score:</span>
-              <p className="font-medium text-foreground">{data.query.creditScoreBucket}</p>
+              <span className="text-sm text-muted-foreground">Credit Score:</span>
+              <p className="text-sm font-medium text-foreground">{data.query.creditScoreBucket}</p>
             </div>
             <div>
-              <span className="text-muted-foreground">Loan Amount:</span>
-              <p className="font-medium text-foreground">{data.query.loanAmountBucket}</p>
+              <span className="text-sm text-muted-foreground">Loan Amount:</span>
+              <p className="text-sm font-medium text-foreground">{data.query.loanAmountBucket}</p>
             </div>
             <div>
-              <span className="text-muted-foreground">Loan Type:</span>
-              <p className="font-medium text-foreground">{data.query.loanType}</p>
+              <span className="text-sm text-muted-foreground">Loan Type:</span>
+              <p className="text-sm font-medium text-foreground">{data.query.loanType}</p>
             </div>
             <div>
-              <span className="text-muted-foreground">State:</span>
-              <p className="font-medium text-foreground">{data.query.stateAbbreviation}</p>
+              <span className="text-sm text-muted-foreground">State:</span>
+              <p className="text-sm font-medium text-foreground">{data.query.stateAbbreviation}</p>
             </div>
           </div>
         </CardContent>
