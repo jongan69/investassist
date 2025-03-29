@@ -50,10 +50,24 @@ export async function GET() {
       fetch(`${baseUrl}?durationDays=21&includeCurrentRate=true&limit=5&program=Fixed15Year`, options as RequestInit)
     ]);
 
+    // Check if responses are ok
+    if (!thirtyYearResponse.ok || !fifteenYearResponse.ok) {
+      throw new Error(`API responses not ok: ${thirtyYearResponse.status} ${fifteenYearResponse.status}`);
+    }
+
     const [thirtyYearData, fifteenYearData] = await Promise.all([
       thirtyYearResponse.json(),
       fifteenYearResponse.json()
     ]);
+
+    // Validate response structure
+    if (!thirtyYearData?.data?.currentRate || !fifteenYearData?.data?.currentRate) {
+      console.error('Invalid API response structure:', { thirtyYearData, fifteenYearData });
+      return NextResponse.json(
+        { error: 'Invalid API response structure' },
+        { status: 500 }
+      );
+    }
 
     // Process and format the data
     const processedData: ProcessedData = {
@@ -70,10 +84,10 @@ export async function GET() {
         }
       },
       historicalData: {
-        thirtyYear: thirtyYearData.data.samples,
-        fifteenYear: fifteenYearData.data.samples
+        thirtyYear: thirtyYearData.data.samples || [],
+        fifteenYear: fifteenYearData.data.samples || []
       },
-      query: thirtyYearData.data.query // Both queries are the same except for program
+      query: thirtyYearData.data.query || {} // Provide default empty object if query is missing
     };
 
     return NextResponse.json(processedData, {
@@ -85,7 +99,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching Zillow market trends:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch market trends' },
+      { error: 'Failed to fetch market trends', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }

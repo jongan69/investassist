@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const API_KEY = 'ZrQEPSkKam9uYXRoYW5nMTMyMjk4QGdtYWlsLmNvbQ==';
+const API_KEY = process.env.CAR_API_KEY;
 const BASE_URL = 'https://auto.dev/api/listings';
 
 interface CarListing {
@@ -45,7 +45,7 @@ export async function GET(request: Request) {
     
     // Build query parameters
     const queryParams = new URLSearchParams();
-    queryParams.append('apikey', API_KEY);
+    queryParams.append('apikey', API_KEY!);
     
     // Add all search parameters from the request
     for (const [key, value] of searchParams.entries()) {
