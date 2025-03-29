@@ -109,7 +109,7 @@ export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas:
                 </div>
             ) : (
                 <p className="leading-relaxed text-sm text-muted-foreground">
-                    No CAS tokens available
+                    No Contract Addresses available
                 </p>
             )}
         </div>
