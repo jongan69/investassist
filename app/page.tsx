@@ -1,34 +1,41 @@
-import { DataTable } from "@/components/stocks/markets/data-table"
+// React and Next.js imports
+import { Suspense } from "react"
+
+// External library imports
 import yahooFinance from "yahoo-finance2"
+
+// Internal component imports
+import { DataTable } from "@/components/stocks/markets/data-table"
+import { columns } from "@/components/stocks/markets/columns"
+import MarketsChart from "@/components/chart/MarketsChart"
+import SectorPerformance from "@/components/stocks/SectorPerformance"
+import MarketSummary from '@/components/stocks/MarketSummary'
+import CryptoTrends from "@/components/crypto/Trends"
+import NewsSection from "@/components/NewsSection"
+import TrendingStocks from "@/components/stocks/Trending"
+import { LiveTrades } from "@/components/crypto/LiveTrades/LiveTrades"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+
+// Internal utility/type imports
 import { DEFAULT_INTERVAL, DEFAULT_RANGE } from "@/lib/yahoo-finance/constants"
 import { Interval } from "@/types/yahoo-finance"
-import { Suspense } from "react"
-import MarketsChart from "@/components/chart/MarketsChart"
-import { columns } from "@/components/stocks/markets/columns"
-import SectorPerformance from "@/components/stocks/SectorPerformance"
 import {
   validateInterval,
   validateRange,
 } from "@/lib/yahoo-finance/fetchChartData"
 import { fetchStockSearch } from "@/lib/yahoo-finance/fetchStockSearch"
-import MarketSummary from '@/components/stocks/MarketSummary';
 import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
 import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
-import CryptoTrends from "@/components/crypto/Trends"
-import NewsSection from "@/components/NewsSection"
 import { tickersFutures, tickerAfterOpen, isMarketOpen, processBatch } from "@/lib/utils"
 import { fetchStockNews } from "@/lib/alpaca/fetchStockNews"
 import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest"
-import TrendingStocks from "@/components/stocks/Trending"
-import { LiveTrades } from "@/components/crypto/LiveTrades/LiveTrades"
 import { fetchWithTimeout, handleApiError } from "@/lib/utils"
-// import { TrendingMetas } from '../components/TrendingMetas';
+import { TrendingTopics } from "@/components/crypto/Trends/TrendingTopics"
 
 // Add route segment config
 export const dynamic = 'force-dynamic'
@@ -324,283 +331,209 @@ export default async function Page({ searchParams }: Props) {
         : "bg-neutral-500/10"
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-2xl font-bold">Invest Assist</h1>
-      <div className="flex flex-col gap-4 lg:flex-row">
-        <div className="w-full lg:w-1/2">
-          <Card className="relative flex h-full min-h-[15rem] flex-col justify-between overflow-hidden">
-            <CardHeader>
-              <CardTitle className="z-50 w-fit rounded-full px-4 py-2 font-medium dark:bg-neutral-100/5">
-                <Suspense fallback={<div className="animate-pulse h-6 w-32 bg-muted rounded" />}>
-                  The markets are{" "}
-                  <strong className={sentimentColor}>{marketSentiment}</strong>
-                  {btcData && (
-                    <span className="ml-2">and Bitcoin is <strong className={bitcoinColor}>{bitcoinWeekly.trend}</strong>{" "}
-                      <span className={bitcoinColor}>
-                        ({bitcoinWeekly.percentage > 0 ? "+" : ""}
-                        {bitcoinWeekly.percentage.toFixed(2)}%)
-                      </span>
-                    </span>
-                  )}
-                </Suspense>
-              </CardTitle>
-            </CardHeader>
+    <div className="flex flex-col gap-4 max-w-[2000px] mx-auto px-4">
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent animate-gradient">Invest Assist</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="lg:col-span-7">
+          <Card className="relative flex h-full min-h-[15rem] flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+            <div className="flex flex-col">
+              <CardHeader className="pb-2">
+                <CardTitle className="z-50 w-fit rounded-full px-4 py-2 font-medium dark:bg-neutral-100/5 backdrop-blur-sm transition-all duration-300 hover:scale-105">
+                  <Suspense fallback={<div className="animate-pulse h-6 w-32 bg-muted rounded" />}>
+                    The markets are{" "}
+                    <strong className={`${sentimentColor} transition-colors duration-300`}>{marketSentiment}</strong>
 
-            {/* Bitcoin Trend Analysis */}
-            {btcData && (
-              <div className="mb-4 px-6 sm:px-4">
-                <div className="rounded-lg border border-border/50 bg-card/50 p-4">
-                  <h3 className="mb-3 text-sm font-medium flex items-center justify-between">
-                    <span>Bitcoin Trend Analysis</span>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-xs px-2 py-1 rounded-full ${bitcoinWeekly.trend === 'bullish'
-                        ? 'bg-green-500/10 text-green-500'
-                        : bitcoinWeekly.trend === 'bearish'
-                          ? 'bg-red-500/10 text-red-500'
-                          : 'bg-neutral-500/10 text-neutral-500'
-                        }`}>
-                        {bitcoinWeekly.trend.toUpperCase()}
-                      </span>
-                      <span className={`text-xs px-2 py-1 rounded-full ${bitcoinWeekly.tradingSignal === 'strong_buy'
-                        ? 'bg-green-500/20 text-green-500 font-medium'
-                        : bitcoinWeekly.tradingSignal === 'buy'
-                          ? 'bg-green-500/10 text-green-500'
-                          : bitcoinWeekly.tradingSignal === 'strong_sell'
-                            ? 'bg-red-500/20 text-red-500 font-medium'
-                            : bitcoinWeekly.tradingSignal === 'sell'
-                              ? 'bg-red-500/10 text-red-500'
-                              : 'bg-neutral-500/10 text-neutral-500'
-                        }`}>
-                        {bitcoinWeekly.tradingSignal.toUpperCase().replace('_', ' ')}
-                      </span>
-                    </div>
-                  </h3>
-
-                  <div className="grid gap-6 lg:grid-cols-2 lg:gap-4">
-                    {/* Signal Reasoning */}
-                    <div className="space-y-3 lg:col-span-2">
-                      <h4 className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                        <span>Signal Analysis</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted">
-                          Confidence: {bitcoinWeekly.signalStrength.toFixed(1)} / 5
+                    {btcData && (
+                      <span className="ml-2 transition-all duration-300 hover:scale-105">and Bitcoin is <strong className={`${bitcoinColor} transition-colors duration-300`}>{bitcoinWeekly.trend}</strong>{" "}
+                        <span className={`${bitcoinColor} transition-colors duration-300`}>
+                          ({bitcoinWeekly.percentage > 0 ? "+" : ""}
+                          {bitcoinWeekly.percentage.toFixed(2)}%)
                         </span>
-                      </h4>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        {bitcoinWeekly.signalReasons.map((reason, index) => (
-                          <div key={index} className="p-2 rounded-lg bg-card/50">
-                            <span className="text-muted-foreground">{reason}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Technical Signals */}
-                    <div className="space-y-3">
-                      <h4 className="text-xs font-medium text-muted-foreground flex items-center gap-2">
-                        <span>Technical Signals</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted">
-                          {Object.entries(bitcoinWeekly.signals)
-                            .filter(([key]) => key !== 'volatility')
-                            .filter(([, value]) => value === 'bullish').length} / 8 Bullish
-                        </span>
-                      </h4>
-                      <div className="grid gap-3">
-                        {Object.entries(bitcoinWeekly.signals).map(([signal, value]) => (
-                          <div key={signal}
-                            className={`space-y-1 p-2 rounded-lg transition-colors ${value === 'high'
-                              ? 'bg-yellow-500/5'
-                              : value === 'low'
-                                ? 'bg-blue-500/5'
-                                : value === 'bullish'
-                                  ? 'bg-green-500/5'
-                                  : value === 'bearish'
-                                    ? 'bg-red-500/5'
-                                    : 'bg-neutral-500/5'
-                              }`}>
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="capitalize font-medium">
-                                {signal.replace(/([A-Z])/g, ' $1').trim()}
+                      </span>
+                    )}
+                  </Suspense>
+                </CardTitle>
+              </CardHeader>
+              <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+                <SectorPerformanceWrapper />
+              </Suspense>
+              {/* Bitcoin Trend Analysis */}
+              {btcData && (
+                <div className="px-6 sm:px-4">
+                  <div className="rounded-lg border border-border/50 bg-card/50 p-4 transition-all duration-300 hover:shadow-md hover:shadow-primary/5">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                      {/* Left Column - Signals and Analysis */}
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="mb-3 text-sm font-medium flex items-center justify-between">
+                            <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Bitcoin Trend Analysis</span>
+                            <div className="flex items-center gap-2">
+                              <span className={`text-xs px-2 py-1 rounded-full transition-all duration-300 hover:scale-105 ${bitcoinWeekly.trend === 'bullish'
+                                ? 'bg-green-500/10 text-green-500'
+                                : bitcoinWeekly.trend === 'bearish'
+                                  ? 'bg-red-500/10 text-red-500'
+                                  : 'bg-neutral-500/10 text-neutral-500'
+                                }`}>
+                                {bitcoinWeekly.trend.toUpperCase()}
                               </span>
-                              <span className={
-                                value === 'high'
-                                  ? 'text-yellow-500'
+                              <span className={`text-xs px-2 py-1 rounded-full transition-all duration-300 hover:scale-105 ${bitcoinWeekly.tradingSignal === 'strong_buy'
+                                ? 'bg-green-500/20 text-green-500 font-medium'
+                                : bitcoinWeekly.tradingSignal === 'buy'
+                                  ? 'bg-green-500/10 text-green-500'
+                                  : bitcoinWeekly.tradingSignal === 'strong_sell'
+                                    ? 'bg-red-500/20 text-red-500 font-medium'
+                                    : bitcoinWeekly.tradingSignal === 'sell'
+                                      ? 'bg-red-500/10 text-red-500'
+                                      : 'bg-neutral-500/10 text-neutral-500'
+                                }`}>
+                                {bitcoinWeekly.tradingSignal.toUpperCase().replace('_', ' ')}
+                              </span>
+                            </div>
+                          </h3>
+
+                          {/* Signal Reasoning */}
+                          <div className="space-y-3">
+                            <h4 className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+                              <span>Signal Analysis</span>
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted animate-pulse">
+                                Confidence: {bitcoinWeekly.signalStrength.toFixed(1)} / 5
+                              </span>
+                            </h4>
+                            <div className="grid grid-cols-2 gap-2 text-xs">
+                              {bitcoinWeekly.signalReasons.map((reason, index) => (
+                                <div key={index} className="p-2 rounded-lg bg-card/50 transition-all duration-300 hover:bg-card/80 hover:shadow-sm">
+                                  <span className="text-muted-foreground">{reason}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Technical Signals */}
+                        <div className="space-y-3">
+                          <h4 className="text-xs font-medium text-muted-foreground flex items-center gap-2">
+                            <span>Technical Signals</span>
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted animate-pulse">
+                              {Object.entries(bitcoinWeekly.signals)
+                                .filter(([key]) => key !== 'volatility')
+                                .filter(([, value]) => value === 'bullish').length} / 8 Bullish
+                            </span>
+                          </h4>
+                          <div className="grid gap-2">
+                            {Object.entries(bitcoinWeekly.signals).map(([signal, value]) => (
+                              <div key={signal}
+                                className={`space-y-1 p-2 rounded-lg transition-all duration-300 hover:shadow-sm hover:scale-[1.02] ${value === 'high'
+                                  ? 'bg-yellow-500/5 hover:bg-yellow-500/10'
                                   : value === 'low'
-                                    ? 'text-blue-500'
+                                    ? 'bg-blue-500/5 hover:bg-blue-500/10'
                                     : value === 'bullish'
-                                      ? 'text-green-500 dark:text-green-400'
+                                      ? 'bg-green-500/5 hover:bg-green-500/10'
                                       : value === 'bearish'
-                                        ? 'text-red-500 dark:text-red-400'
-                                        : 'text-muted-foreground'
-                              }>
-                                {value}
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground/80">
-                              {signal === 'priceVs50dma' && `${value === 'bullish' ? 'Price is above' : 'Price is below'} the 50-day average - ${value === 'bullish' ? 'indicating' : 'suggesting'} short-term ${value === 'bullish' ? 'strength' : 'weakness'}`}
-                              {signal === 'priceVs200dma' && `${value === 'bullish' ? 'Price is above' : 'Price is below'} the 200-day average - ${value === 'bullish' ? 'indicating' : 'suggesting'} long-term ${value === 'bullish' ? 'strength' : 'weakness'}`}
-                              {signal === 'goldenCross' && `${value === 'bullish' ? 'Golden Cross pattern active' : 'Death Cross pattern active'} - ${value === 'bullish' ? 'suggesting' : 'indicating'} a ${value === 'bullish' ? 'bullish' : 'bearish'} trend`}
-                              {signal === 'weeklyMomentum' && `${value === 'bullish' ? 'Strong' : value === 'bearish' ? 'Weak' : 'Neutral'} weekly momentum - ${value === 'bullish' ? 'showing' : value === 'bearish' ? 'indicating' : 'suggesting'} ${value === 'bullish' ? 'positive' : value === 'bearish' ? 'negative' : 'stable'} short-term movement`}
-                              {signal === 'yearlyPerformance' && `${value === 'bullish' ? 'Positive' : 'Negative'} year-over-year performance - ${value === 'bullish' ? 'showing' : 'indicating'} ${value === 'bullish' ? 'strong' : 'weak'} long-term growth`}
-                              {signal === 'volumeTrend' && `${value === 'bullish' ? 'Above' : value === 'bearish' ? 'Below' : 'Near'} average trading volume - ${value === 'bullish' ? 'indicating' : value === 'bearish' ? 'suggesting' : 'showing'} ${value === 'bullish' ? 'strong' : value === 'bearish' ? 'weak' : 'normal'} market interest`}
-                              {signal === 'priceAboveOpen' && `${value === 'bullish' ? 'Price is above' : 'Price is below'} today's opening - ${value === 'bullish' ? 'showing' : 'indicating'} ${value === 'bullish' ? 'positive' : 'negative'} daily momentum`}
-                              {signal === 'dailyMomentum' && `${value === 'bullish' ? 'Strong' : value === 'bearish' ? 'Weak' : 'Moderate'} daily price movement - ${value === 'bullish' ? 'showing' : value === 'bearish' ? 'indicating' : 'suggesting'} ${value === 'bullish' ? 'positive' : value === 'bearish' ? 'negative' : 'stable'} immediate strength`}
-                              {signal === 'volatility' && `${value === 'high' ? 'High' : value === 'low' ? 'Low' : 'Normal'} price volatility - ${value === 'high' ? 'indicating' : value === 'low' ? 'suggesting' : 'showing'} ${value === 'high' ? 'increased' : value === 'low' ? 'reduced' : 'stable'} market uncertainty`}
-                            </p>
+                                        ? 'bg-red-500/5 hover:bg-red-500/10'
+                                        : 'bg-neutral-500/5 hover:bg-neutral-500/10'
+                                  }`}>
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="capitalize font-medium">
+                                    {signal.replace(/([A-Z])/g, ' $1').trim()}
+                                  </span>
+                                  <span className={`transition-colors duration-300 ${value === 'high'
+                                      ? 'text-yellow-500'
+                                      : value === 'low'
+                                        ? 'text-blue-500'
+                                        : value === 'bullish'
+                                          ? 'text-green-500 dark:text-green-400'
+                                          : value === 'bearish'
+                                            ? 'text-red-500 dark:text-red-400'
+                                            : 'text-muted-foreground'
+                                    }`}>
+                                    {value}
+                                  </span>
+                                </div>
+                                <p className="text-[10px] text-muted-foreground/80">
+                                  {signal === 'priceVs50dma' && `${value === 'bullish' ? 'Price is above' : 'Price is below'} the 50-day average - ${value === 'bullish' ? 'indicating' : 'suggesting'} short-term ${value === 'bullish' ? 'strength' : 'weakness'}`}
+                                  {signal === 'priceVs200dma' && `${value === 'bullish' ? 'Price is above' : 'Price is below'} the 200-day average - ${value === 'bullish' ? 'indicating' : 'suggesting'} long-term ${value === 'bullish' ? 'strength' : 'weakness'}`}
+                                  {signal === 'goldenCross' && `${value === 'bullish' ? 'Golden Cross pattern active' : 'Death Cross pattern active'} - ${value === 'bullish' ? 'suggesting' : 'indicating'} a ${value === 'bullish' ? 'bullish' : 'bearish'} trend`}
+                                  {signal === 'weeklyMomentum' && `${value === 'bullish' ? 'Strong' : value === 'bearish' ? 'Weak' : 'Neutral'} weekly momentum - ${value === 'bullish' ? 'showing' : value === 'bearish' ? 'indicating' : 'suggesting'} ${value === 'bullish' ? 'positive' : value === 'bearish' ? 'negative' : 'stable'} short-term movement`}
+                                  {signal === 'yearlyPerformance' && `${value === 'bullish' ? 'Positive' : 'Negative'} year-over-year performance - ${value === 'bullish' ? 'showing' : 'indicating'} ${value === 'bullish' ? 'strong' : 'weak'} long-term growth`}
+                                  {signal === 'volumeTrend' && `${value === 'bullish' ? 'Above' : value === 'bearish' ? 'Below' : 'Near'} average trading volume - ${value === 'bullish' ? 'indicating' : value === 'bearish' ? 'suggesting' : 'showing'} ${value === 'bullish' ? 'strong' : value === 'bearish' ? 'weak' : 'normal'} market interest`}
+                                  {signal === 'priceAboveOpen' && `${value === 'bullish' ? 'Price is above' : 'Price is below'} today's opening - ${value === 'bullish' ? 'showing' : 'indicating'} ${value === 'bullish' ? 'positive' : 'negative'} daily momentum`}
+                                  {signal === 'dailyMomentum' && `${value === 'bullish' ? 'Strong' : value === 'bearish' ? 'Weak' : 'Moderate'} daily price movement - ${value === 'bullish' ? 'showing' : value === 'bearish' ? 'indicating' : 'suggesting'} ${value === 'bullish' ? 'positive' : value === 'bearish' ? 'negative' : 'stable'} immediate strength`}
+                                  {signal === 'volatility' && `${value === 'high' ? 'High' : value === 'low' ? 'Low' : 'Normal'} price volatility - ${value === 'high' ? 'indicating' : value === 'low' ? 'suggesting' : 'showing'} ${value === 'high' ? 'increased' : value === 'low' ? 'reduced' : 'stable'} market uncertainty`}
+                                </p>
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        </div>
                       </div>
-                    </div>
 
-                    {/* Key Metrics */}
-                    <div className="space-y-3">
-                      <h4 className="text-xs font-medium text-muted-foreground">Key Metrics</h4>
-                      <div className="grid gap-3">
+                      {/* Right Column - Key Metrics */}
+                      <div className="space-y-4">
+                        <h4 className="text-xs font-medium text-muted-foreground">Key Metrics</h4>
                         <div className="grid grid-cols-2 gap-2">
-                          <div className="space-y-1 p-2 rounded-lg bg-card/50">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-medium">vs 50-day MA</span>
-                              <span className={bitcoinWeekly.metrics.priceVs50dma > 0 ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'}>
-                                {bitcoinWeekly.metrics.priceVs50dma > 0 ? '+' : ''}
-                                {bitcoinWeekly.metrics.priceVs50dma.toFixed(2)}%
-                              </span>
+                          {Object.entries(bitcoinWeekly.metrics).map(([key, value]) => (
+                            <div key={key} className="space-y-1 p-2 rounded-lg bg-card/50 transition-all duration-300 hover:shadow-sm hover:scale-[1.02]">
+                              <div className="flex items-center justify-between text-xs">
+                                <span className="font-medium capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                                <span className={`transition-colors duration-300 ${typeof value === 'number' && value > 0
+                                    ? 'text-green-500 dark:text-green-400'
+                                    : typeof value === 'number' && value < 0
+                                      ? 'text-red-500 dark:text-red-400'
+                                      : 'text-muted-foreground'
+                                  }`}>
+                                  {typeof value === 'number' && value > 0 ? '+' : ''}
+                                  {typeof value === 'number' ? value.toFixed(2) : value}
+                                  {key === 'marketCap' ? 'B' : '%'}
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-muted-foreground/80">
+                                {key === 'marketCap' ? 'Total market value' : 'Performance metric'}
+                              </p>
                             </div>
-                            <p className="text-[10px] text-muted-foreground/80">
-                              Short-term trend indicator
-                            </p>
-                          </div>
-
-                          <div className="space-y-1 p-2 rounded-lg bg-card/50">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-medium">vs 200-day MA</span>
-                              <span className={bitcoinWeekly.metrics.priceVs200dma > 0 ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'}>
-                                {bitcoinWeekly.metrics.priceVs200dma > 0 ? '+' : ''}
-                                {bitcoinWeekly.metrics.priceVs200dma.toFixed(2)}%
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground/80">
-                              Long-term trend indicator
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="space-y-1 p-2 rounded-lg bg-card/50">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-medium">Volume Change</span>
-                              <span className={bitcoinWeekly.metrics.volumeChange > 0 ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'}>
-                                {bitcoinWeekly.metrics.volumeChange > 0 ? '+' : ''}
-                                {bitcoinWeekly.metrics.volumeChange.toFixed(2)}%
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground/80">
-                              vs 10-day average volume
-                            </p>
-                          </div>
-
-                          <div className="space-y-1 p-2 rounded-lg bg-card/50">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-medium">Daily Range</span>
-                              <span className="text-muted-foreground">
-                                {bitcoinWeekly.metrics.volatilityPercentage.toFixed(2)}%
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground/80">
-                              Today&apos;s trading range
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="space-y-1 p-2 rounded-lg bg-card/50">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-medium">From 52w High</span>
-                              <span className="text-muted-foreground">
-                                -{bitcoinWeekly.metrics.distanceFromHigh.toFixed(2)}%
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground/80">
-                              Distance from peak
-                            </p>
-                          </div>
-
-                          <div className="space-y-1 p-2 rounded-lg bg-card/50">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-medium">From 52w Low</span>
-                              <span className="text-muted-foreground">
-                                +{bitcoinWeekly.metrics.distanceFromLow.toFixed(2)}%
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground/80">
-                              Growth from bottom
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="space-y-1 p-2 rounded-lg bg-card/50">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-medium">Market Cap</span>
-                              <span className="text-muted-foreground">
-                                ${(bitcoinWeekly.metrics.marketCap / 1e9).toFixed(2)}B
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground/80">
-                              Total market value
-                            </p>
-                          </div>
-
-                          <div className="space-y-1 p-2 rounded-lg bg-card/50 border-t border-border/50">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-medium">52-Week Change</span>
-                              <span className={bitcoinWeekly.metrics.fiftyTwoWeekChange > 0 ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'}>
-                                {bitcoinWeekly.metrics.fiftyTwoWeekChange > 0 ? '+' : ''}
-                                {bitcoinWeekly.metrics.fiftyTwoWeekChange.toFixed(2)}%
-                              </span>
-                            </div>
-                            <p className="text-[10px] text-muted-foreground/80">
-                              Yearly performance
-                            </p>
-                          </div>
+                          ))}
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
+              )}
+            </div>
+            <TrendingTopics />
+            <div className="flex flex-col">
+              <div className="px-6 sm:px-4">
+                <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
+                  <MarketSummaryWrapper
+                    sentimentColor={sentimentColor}
+                  />
+                </Suspense>
               </div>
-            )}
 
-            <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
-              <MarketSummaryWrapper
-                sentimentColor={sentimentColor}
-              />
-            </Suspense>
+              <div className="px-6 sm:px-4 mt-4">
+                <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
+                  <TrendingStocksWrapper latestNews={latestNews} />
+                </Suspense>
+              </div>
 
-            <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
-              <TrendingStocksWrapper latestNews={latestNews} />
-            </Suspense>
-
-            <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
-              <NewsSectionWrapper ticker={ticker} />
-            </Suspense>
+              <div className="px-6 sm:px-4 mt-4">
+                <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
+                  <NewsSectionWrapper ticker={ticker} />
+                </Suspense>
+              </div>
+            </div>
 
             <div
-              className={`pointer-events-none absolute inset-0 z-0 h-[65%] w-[65%] -translate-x-[10%] -translate-y-[30%] rounded-full blur-3xl ${sentimentBackground}`}
+              className={`pointer-events-none absolute inset-0 z-0 h-[65%] w-[65%] -translate-x-[10%] -translate-y-[30%] rounded-full blur-3xl transition-all duration-500 ${sentimentBackground}`}
             />
           </Card>
         </div>
-        <div className="w-full lg:w-1/2">
-          <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
-            <SectorPerformanceWrapper />
-          </Suspense>
-
+        <div className="lg:col-span-5 space-y-4">
           <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded-lg" />}>
             <CryptoTrends data={resultsWithTitles} />
           </Suspense>
 
-          <Card className="mt-4 rounded-md border-none">
+          <Card className="rounded-md border-none transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
             <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
               <CardHeader>
-                <CardTitle className="text-lg">Live Trades</CardTitle>
+                <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Live Trades</CardTitle>
               </CardHeader>
               <CardContent>
                 <LiveTrades />
@@ -610,17 +543,19 @@ export default async function Page({ searchParams }: Props) {
         </div>
       </div>
       <div>
-        <h2 className="py-4 text-xl font-medium">Markets</h2>
-        <Card className="flex flex-col gap-4 p-6 lg:flex-row">
-          <div className="w-full lg:w-1/2">
-            <Suspense fallback={<div>Loading...</div>}>
-              <DataTable columns={columns as any} data={resultsWithTitles} />
-            </Suspense>
-          </div>
-          <div className="w-full lg:w-1/2 p-2">
-            <Suspense fallback={<div>Loading...</div>}>
-              <MarketsChart ticker={ticker} range={range} interval={interval} />
-            </Suspense>
+        <h2 className="py-4 text-xl font-medium bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Markets</h2>
+        <Card className="flex flex-col gap-4 p-6 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="w-full">
+              <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+                <DataTable columns={columns as any} data={resultsWithTitles} />
+              </Suspense>
+            </div>
+            <div className="w-full">
+              <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+                <MarketsChart ticker={ticker} range={range} interval={interval} />
+              </Suspense>
+            </div>
           </div>
         </Card>
       </div>
@@ -796,7 +731,7 @@ async function NewsSectionWrapper({ ticker }: { ticker: string }) {
 
 async function SectorPerformanceWrapper() {
   return (
-    <Card>
+    <Card className="m-4">
       <CardHeader>
         <CardTitle className="text-lg">Sector Performance</CardTitle>
       </CardHeader>
