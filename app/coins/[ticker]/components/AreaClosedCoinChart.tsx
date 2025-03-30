@@ -109,7 +109,7 @@ function Interactions({
       dispatch({
         type: "UPDATE",
         ...d,
-        x: xScale(toDate(d)), // Use exact x position from scale
+        x: xScale(toDate(d)),
         y: pointer.y,
         width
       })
@@ -127,7 +127,10 @@ function Interactions({
       ry={12}
       onPointerMove={handleMove}
       onPointerLeave={handleLeave}
-      fill={"transparent"}
+      onTouchMove={handleMove}
+      onTouchEnd={handleLeave}
+      fill="transparent"
+      style={{ touchAction: 'none' }}
     />
   )
 }
@@ -298,12 +301,12 @@ function GraphSlider({ data, width, height, top, state, dispatch, range }: Graph
   const chartColor = getChartColor(state.hovered, isIncreasing)
 
   return (
-    <div className="transition-all duration-300 ease-in-out">
+    <div className="transition-all duration-300 ease-in-out touch-none">
       <svg
         height={height}
         width="100%"
         viewBox={`0 0 ${width} ${height}`}
-        style={{ overflow: 'visible' }} // Allow hover elements to overflow
+        style={{ overflow: 'visible', touchAction: 'none' }}
       >
         <defs>
           <mask id="mask" className="w-full">
@@ -361,12 +364,12 @@ function GraphSlider({ data, width, height, top, state, dispatch, range }: Graph
             />
             <text
               suppressHydrationWarning
-              textAnchor={state.x + 8 > width / 2 ? "end" : "start"}
-              x={state.x + 8 > width / 2 ? state.x - 8 : state.x + 6}
+              textAnchor="middle"
+              x={state.x}
               y={0}
               dy={"0.75em"}
               fill={chartColor}
-              className="text-base font-medium"
+              className="text-sm sm:text-base font-medium"
             >
               {formatCurrency(state.close)}
             </text>
@@ -425,9 +428,11 @@ const PriceDisplay = memo(function PriceDisplay({
     .replace(":", ".")
 
   return (
-    <div suppressHydrationWarning className="flex items-center justify-center font-medium">
-      {formattedDate}{" "}
-      {range !== "3m" && range !== "1y" && "at " + formattedTime}
+    <div suppressHydrationWarning className="flex flex-col sm:flex-row items-center justify-center font-medium text-sm sm:text-base gap-1 sm:gap-2 mb-2">
+      <span>{formattedDate}</span>
+      {range !== "3m" && range !== "1y" && (
+        <span className="text-muted-foreground">at {formattedTime}</span>
+      )}
     </div>
   )
 })
@@ -491,7 +496,7 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
           range={range}
         />
       )}
-      <div className="h-80">
+      <div className="h-[300px] sm:h-80">
         {chartQuotes.length > 0 ? (
           <ParentSize>
             {({ width, height }) => (
@@ -507,12 +512,12 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
             )}
           </ParentSize>
         ) : (
-          <div className="flex h-80 w-full items-center justify-center">
+          <div className="flex h-[300px] sm:h-80 w-full items-center justify-center">
             <p>No data available</p>
           </div>
         )}
       </div>
-      <div className="mt-1 flex flex-row">
+      <div className="mt-2 flex flex-wrap justify-center gap-1">
         {rangeOptions.map((r) => (
           <Button
             key={r}
@@ -520,6 +525,7 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
             onClick={handleClick}
             disabled={!availableRanges.includes(r)}
             className={cn(
+              "text-sm sm:text-base px-2 sm:px-4",
               range === r
                 ? "bg-accent font-bold text-accent-foreground"
                 : "text-muted-foreground",

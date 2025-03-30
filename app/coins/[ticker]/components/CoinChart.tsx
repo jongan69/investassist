@@ -112,9 +112,9 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
   }
 
   return (
-    <div suppressHydrationWarning>
-      <div className="flex flex-row items-end justify-between">
-        <div className="space-x-1">
+    <div suppressHydrationWarning className="w-full">
+      <div className="flex flex-col items-center w-full">
+        <div className="space-x-1 w-full">
           <PriceHeader
             ticker={upperCaseTicker}
             priceStats={priceStats}
