@@ -66,7 +66,7 @@ export default function BoxOffice() {
     };
 
     // Filtered Tokens Based on Search & Status
-    const filteredTokens = tokens.filter((token) => {
+    const filteredTokens = tokens?.filter((token) => {
         const matchesSearch = token.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             token.ticker.toLowerCase().includes(searchTerm.toLowerCase());
 
@@ -76,6 +76,8 @@ export default function BoxOffice() {
 
         return matchesSearch && matchesStatus;
     });
+
+    if (!tokens) return null;
 
     return (
         <div className="container mx-auto px-4 py-4 sm:py-8 min-h-screen overflow-hidden z-10 max-w-[1920px]">
