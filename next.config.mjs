@@ -6,31 +6,7 @@ const nextConfig = {
         remotePatterns: [
             {
                 protocol: 'https',
-                hostname: 'dd.dexscreener.com'
-            },
-            {
-                protocol: 'https',
-                hostname: 'coin-images.coingecko.com'
-            },
-            {
-                protocol: 'https',
-                hostname: 'ipfs.io'
-            },
-            {
-                protocol: 'https',
-                hostname: 'cdn.benzinga.com'
-            },
-            {
-                protocol: 'https',
-                hostname: 'avatar.iran.liara.run'
-            },
-            {
-                protocol: 'https',
-                hostname: 'pbs.twimg.com'
-            },
-            {
-                protocol: 'https',
-                hostname: 'placehold.co'
+                hostname: '**'
             }
         ]
     },

@@ -64,10 +64,6 @@ let verifiedTokensCache: {
     timestamp: 0
 };
 
-const rpcEndpoint = 'https://christiane-z5lsaw-fast-mainnet.helius-rpc.com';
-const solanaConnection = new Connection(rpcEndpoint);
-
-
 export async function getTokenAccounts(wallet: string, solanaConnection: Connection) {
     const filters:GetProgramAccountsFilter[] = [
         {

@@ -38,6 +38,7 @@ import { fetchWithTimeout, handleApiError } from "@/lib/utils"
 import { TrendingTopics } from "@/components/crypto/Trends/TrendingTopics"
 import RealEstateMarketTrends from "@/components/realestate/RealEstateMarketTrends"
 import { CarPriceIndex } from "@/components/automotive/CarPriceIndex"
+import BoxOffice from "@/components/crypto/BoxOffice"
 
 // Add route segment config
 export const dynamic = 'force-dynamic'
@@ -547,7 +548,9 @@ export default async function Page({ searchParams }: Props) {
           <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded-lg" />}>
             <CryptoTrends data={resultsWithTitles} />
           </Suspense>
-
+          <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded-lg" />}>
+            <BoxOffice />
+          </Suspense>
           <Card className="rounded-md border-none transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
             <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
               <CardHeader>
