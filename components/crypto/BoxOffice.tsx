@@ -80,10 +80,10 @@ export default function BoxOffice() {
     if (!tokens) return null;
 
     return (
-        <div className="container mx-auto px-4 py-4 sm:py-8 min-h-screen overflow-hidden z-10 max-w-[1920px]">
+        <div className="container mx-auto px-4 py-4 sm:py-8 min-h-screen overflow-x-hidden z-10 max-w-[1920px]">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8 max-w-[1600px] mx-auto">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Box Office Tokens</h1>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto max-w-full sm:max-w-[1200px] flex-wrap">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
@@ -104,14 +104,14 @@ export default function BoxOffice() {
             </div>
 
             {/* Scrollable Token List */}
-            <div className="max-h-[700px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-1 gap-6 lg:gap-8">
+            <div className="max-h-[700px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+                <div className="grid grid-cols-1 gap-6 lg:gap-8">
                     {filteredTokens.length > 0 ? (
                         filteredTokens.map((token) => (
                             <div 
                                 key={token.ticker}
                                 onClick={() => window.open(token.metadata.extensions.boxoffice, "_blank")}
-                                className="w-full max-w-[700px] min-w-[200] mx-auto rounded-xl border bg-card p-5 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-primary/50 p-4 sm:m-4"
+                                className="w-full rounded-xl border bg-card p-4 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-primary/50"
                             >
                                 {/* Header Section */}
                                 <div className="flex items-start justify-between mb-4">
@@ -123,6 +123,7 @@ export default function BoxOffice() {
                                                     alt={token.name}
                                                     fill
                                                     className="object-cover"
+                                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                 />
                                             </div>
                                         )}
@@ -138,9 +139,9 @@ export default function BoxOffice() {
 
                                 {/* Ticket Sales */}
                                 <div className="space-y-4">
-                                    <div className="flex justify-between text-sm">
+                                    <div className="flex flex-wrap justify-between text-sm gap-2">
                                         <span className="text-muted-foreground">Tickets Sold</span>
-                                        <span className="font-medium ml-2">{token.ticketsSold} / {token.maxTicketSupply}</span>
+                                        <span className="font-medium">{token.ticketsSold} / {token.maxTicketSupply}</span>
                                     </div>
                                     <div className="w-full bg-secondary rounded-full h-2">
                                         <div 
@@ -148,9 +149,9 @@ export default function BoxOffice() {
                                             style={{ width: `${(token.ticketsSold / token.maxTicketSupply) * 100}%` }}
                                         />
                                     </div>
-                                    <div className="flex justify-between text-sm">
+                                    <div className="flex flex-wrap justify-between text-sm gap-2">
                                         <span className="text-muted-foreground">Token Supply</span>
-                                        <span className="font-medium ml-2">{formatSupply(token.tokenSupply)}</span>
+                                        <span className="font-medium">{formatSupply(token.tokenSupply)}</span>
                                     </div>
                                 </div>
 
