@@ -50,8 +50,11 @@ export function TrendingTopics() {
     const abortControllers = useRef<{[key: string]: AbortController}>({});
 
     const searchPumpFun = useCallback(async (topic: string) => {
+        // Strip $ symbol from topic if present
+        const cleanTopic = topic.replace('$', '');
+
         // Check cache first
-        const cached = searchCache.current[topic];
+        const cached = searchCache.current[cleanTopic];
         if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
             setSearchResults(prev => ({
                 ...prev,
@@ -61,13 +64,13 @@ export function TrendingTopics() {
         }
 
         // Cancel any existing search for this topic
-        if (abortControllers.current[topic]) {
-            abortControllers.current[topic].abort();
+        if (abortControllers.current[cleanTopic]) {
+            abortControllers.current[cleanTopic].abort();
         }
 
         // Create new abort controller
         const controller = new AbortController();
-        abortControllers.current[topic] = controller;
+        abortControllers.current[cleanTopic] = controller;
 
         setIsSearching(prev => ({ ...prev, [topic]: true }));
         try {
@@ -76,7 +79,7 @@ export function TrendingTopics() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ searchTerm: topic }),
+                body: JSON.stringify({ searchTerm: cleanTopic }),
                 signal: controller.signal
             });
             
@@ -85,7 +88,7 @@ export function TrendingTopics() {
             const data = await res.json();
             
             // Update cache
-            searchCache.current[topic] = {
+            searchCache.current[cleanTopic] = {
                 timestamp: Date.now(),
                 data
             };
@@ -105,7 +108,7 @@ export function TrendingTopics() {
             }
         } finally {
             setIsSearching(prev => ({ ...prev, [topic]: false }));
-            delete abortControllers.current[topic];
+            delete abortControllers.current[cleanTopic];
         }
     }, []);
 
