@@ -81,7 +81,7 @@ export default function RealEstateMarketTrends() {
     const fetchData = async () => {
       try {
         const response = await fetch('/api/realestate/market-trends');
-        if (!response.ok) throw new Error('Failed to fetch data');
+        if (!response.ok) throw new Error('Failed to fetch mortgage rate data');
         const result = await response.json();
         setData(result);
       } catch (err) {
@@ -95,7 +95,8 @@ export default function RealEstateMarketTrends() {
   }, []);
 
   if (loading) return <div className="flex justify-center items-center h-64">Loading...</div>;
-  if (error) return <div className="text-red-500 text-center p-4">{error}</div>;
+  // if (error) return <div className="text-red-500 text-center p-4">{error}</div>;
+  if (error) return null;
   if (!data) return null;
 
   const formatDate = (dateString: string) => {
