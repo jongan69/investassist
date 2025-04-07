@@ -454,6 +454,7 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
   const { replace } = useRouter()
   const pathname = usePathname()
   const [isCandleChart, setIsCandleChart] = useState(false)
+  const [showPatterns, setShowPatterns] = useState(false)
   const last = useMemo(() => chartQuotes[chartQuotes.length - 1], [chartQuotes])
 
   // Transform chartQuotes to include OHLC data for candle chart
@@ -526,6 +527,8 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
             <CandleChart
               chartQuotes={candleChartData}
               range={range}
+              showPatterns={showPatterns}
+              onPatternsChange={setShowPatterns}
             />
           ) : (
             <ParentSize>
@@ -566,12 +569,19 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
             {r.toUpperCase()}
           </Button>
         ))}
-        <div className="ml-2">
+        <div className="ml-2 flex items-center space-x-2">
           <SwitchComponent 
             checked={isCandleChart} 
             onCheckedChange={setIsCandleChart} 
             label="Candle Chart"
           />
+          {isCandleChart && (
+            <SwitchComponent 
+              checked={showPatterns} 
+              onCheckedChange={setShowPatterns} 
+              label="Show Patterns"
+            />
+          )}
         </div>
       </div>
       

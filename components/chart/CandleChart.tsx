@@ -1,11 +1,17 @@
 "use client"
-import { memo, useCallback, useMemo, useReducer, useRef, useState } from "react"
+import { memo, useCallback, useMemo, useReducer, useRef, useState, useEffect } from "react"
 import { scalePoint } from "d3-scale"
 import * as d3 from "d3"
 import { localPoint } from "@visx/event"
 import { scaleLinear } from "@visx/scale"
 import { ParentSize } from "@visx/responsive"
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect"
+import { detectCandlestickPatterns, PatternResult } from "@/lib/candlestickPatterns"
+import PatternIndicator from "./PatternIndicator"
+import PatternLegend from "./PatternLegend"
+import "@/styles/patternIndicators.css"
+import { useCandlestickPatterns } from '@/lib/candlestickPatterns'
+import SwitchComponent from "@/components/ui/switch"
 
 // Add type declaration for d3
 declare module 'd3' {
@@ -22,12 +28,52 @@ const formatCurrency = new Intl.NumberFormat("en-US", {
   currency: "USD",
 }).format
 
+// Function to get emoji for pattern
+const getPatternEmoji = (pattern: string) => {
+  switch (pattern) {
+    case 'Doji':
+      return '○';
+    case 'Spinning Top':
+      return '◎';
+    case 'White Marubozu':
+    case 'Black Marubozu':
+      return '■';
+    case 'Hammer':
+      return '🔨';
+    case 'Hanging Man':
+      return '🪦';
+    case 'Inverted Hammer':
+      return '🔨';
+    case 'Shooting Star':
+      return '⭐';
+    case 'Bullish Engulfing':
+      return '📈';
+    case 'Bearish Engulfing':
+      return '📉';
+    case 'Tweezer Tops':
+      return '🔝';
+    case 'Tweezer Bottoms':
+      return '🔻';
+    case 'Morning Star':
+      return '🌅';
+    case 'Evening Star':
+      return '🌆';
+    case 'Three White Soldiers':
+      return '⚔️';
+    case 'Three Black Crows':
+      return '🦅';
+    default:
+      return '•';
+  }
+};
+
 function reducer(state: any, action: any) {
   const initialState = {
     close: state.close,
     date: state.date,
     translate: "0%",
     hovered: false,
+    patternHovered: undefined,
   }
 
   switch (action.type) {
@@ -42,6 +88,7 @@ function reducer(state: any, action: any) {
         open: action.open,
         high: action.high,
         low: action.low,
+        candleType: true // Just set to true to indicate we should show pattern info
       }
     }
     case "CLEAR": {
@@ -49,6 +96,18 @@ function reducer(state: any, action: any) {
         ...initialState,
         x: undefined,
         y: undefined,
+      }
+    }
+    case "PATTERN_HOVER": {
+      return {
+        ...state,
+        patternHovered: action.pattern,
+      }
+    }
+    case "PATTERN_LEAVE": {
+      return {
+        ...state,
+        patternHovered: undefined,
       }
     }
     default:
@@ -156,7 +215,7 @@ function Candle({ x, y, width, height, color }: { x: number, y: number, width: n
   )
 }
 
-function GraphSlider({ data, width, height, top, state, dispatch }: any) {
+function GraphSlider({ data, width, height, top, state, dispatch, showPatterns, onPatternsChange }: any) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
@@ -208,33 +267,88 @@ function GraphSlider({ data, width, height, top, state, dispatch }: any) {
 
   const candleWidth = width / data.length * 0.8
 
+  // Use the memoized pattern detection hook
+  const patterns = useCandlestickPatterns(data);
+  
+  // Debug logging
+  console.log('Detected patterns:', patterns);
+  console.log('Show patterns:', showPatterns);
+  console.log('Data length:', data.length);
+
+  // Handle pattern hover
+  const handlePatternHover = useCallback((pattern: PatternResult) => {
+    dispatch({ type: "PATTERN_HOVER", pattern });
+  }, [dispatch]);
+
+  const handlePatternLeave = useCallback(() => {
+    dispatch({ type: "PATTERN_LEAVE" });
+  }, [dispatch]);
+
+  // Memoize the candle rendering
+  const renderCandles = useMemo(() => {
+    return data.map((d: any, i: number) => {
+      const isIncreasing = d.close > d.open
+      const color = isIncreasing ? "#22c55e" : "#ef4444"
+      const candleHeight = Math.abs(yScale(d.close) - yScale(d.open))
+      const wickHeight = Math.abs(yScale(d.high) - yScale(d.low))
+      const yPos = yScale(Math.max(d.open, d.close))
+      const xPos = x(d) || 0;
+      
+      return (
+        <Candle
+          key={i}
+          x={xPos}
+          y={yPos}
+          width={candleWidth}
+          height={candleHeight}
+          color={color}
+        />
+      );
+    });
+  }, [data, xScale, yScale, candleWidth, x]);
+
+  // Memoize the pattern indicators
+  const renderPatternIndicators = useMemo(() => {
+    if (!showPatterns) return null;
+    
+    return patterns.map((pattern: PatternResult, i: number) => {
+      const candle = data[pattern.index];
+      const xPos = x(candle) || 0;
+      const yPos = yScale(candle.low) - 20;
+      
+      return (
+        <PatternIndicator
+          key={`pattern-${i}`}
+          pattern={pattern}
+          x={xPos}
+          y={yPos}
+          width={candleWidth}
+          height={height}
+          onHover={handlePatternHover}
+          onLeave={handlePatternLeave}
+        />
+      );
+    });
+  }, [patterns, data, x, yScale, candleWidth, height, handlePatternHover, handlePatternLeave, showPatterns]);
+
   return (
-    <div className="transition-all duration-300 ease-in-out touch-none">
+    <div className="transition-all duration-300 ease-in-out touch-none relative">
       <svg
         height={height}
         width="100%"
         viewBox={`0 0 ${width} ${height}`}
         style={{ overflow: 'visible', touchAction: 'none' }}
       >
-        {data.map((d: any, i: number) => {
-          const isIncreasing = d.close > d.open
-          const color = isIncreasing ? "#22c55e" : "#ef4444"
-          const candleHeight = Math.abs(yScale(d.close) - yScale(d.open))
-          const wickHeight = Math.abs(yScale(d.high) - yScale(d.low))
-          const yPos = yScale(Math.max(d.open, d.close))
-          const xPos = x(d) || 0; // Provide a default value if x(d) is undefined
-          
-          return (
-            <Candle
-              key={i}
-              x={xPos}
-              y={yPos}
-              width={candleWidth}
-              height={candleHeight}
-              color={color}
-            />
-          )
-        })}
+        {/* SVG filter definition for glow effect */}
+        <defs>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="2" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
+        
+        {renderCandles}
+        {renderPatternIndicators}
 
         {/* Hover effects */}
         {state.x && (
@@ -317,7 +431,64 @@ function GraphSlider({ data, width, height, top, state, dispatch }: any) {
               >
                 C: {formatCurrency(state.close || 0)}
               </text>
+              {state.candleType && (
+                <text
+                  suppressHydrationWarning
+                  textAnchor="middle"
+                  x="0"
+                  y="10"
+                  fill="#fff"
+                  className="text-xs font-medium"
+                >
+                  Pattern: {patterns.find(p => p.index === data.findIndex((d: any) => d.date === state.date))?.pattern || "No Pattern"}
+                </text>
+              )}
+              {state.candleType && patterns.find(p => p.index === data.findIndex((d: any) => d.date === state.date)) && (
+                <text
+                  suppressHydrationWarning
+                  textAnchor="middle"
+                  x="0"
+                  y="30"
+                  fill="#fff"
+                  className="text-xs font-medium"
+                >
+                  {getPatternEmoji(patterns.find(p => p.index === data.findIndex((d: any) => d.date === state.date))?.pattern || "")}
+                </text>
+              )}
             </g>
+          </g>
+        )}
+
+        {/* Pattern Info Display */}
+        {state.patternHovered && showPatterns && (
+          <g transform={`translate(${state.x || width / 2}, ${height - 60})`}>
+            <rect
+              x="-150"
+              y="-50"
+              width="300"
+              height="50"
+              rx="4"
+              fill="rgba(0, 0, 0, 0.8)"
+              opacity={0.9}
+            />
+            <text
+              textAnchor="middle"
+              x="0"
+              y="-30"
+              fill="#fff"
+              className="text-xs font-medium"
+            >
+              {state.patternHovered.pattern}
+            </text>
+            <text
+              textAnchor="middle"
+              x="0"
+              y="-10"
+              fill="#fff"
+              className="text-xs"
+            >
+              {state.patternHovered.description}
+            </text>
           </g>
         )}
 
@@ -329,6 +500,9 @@ function GraphSlider({ data, width, height, top, state, dispatch }: any) {
           dispatch={dispatch}
         />
       </svg>
+      
+      {/* Pattern Legend - positioned absolutely */}
+      {showPatterns && <PatternLegend patterns={patterns} />}
     </div>
   )
 }
@@ -342,19 +516,37 @@ interface CandleChartProps {
     close: number
   }[]
   range: string
+  showPatterns?: boolean
+  onPatternsChange?: (show: boolean) => void
 }
 
 const CandleChart = memo(function CandleChart({
   chartQuotes,
   range,
+  showPatterns = false,
+  onPatternsChange,
 }: CandleChartProps) {
   const last = useMemo(() => chartQuotes[chartQuotes.length - 1], [chartQuotes])
+  const [showPatternsState, setShowPatternsState] = useState(showPatterns)
+
+  // Update local state when prop changes
+  useEffect(() => {
+    setShowPatternsState(showPatterns)
+  }, [showPatterns])
+
+  const handlePatternsChange = useCallback((checked: boolean) => {
+    setShowPatternsState(checked)
+    if (onPatternsChange) {
+      onPatternsChange(checked)
+    }
+  }, [onPatternsChange])
 
   const initialState = useMemo(() => ({
     close: last.close,
     date: last.date,
     translate: "100%",
     hovered: false,
+    patternHovered: undefined,
   }), [last])
 
   const [state, dispatch] = useReducer(reducer, initialState)
@@ -364,6 +556,13 @@ const CandleChart = memo(function CandleChart({
       suppressHydrationWarning
       className="w-full min-w-fit transition-opacity duration-300 ease-in-out"
     >
+      <div className="flex justify-end mb-2">
+        <SwitchComponent 
+          checked={showPatternsState} 
+          onCheckedChange={handlePatternsChange}
+          label="Show Patterns"
+        />
+      </div>
       {state.hovered && (
         <div className="flex items-center justify-center font-medium">
           {new Date(state.date).toLocaleDateString()}
@@ -386,6 +585,8 @@ const CandleChart = memo(function CandleChart({
                   top={0}
                   state={state}
                   dispatch={dispatch}
+                  showPatterns={showPatternsState}
+                  onPatternsChange={onPatternsChange}
                 />
               )}
             </ParentSize>

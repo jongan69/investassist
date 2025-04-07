@@ -1,0 +1,55 @@
+/* Pattern indicator styles */
+.pattern-indicator {
+  transition: transform 0.2s ease;
+  z-index: 5;
+}
+
+.pattern-indicator:hover {
+  transform: scale(1.2);
+}
+
+.pattern-indicator:hover .pattern-tooltip {
+  opacity: 1 !important;
+}
+
+/* Pattern type colors */
+.pattern-bullish {
+  color: #22c55e;
+}
+
+.pattern-bearish {
+  color: #ef4444;
+}
+
+.pattern-neutral {
+  color: #3b82f6;
+}
+
+/* Tooltip animation */
+.pattern-tooltip {
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Ensure tooltips don't get cut off */
+svg {
+  overflow: visible !important;
+}
+
+/* Add SVG filter for glow effect */
+svg:not(:root) {
+  overflow: visible;
+}
+
+/* Add this to your SVG element */
+svg defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+/* Glow filter definition - add this to your SVG */
+svg defs filter {
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.5));
+} 

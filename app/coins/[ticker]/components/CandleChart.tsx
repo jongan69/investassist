@@ -155,9 +155,72 @@ function Candle({ x, y, width, height, color }: { x: number, y: number, width: n
   )
 }
 
-function GraphSlider({ data, width, height, top, state, dispatch }: any) {
+function GraphSlider({ data, width, height, top, state, dispatch, showPatterns, onPatternsChange }: any) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+
+  // Pattern detection function
+  const detectPatterns = useCallback((data: any[]) => {
+    const patterns = []
+    for (let i = 2; i < data.length; i++) {
+      const current = data[i]
+      const prev = data[i - 1]
+      const prevPrev = data[i - 2]
+
+      // Bullish Engulfing
+      if (prev.close < prev.open && // Previous red candle
+          current.close > current.open && // Current green candle
+          current.open < prev.close && // Current opens below previous close
+          current.close > prev.open) { // Current closes above previous open
+        patterns.push({
+          type: 'Bullish Engulfing',
+          index: i,
+          price: current.high
+        })
+      }
+
+      // Bearish Engulfing
+      if (prev.close > prev.open && // Previous green candle
+          current.close < current.open && // Current red candle
+          current.open > prev.close && // Current opens above previous close
+          current.close < prev.open) { // Current closes below previous open
+        patterns.push({
+          type: 'Bearish Engulfing',
+          index: i,
+          price: current.low
+        })
+      }
+
+      // Morning Star
+      if (i >= 2 &&
+          prevPrev.close < prevPrev.open && // First red candle
+          Math.abs(prev.close - prev.open) < Math.abs(prevPrev.close - prevPrev.open) * 0.3 && // Small second candle
+          current.close > current.open && // Third green candle
+          current.close > (prevPrev.open + prevPrev.close) / 2) { // Closes above midpoint of first candle
+        patterns.push({
+          type: 'Morning Star',
+          index: i,
+          price: current.high
+        })
+      }
+
+      // Evening Star
+      if (i >= 2 &&
+          prevPrev.close > prevPrev.open && // First green candle
+          Math.abs(prev.close - prev.open) < Math.abs(prevPrev.close - prevPrev.open) * 0.3 && // Small second candle
+          current.close < current.open && // Third red candle
+          current.close < (prevPrev.open + prevPrev.close) / 2) { // Closes below midpoint of first candle
+        patterns.push({
+          type: 'Evening Star',
+          index: i,
+          price: current.low
+        })
+      }
+    }
+    return patterns
+  }, [])
+
+  const patterns = useMemo(() => detectPatterns(data), [data, detectPatterns])
 
   useIsomorphicLayoutEffect(() => {
     if (!containerRef.current) return
@@ -215,6 +278,38 @@ function GraphSlider({ data, width, height, top, state, dispatch }: any) {
         viewBox={`0 0 ${width} ${height}`}
         style={{ overflow: 'visible', touchAction: 'none' }}
       >
+        {/* Pattern markers */}
+        {showPatterns && patterns.map((pattern, i) => {
+          const xPos = x(data[pattern.index]) || 0
+          const yPos = yScale(pattern.price)
+          const color = pattern.type.includes('Bullish') || pattern.type.includes('Morning') 
+            ? '#22c55e' 
+            : '#ef4444'
+          
+          return (
+            <g key={i} className="pattern-marker">
+              <circle
+                cx={xPos}
+                cy={yPos}
+                r={4}
+                fill={color}
+                stroke="white"
+                strokeWidth={1}
+              />
+              <text
+                x={xPos}
+                y={yPos - 10}
+                textAnchor="middle"
+                fill={color}
+                fontSize={10}
+                className="pattern-label"
+              >
+                {pattern.type}
+              </text>
+            </g>
+          )
+        })}
+
         {data.map((d: any, i: number) => {
           const isIncreasing = d.close > d.open
           const color = isIncreasing ? "#22c55e" : "#ef4444"
@@ -341,11 +436,15 @@ interface CandleChartProps {
     close: number
   }[]
   range: string
+  showPatterns?: boolean
+  onPatternsChange?: (show: boolean) => void
 }
 
 const CandleChart = memo(function CandleChart({
   chartQuotes,
   range,
+  showPatterns = false,
+  onPatternsChange,
 }: CandleChartProps) {
   const last = useMemo(() => chartQuotes[chartQuotes.length - 1], [chartQuotes])
 
@@ -375,18 +474,22 @@ const CandleChart = memo(function CandleChart({
       )}
       <div className="h-[300px] sm:h-80">
         {chartQuotes.length > 0 ? (
-          <ParentSize>
-            {({ width, height }) => (
-              <GraphSlider
-                data={chartQuotes}
-                width={width}
-                height={height}
-                top={0}
-                state={state}
-                dispatch={dispatch}
-              />
-            )}
-          </ParentSize>
+          <div className="relative h-full w-full">
+            <ParentSize>
+              {({ width, height }) => (
+                <GraphSlider
+                  data={chartQuotes}
+                  width={width}
+                  height={height}
+                  top={0}
+                  state={state}
+                  dispatch={dispatch}
+                  showPatterns={showPatterns}
+                  onPatternsChange={onPatternsChange}
+                />
+              )}
+            </ParentSize>
+          </div>
         ) : (
           <div className="flex h-[300px] sm:h-80 w-full items-center justify-center">
             <p>No data available</p>
