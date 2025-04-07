@@ -127,7 +127,6 @@ export default async function CoinsPage({ params, searchParams }: Props) {
                 interval={interval as any}
                 timeframeData={allTimeframeData.data}
               />}
-
           </Suspense>
 
           <Suspense

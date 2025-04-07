@@ -48,7 +48,7 @@ export async function GET(request: Request) {
             return NextResponse.json({ error: data.error.message }, { status: 400 });
         }
 
-        const filteredNfts = data.result.items.filter((item: any) => item.compression.compressed === false);
+        const filteredNfts = data.result.items.filter((item: any) => item.compression.compressed === false && item.content.metadata.attributes.length > 0);
 
         return NextResponse.json(filteredNfts, { status: 200 });
     } catch (error) {

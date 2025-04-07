@@ -14,6 +14,10 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation"
 import { useSpring, animated } from "@react-spring/web"
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect"
 import { cn } from "@/lib/utils"
+import SwitchComponent from "@/components/ui/switch"
+import { ChevronDown, ChevronUp } from "lucide-react"
+import CandleChart from "./CandleChart"
+
 // UTILS
 const toDate = (d: any) => +new Date(d?.date || d)
 
@@ -449,8 +453,28 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
   const searchParams = useSearchParams()
   const { replace } = useRouter()
   const pathname = usePathname()
-
+  const [isCandleChart, setIsCandleChart] = useState(false)
   const last = useMemo(() => chartQuotes[chartQuotes.length - 1], [chartQuotes])
+
+  // Transform chartQuotes to include OHLC data for candle chart
+  const candleChartData = useMemo(() => {
+    return chartQuotes.map((quote, index) => {
+      // For demonstration purposes, create simulated OHLC data
+      // In a real implementation, you would need actual OHLC data
+      const close = quote.close;
+      const open = index > 0 ? chartQuotes[index - 1].close : close;
+      const high = Math.max(open, close) * (1 + Math.random() * 0.05);
+      const low = Math.min(open, close) * (1 - Math.random() * 0.05);
+      
+      return {
+        date: quote.date,
+        open,
+        high,
+        low,
+        close
+      };
+    });
+  }, [chartQuotes]);
 
   const initialState = useMemo(() => ({
     close: last.close,
@@ -498,26 +522,33 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
       )}
       <div className="h-[300px] sm:h-80">
         {chartQuotes.length > 0 ? (
-          <ParentSize>
-            {({ width, height }) => (
-              <GraphSlider
-                data={chartQuotes}
-                width={width}
-                height={height}
-                top={0}
-                state={state}
-                dispatch={dispatch}
-                range={range}
-              />
-            )}
-          </ParentSize>
+          isCandleChart ? (
+            <CandleChart
+              chartQuotes={candleChartData}
+              range={range}
+            />
+          ) : (
+            <ParentSize>
+              {({ width, height }) => (
+                <GraphSlider
+                  data={chartQuotes}
+                  width={width}
+                  height={height}
+                  top={0}
+                  state={state}
+                  dispatch={dispatch}
+                  range={range}
+                />
+              )}
+            </ParentSize>
+          )
         ) : (
           <div className="flex h-[300px] sm:h-80 w-full items-center justify-center">
             <p>No data available</p>
           </div>
         )}
       </div>
-      <div className="mt-2 flex flex-wrap justify-center gap-1">
+      <div className="mt-2 flex flex-wrap justify-center gap-1 items-center">
         {rangeOptions.map((r) => (
           <Button
             key={r}
@@ -535,7 +566,18 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
             {r.toUpperCase()}
           </Button>
         ))}
+        <div className="ml-2">
+          <SwitchComponent 
+            checked={isCandleChart} 
+            onCheckedChange={setIsCandleChart} 
+            label="Candle Chart"
+          />
+        </div>
       </div>
+      
+      {/* Add the data display components */}
+      {/* <DataDisplay chartQuotes={chartQuotes} /> */}
+      {/* <CandleDataDisplay chartQuotes={chartQuotes} /> */}
     </div>
   )
 })

@@ -12,8 +12,8 @@ import { Interval } from "@/types/yahoo-finance"
 import { Suspense } from "react"
 import type { Metadata } from "next"
 import { fetchQuote } from "@/lib/yahoo-finance/fetchQuote"
-import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest"
 import OpenInterest from "./components/OpenInterest"
+
 type Props = {
   params: Promise<any>
   searchParams: Promise<{

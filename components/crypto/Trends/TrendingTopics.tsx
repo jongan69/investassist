@@ -126,9 +126,12 @@ export function TrendingTopics() {
     useEffect(() => {
         fetchTrendingTopics(setTopics, setIsLoading, setError);
 
+        // Capture the current value of the ref
+        const currentControllers = abortControllers.current;
+
         // Cleanup function to abort any pending requests
         return () => {
-            Object.values(abortControllers.current).forEach(controller => {
+            Object.values(currentControllers).forEach(controller => {
                 controller.abort();
             });
         };

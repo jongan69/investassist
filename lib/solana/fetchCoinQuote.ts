@@ -210,6 +210,7 @@ export async function fetchAllTimeframes(ticker: string) {
         }
 
         // Return data with warning if some timeframes failed
+        console.log("timeframeData", timeframeData)
         return {
             data: timeframeData,
             error: hasPartialFailure ? {

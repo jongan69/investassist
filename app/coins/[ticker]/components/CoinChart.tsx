@@ -105,8 +105,8 @@ const CoinChart = memo(function CoinChart({ ticker, range, timeframeData }: Coin
   // Handle loading/no data state
   if (!quotes.length || !priceStats) {
     return (
-      <div className="flex h-80 items-center justify-center text-muted-foreground">
-        No data available for {upperCaseTicker} on the {effectiveRange} timeframe
+      <div className="flex h-[300px] sm:h-80 w-full items-center justify-center">
+        <p className="text-muted-foreground">No data available for this time range {}</p>
       </div>
     )
   }

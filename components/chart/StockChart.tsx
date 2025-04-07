@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils"
 import { fetchChartData } from "@/lib/yahoo-finance/fetchChartData"
 import type { Interval, Range } from "@/types/yahoo-finance"
-import AreaClosedChart from "./AreaClosedChart"
 import { fetchQuote } from "@/lib/yahoo-finance/fetchQuote"
+import ChartDisplay from "./ChartDisplay"
 
 interface StockGraphProps {
   ticker: string
@@ -52,10 +52,12 @@ export default async function StockChart({
     .map((quote) => ({
       date: quote.date,
       close: quote.close?.toFixed(2),
+      open: quote.open?.toFixed(2),
+      high: quote.high?.toFixed(2),
+      low: quote.low?.toFixed(2),
     }))
     .filter((quote) => quote.close !== undefined && quote.date !== null)
 
-  // console.log('chart.quotes', chart.quotes)
   return (
     <div className="h-[27.5rem] w-full">
       <div>
@@ -168,14 +170,8 @@ export default async function StockChart({
           </span>
         </div>
       </div>
-      {chart.quotes.length === 0 && (
-        <div className="flex h-full items-center justify-center text-center text-neutral-500">
-          No Quote Data Was Available for {decodedTicker}
-        </div>
-      )}
-      {chart.quotes.length > 0 && (
-        <AreaClosedChart chartQuotes={ChartQuotes} range={range} />
-      )}
+      
+      <ChartDisplay chartQuotes={ChartQuotes} range={range} />
     </div>
   )
 }

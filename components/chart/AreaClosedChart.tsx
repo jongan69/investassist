@@ -360,22 +360,6 @@ export default function AreaClosedChart({ chartQuotes, range }: any) {
           </div>
         )}
       </div>
-      <div className="mt-1 flex flex-row">
-        {rangeOptions.map((r) => (
-          <Button
-            key={r}
-            variant={"ghost"}
-            onClick={handleClick}
-            className={
-              range === r
-                ? "bg-accent font-bold text-accent-foreground"
-                : "text-muted-foreground"
-            }
-          >
-            {r.toUpperCase()}
-          </Button>
-        ))}
-      </div>
     </div>
   )
 }
