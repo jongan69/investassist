@@ -1,5 +1,6 @@
 'use client'
 import * as ScrollArea from '@radix-ui/react-scroll-area';
+import Link from 'next/link';
 
 export function LatestTweets({ latestTweets, isTweetsLoading, tweetsError }: { latestTweets: any, isTweetsLoading: boolean, tweetsError: string }) {
     return (
@@ -59,6 +60,15 @@ export function LatestTweets({ latestTweets, isTweetsLoading, tweetsError }: { l
                                                             <span className="text-xs text-muted-foreground">
                                                                 {new Date(tweet.createdAt).toLocaleTimeString()}
                                                             </span>
+                                                            {tweet?.url && (
+                                                                <Link
+                                                                    href={tweet.url}
+                                                                    target="_blank"
+                                                                    className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-primary hover:bg-accent transition-colors duration-200"
+                                                                >
+                                                                    View Tweet
+                                                                </Link>
+                                                            )}
                                                         </div>
                                                         <p className="leading-relaxed">{tweet.text}</p>
                                                     </div>

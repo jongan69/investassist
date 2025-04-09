@@ -6,7 +6,7 @@ import { localPoint } from "@visx/event"
 import { scaleLinear } from "@visx/scale"
 import { ParentSize } from "@visx/responsive"
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect"
-import { detectCandlestickPatterns, PatternResult } from "@/lib/candlestickPatterns"
+import { PatternResult } from "@/lib/candlestickPatterns"
 import PatternIndicator from "./PatternIndicator"
 import PatternLegend from "./PatternLegend"
 import "@/styles/patternIndicators.css"
@@ -305,7 +305,7 @@ function GraphSlider({ data, width, height, top, state, dispatch, showPatterns, 
         />
       );
     });
-  }, [data, xScale, yScale, candleWidth, x]);
+  }, [data, yScale, candleWidth, x]);
 
   // Memoize the pattern indicators
   const renderPatternIndicators = useMemo(() => {

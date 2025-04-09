@@ -15,6 +15,7 @@ import { LatestTweets } from './Trends/LatestTweets';
 import { Overview } from './Trends/Overview';
 import { TopTweeted } from './Trends/TopTweeted';
 import { TrendingMetas } from './Trends/TrendingMetas';
+import TrendingVideos from '../tiktok/TrendingVideos';
 
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
@@ -189,6 +190,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                     </button>
                 </div>
             )}
+            <TrendingVideos />
             <TweetedCas tweetedCas={tweetedCas} isCasLoading={isCasLoading} casError={casError ?? ''} />
             {(!isTweetsLoading && latestTweets && latestTweets.length === 0) && (
                 <div className="flex justify-center mt-4">
