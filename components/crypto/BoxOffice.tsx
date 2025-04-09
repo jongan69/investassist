@@ -122,6 +122,7 @@ export default function BoxOffice() {
                                                     src={token.metadata.image}
                                                     alt={token.name}
                                                     fill
+                                                    unoptimized
                                                     className="object-cover"
                                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                                 />

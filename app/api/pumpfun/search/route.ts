@@ -130,9 +130,9 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    console.error('Error retrieving Pump Fun trending data:', error);
+    console.error('Error retrieving Pump Fun search data:', error);
     return NextResponse.json(
-      { error: 'Failed to retrieve Pump Fun trending data' },
+      { error: 'Failed to retrieve Pump Fun search data' },
       { status: 500 }
     );
   }

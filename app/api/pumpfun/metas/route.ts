@@ -70,9 +70,9 @@ export async function GET() {
       },
     });
   } catch (error) {
-    console.error('Error retrieving Pump Fun trending data:', error);
+    console.error('Error retrieving Pump Fun metas data:', error);
     return NextResponse.json(
-      { error: 'Failed to retrieve Pump Fun trending data' },
+      { error: 'Failed to retrieve Pump Fun metas data' },
       { status: 500 }
     );
   }
