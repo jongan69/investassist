@@ -83,6 +83,11 @@ const USEFUL_LINKS = [
     title: "Kraken",
     description: "Kraken is a platform that allows you to trade cryptocurrencies.",
     url: "https://kraken.onelink.me/JDNW/m6z2wu7k"
+  },
+  {
+    title: "Kamino Finance",
+    description: "Kamino Finance is a platform that allows you to multiply your holdings of any token by supplying it to the protocol for lending.",
+    url: "https://swap.kamino.finance/?ref=lockin"
   }
 ]
 
@@ -171,6 +176,14 @@ export default async function LearnPage() {
                 rel="noopener noreferrer"
               >
                 Kraken - Established Crypto Exchange →
+              </Link>
+              <Link
+                href={USEFUL_LINKS.find(link => link.title === "Kamino Finance")?.url || "#"}
+                className="text-blue-600 dark:text-blue-400 hover:underline block"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Kamino Finance - DeFi Protocol on Solana →
               </Link>
             </div>
           </div>
@@ -289,6 +302,37 @@ export default async function LearnPage() {
             <li>Research thoroughly before making investment decisions</li>
             <li>Consider using portfolio tracking tools to monitor your investments</li>
           </ul>
+        </div>
+      </section>
+
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4 dark:text-white">DeFi Protocols</h2>
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="p-4 bg-gray-100 dark:bg-gray-800 rounded-lg">
+            <h3 className="text-xl font-semibold mb-2 dark:text-white">Kamino Finance</h3>
+            <p className="dark:text-gray-300 mb-4">
+              Kamino Finance is a first-of-its-kind DeFi protocol that unifies Lending, Liquidity, and Leverage into a single, secure DeFi product suite.
+            </p>
+            <div className="space-y-2">
+              <h4 className="font-medium dark:text-white">Key Features:</h4>
+              <ul className="list-disc list-inside space-y-1 dark:text-gray-300">
+                <li>Borrow and lend assets</li>
+                <li>Provide leveraged liquidity to concentrated liquidity DEXs</li>
+                <li>Build automated liquidity strategies</li>
+                <li>Use concentrated liquidity positions as collateral</li>
+              </ul>
+              <div className="mt-4">
+                <Link
+                  href={USEFUL_LINKS.find(link => link.title === "Kamino Finance")?.url || "#"}
+                  className="text-blue-600 dark:text-blue-400 hover:underline block"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Visit Kamino Finance →
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
