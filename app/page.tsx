@@ -23,6 +23,7 @@ import {
   NewsSectionWrapper, 
   SectorPerformanceWrapper 
 } from "@/components/home/WrapperComponents"
+import { EmailSignupPrompt } from "@/components/home/EmailSignupPrompt"
 
 // Internal utility/type imports
 import { DEFAULT_INTERVAL, DEFAULT_RANGE } from "@/lib/yahoo-finance/constants"
@@ -101,6 +102,9 @@ export default async function Page({ searchParams }: Props) {
   return (
     <div className="flex flex-col gap-4 max-w-[2000px] mx-auto px-4">
       <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent animate-gradient">Invest Assist</h1>
+      
+      <EmailSignupPrompt />
+      
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
         <div className="lg:col-span-7">
           <Card className="relative flex h-full min-h-[15rem] flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">

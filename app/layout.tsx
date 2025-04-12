@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/ui/theme-provider"
 import Navigation from "@/components/ui/navigation"
 import Footer from "@/components/ui/footer"
 import WalletContextProvider from "@/components/contexts/WalletContextProvider"
-import { Toaster } from 'react-hot-toast';
+import { Toaster } from 'sonner';
 import ProfileForm from '@/components/profile/ProfileForm'
 import { Analytics } from '@vercel/analytics/next';
 import { getTokenPrice } from "@/lib/solana/fetchTokenPirce";
@@ -87,7 +87,7 @@ export default function RootLayout({
                 <Analytics />
               </main>
               <ProfileForm />
-              <Toaster />
+              <Toaster position="top-right" />
               <Footer />
             </WalletContextProvider>
           </ThemeProvider>
