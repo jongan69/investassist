@@ -101,7 +101,7 @@ export const WelcomeEmail: React.FC<Readonly<WelcomeEmailProps>> = ({
 
       <Section style={footer}>
         <Text style={footerText}>
-          You're receiving this email because you signed up for Invest Assist.
+          You&apos;re receiving this email because you signed up for Invest Assist.
         </Text>
 
         {/* <Link href="https://investassist.app/unsubscribe" style={footerLink}>
