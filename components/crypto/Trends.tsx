@@ -16,7 +16,7 @@ import { Overview } from './Trends/Overview';
 import { TopTweeted } from './Trends/TopTweeted';
 import { TrendingMetas } from './Trends/TrendingMetas';
 import TrendingVideos from '../tiktok/TrendingVideos';
-
+import AxiomPulse from './Trends/AxiomPulse';
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
     const [isMounted, setIsMounted] = useState(false);
@@ -123,6 +123,7 @@ export default function CryptoTrends({ data }: { data: any }) {
 
     return (
         <>
+            <AxiomPulse />
             <motion.div
                 className={cn(
                     "group relative rounded-xl",
