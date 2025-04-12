@@ -24,7 +24,7 @@ export async function POST(req: Request) {
       
       Sector Performance:
       ${sectorPerformance
-        .map((sector: { sector: any; performance: any; }) => `${sector.sector}: ${sector.performance}%`)
+        ?.map((sector: { sector: any; performance: any; }) => `${sector.sector}: ${sector.performance}%`)
         .join('\n')}
       
       Please analyze these indicators and provide insights about:

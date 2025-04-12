@@ -158,7 +158,7 @@ export function TrendingTopics() {
     const processBatch = useCallback(async (topics: string[]) => {
         for (let i = 0; i < topics.length; i += BATCH_SIZE) {
             const batch = topics.slice(i, i + BATCH_SIZE);
-            await Promise.all(batch.map(topic => searchPumpFun(topic)));
+            await Promise.all(batch?.map(topic => searchPumpFun(topic)));
             if (i + BATCH_SIZE < topics.length) {
                 await new Promise(resolve => setTimeout(resolve, BATCH_DELAY));
             }
@@ -287,7 +287,7 @@ export function TrendingTopics() {
                                 const bResults = searchResults[b]?.totalResults || 0;
                                 return bResults - aResults;
                             })
-                            .map((topic, index) => {
+                            ?.map((topic, index) => {
                                 const result = searchResults[topic];
                                 const isLoading = isSearching[topic];
                                 const isExpanded = expandedTopics[topic];
@@ -314,7 +314,7 @@ export function TrendingTopics() {
                                             <div className="h-4 w-3/4 bg-secondary/20 rounded animate-pulse"></div>
                                         ) : result && result.results && result.results.length > 0 ? (
                                             <div className="space-y-2">
-                                                {result.results.slice(0, isExpanded ? 3 : 1).map((item, i) => {
+                                                {result.results.slice(0, isExpanded ? 3 : 1)?.map((item, i) => {
                                                     const bestPair = getBestPair(result.dexScreenerData);
                                                     const priceChange = bestPair?.priceChange24h || 0;
                                                     const isPositive = priceChange > 0;

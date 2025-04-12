@@ -106,19 +106,20 @@ export async function GET(request: Request) {
   };
 
   // Fetch data from all tables in parallel
-  const fetchPromises = tables.map(table => {
+  const fetchPromises = tables?.map(async table => {
     const filters = JSON.stringify({
       ...filterTemplate,
       table
     });
     
-    return fetch('https://api5.axiom.trade/pulse', {
+    const response = await fetch('https://api5.axiom.trade/pulse', {
       method: 'POST',
       headers: {
         'Cookie': process.env.AXIOM_COOKIE || ''
       },
       body: filters
-    }).then(response => response.json());
+    });
+    return await response.json();
   });
 
   try {
@@ -131,7 +132,7 @@ export async function GET(request: Request) {
     results.forEach((data, index) => {
       if (Array.isArray(data)) {
         // Add source table information to each token
-        const tokensWithSource = data.map(token => ({
+        const tokensWithSource = data?.map(token => ({
           ...token,
           sourceTable: tables[index]
         }));
@@ -170,7 +171,7 @@ export async function GET(request: Request) {
     const deduplicatedTokens = Array.from(uniqueTokensMap.values());
     
     // Ensure all tokens have a score property
-    const tokensWithScores = deduplicatedTokens.map(token => {
+    const tokensWithScores = deduplicatedTokens?.map(token => {
       // If token doesn't have a score, calculate one
       if (token.score === undefined) {
         return {

@@ -66,15 +66,15 @@ export default async function Page({ searchParams }: Props) {
   // Split data fetching into smaller chunks
   const [marketData, latestNews] = await Promise.all([
     Promise.allSettled(
-      tickers.map(({ symbol }) => yahooFinance.quoteCombine(symbol))
+      tickers?.map(({ symbol }) => yahooFinance.quoteCombine(symbol))
     ).then(results => results
       .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
-      .map(result => result.value)
+      ?.map(result => result.value)
     ),
     fetchStockNews()
   ])
 
-  const resultsWithTitles = marketData.map((result, index) => ({
+  const resultsWithTitles = marketData?.map((result, index) => ({
     ...result,
     shortName: tickers[index].shortName,
   }))

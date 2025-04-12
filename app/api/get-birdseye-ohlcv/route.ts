@@ -77,7 +77,7 @@ async function fetchDataForTimeframe(
         // - Convert unixTime to an ISO timestamp.
         // - Rename keys: o => open, h => high, l => low, c => close, v => volume.
         // - Convert numeric strings to numbers.
-        const processedData = dataItems.map((item) => ({
+        const processedData = dataItems?.map((item) => ({
           timestamp: new Date(item.unixTime * 1000).toISOString(),
           open: parseFloat(item.o),
           high: parseFloat(item.h),

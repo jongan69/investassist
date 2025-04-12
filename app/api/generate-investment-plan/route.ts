@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       
       Current Portfolio:
       Total Value: $${userPortfolio.totalValue}
-      Holdings: ${userPortfolio.holdings.map((h: any) => `${h.symbol}: $${h.usdValue.toFixed(2)}`).join(', ')}
+      Holdings: ${userPortfolio.holdings?.map((h: any) => `${h.symbol}: $${h.usdValue.toFixed(2)}`).join(', ')}
       
       Market Sentiment (Fear & Greed Index):
       Current: ${fearGreedValue.fgi.now.value} (${fearGreedValue.fgi.now.valueText})
@@ -69,7 +69,7 @@ export async function POST(req: Request) {
       Last Updated: ${new Date(fearGreedValue.lastUpdated.humanDate).toLocaleString()}
       
       Sector Performance:
-      ${sectorPerformance.map((sector: any) => `${sector.sector}: ${sector.performance}%`).join('\n')}
+      ${sectorPerformance?.map((sector: any) => `${sector.sector}: ${sector.performance}%`).join('\n')}
 
       Market Data:
       ${JSON.stringify(marketData, null, 2)}

@@ -215,7 +215,7 @@ export default async function AboutPage() {
                     </tr>
                   </thead>
                   <tbody className="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
-                    {topHolders.map((holder: any, index: number) => (
+                    {topHolders?.map((holder: any, index: number) => (
                       <tr key={holder.id} className="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                           #{index + 1}
@@ -246,7 +246,7 @@ export default async function AboutPage() {
                 Connect With Us
               </h2>
               <div className="flex flex-wrap justify-center gap-4">
-                {socialLinks.map((link: { type: string; url: string }) => (
+                {socialLinks?.map((link: { type: string; url: string }) => (
                   <a
                     key={link.type}
                     href={link.url}

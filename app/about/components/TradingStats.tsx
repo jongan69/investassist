@@ -128,7 +128,7 @@ export default function TradingStats({ data }: TradingStatsProps) {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <h3 className="text-2xl font-bold text-yellow-400">Market Performance</h3>
           <div className="flex flex-wrap gap-3">
-            {timeframes.map(({ value, label }) => (
+            {timeframes?.map(({ value, label }) => (
               <button
                 key={value}
                 onClick={() => setSelectedTimeframe(value)}

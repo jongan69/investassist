@@ -62,7 +62,7 @@ export async function GET(request: Request) {
     const data = await response.json();
     
     // Process the listings to create price index
-    const listings = data.records.map((record: any) => ({
+    const listings = data.records?.map((record: any) => ({
       year: record.year,
       make: record.make,
       model: record.model,
@@ -76,11 +76,11 @@ export async function GET(request: Request) {
     }));
 
     // Calculate statistics
-    const prices = listings.map((l: CarListing) => l.priceUnformatted);
-    const mileages = listings.map((l: CarListing) => l.mileageUnformatted);
+    const prices = listings?.map((l: CarListing) => l.priceUnformatted);
+    const mileages = listings?.map((l: CarListing) => l.mileageUnformatted);
     
     const priceIndex: PriceIndex = {
-      totalListings: listings.length,
+      totalListings: listings?.length || 0,
       averagePrice: Math.round(prices.reduce((a: number, b: number) => a + b, 0) / prices.length),
       medianPrice: prices.sort((a: number, b: number) => a - b)[Math.floor(prices.length / 2)],
       priceRange: {
