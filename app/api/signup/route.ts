@@ -27,7 +27,14 @@ export async function POST(request: Request) {
     // Here you would typically also save the email to your database
     // For example:
     // await db.users.create({ data: { email, name } });
-
+    resend.contacts.create({
+      email: email,
+      firstName: '',
+      lastName: '',
+      unsubscribed: false,
+      audienceId: 'cb45604a-93c1-4fd4-a2dd-218712d4e22f',
+    });
+    
     return NextResponse.json(
       { success: true, message: 'Signup successful' },
       { status: 200 }
