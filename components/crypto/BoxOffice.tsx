@@ -106,7 +106,7 @@ export default function BoxOffice() {
             {/* Scrollable Token List */}
             <div className="max-h-[700px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
                 <div className="grid grid-cols-1 gap-6 lg:gap-8">
-                    {filteredTokens.length > 0 ? (
+                    {filteredTokens && filteredTokens?.length > 0 ? (
                         filteredTokens?.map((token) => (
                             <div 
                                 key={token.ticker}
