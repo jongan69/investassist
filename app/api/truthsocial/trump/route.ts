@@ -21,7 +21,7 @@ export async function GET() {
   } catch (error) {
     console.error('Error fetching trump social posts:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch trump social posts' },
+      { error: 'Failed to fetch trump social posts: ' + error },
       { status: 500 }
     );
   }
