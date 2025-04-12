@@ -26,7 +26,9 @@ export const WelcomeEmail: React.FC<Readonly<WelcomeEmailProps>> = ({
     <Body style={main}>
       <Container style={container}>
         <Heading style={h1}>Welcome to Invest Assist!</Heading>
-        <Img src="/android-chrome-192x192.png" alt="Invest Assist Logo" width={100} height={100} />
+        <Section style={imageContainer}>
+          <Img src="https://dd.dexscreener.com/ds-data/tokens/solana/8KxEiudmUF5tpJKK4uHzjDuJPGKUz9hYUDBEVcfdpump.png?key=733897" alt="Invest Assist Logo" width={100} height={100} />
+        </Section>
         <Text style={text}>
           Hi {name},
         </Text>
@@ -134,4 +136,9 @@ const footer = {
   lineHeight: "22px",
   margin: "0 0 10px",
   padding: "0 20px",
+};
+
+const imageContainer = {
+  textAlign: "center" as const,
+  margin: "0 0 20px",
 }; 
