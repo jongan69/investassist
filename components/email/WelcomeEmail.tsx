@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {
   Body,
+  Column,
   Container,
   Head,
   Heading,
@@ -11,6 +12,8 @@ import {
   Section,
   Hr,
   Img,
+  Link,
+  Row,
 } from "@react-email/components";
 
 interface WelcomeEmailProps {
@@ -25,39 +28,107 @@ export const WelcomeEmail: React.FC<Readonly<WelcomeEmailProps>> = ({
     <Preview>Welcome to Invest Assist - Your Financial Intelligence Platform</Preview>
     <Body style={main}>
       <Container style={container}>
-        <Heading style={h1}>Welcome to Invest Assist!</Heading>
-        <Section style={imageContainer}>
-          <Img src="https://dd.dexscreener.com/ds-data/tokens/solana/8KxEiudmUF5tpJKK4uHzjDuJPGKUz9hYUDBEVcfdpump.png?key=733897" alt="Invest Assist Logo" width={100} height={100} />
+        <Section style={logo}>
+          <Img 
+            src="https://dd.dexscreener.com/ds-data/tokens/solana/8KxEiudmUF5tpJKK4uHzjDuJPGKUz9hYUDBEVcfdpump.png?key=733897" 
+            alt="Invest Assist Logo" 
+            width={100} 
+            height={100} 
+          />
         </Section>
-        <Text style={text}>
-          Hi {name},
-        </Text>
-        <Text style={text}>
-          Thank you for signing up for Invest Assist. We&apos;re excited to have you on board!
-        </Text>
-        <Text style={text}>
-          With Invest Assist, you&apos;ll receive:
-        </Text>
-        <ul style={list}>
-          <li style={listItem}>Real-time market insights and trends</li>
-          <li style={listItem}>Personalized investment recommendations</li>
-          <li style={listItem}>Updates on market movements and opportunities</li>
-          <li style={listItem}>Exclusive content and analysis</li>
-        </ul>
-        <Section style={buttonContainer}>
-          <Button style={button} href="https://investassist.app">
-            Explore Invest Assist
-          </Button>
+
+        <Section style={header}>
+          <Row>
+            <Column style={headerContent}>
+              <Heading style={headerContentTitle}>Welcome to Invest Assist!</Heading>
+              <Text style={headerContentSubtitle}>
+                Your Financial Intelligence Platform
+              </Text>
+            </Column>
+            <Column style={headerImageContainer}>
+              <Img
+                style={headerImage}
+                width={340}
+                src="https://dd.dexscreener.com/ds-data/tokens/solana/8KxEiudmUF5tpJKK4uHzjDuJPGKUz9hYUDBEVcfdpump.png?key=733897"
+                alt="Invest Assist"
+              />
+            </Column>
+          </Row>
         </Section>
-        <Hr style={hr} />
-        <Text style={footer}>
-          If you have any questions, feel free to reply to this email.
-        </Text>
-        <Text style={footer}>
-          Best regards,<br />
-          The Invest Assist Team
-        </Text>
+
+        <Section style={content}>
+          <Text style={paragraph}>
+            Hi {name},
+          </Text>
+          <Text style={paragraph}>
+            Thank you for signing up for Invest Assist. We&apos;re excited to have you on board!
+          </Text>
+          <Text style={paragraph}>
+            With Invest Assist, you&apos;ll receive:
+          </Text>
+          <ul>
+            <li>
+              <Text style={paragraph}>Real-time market insights and trends</Text>
+            </li>
+            <li>
+              <Text style={paragraph}>Personalized investment recommendations</Text>
+            </li>
+            <li>
+              <Text style={paragraph}>Updates on market movements and opportunities</Text>
+            </li>
+            <li>
+              <Text style={paragraph}>Exclusive content and analysis</Text>
+            </li>
+          </ul>
+
+          <Hr style={divider} />
+
+          <Section style={buttonContainer}>
+            <Button style={button} href="https://investassist.app">
+              Explore Invest Assist
+            </Button>
+          </Section>
+
+          <Text style={paragraph}>
+            If you have any questions, feel free to reply to this email.
+          </Text>
+          <Text style={paragraph}>
+            Best regards,<br />
+            The Invest Assist Team
+          </Text>
+        </Section>
       </Container>
+
+      <Section style={footer}>
+        <Text style={footerText}>
+          You're receiving this email because you signed up for Invest Assist.
+        </Text>
+
+        {/* <Link href="https://investassist.app/unsubscribe" style={footerLink}>
+          Unsubscribe from emails like this{' '}
+        </Link>
+        <Link href="https://investassist.app/settings" style={footerLink}>
+          Edit email settings{' '}
+        </Link>
+        <Link href="https://investassist.app/contact" style={footerLink}>
+          Contact us
+        </Link>
+        <Link href="https://investassist.app/privacy" style={footerLink}>
+          Privacy
+        </Link> */}
+
+        <Hr style={footerDivider} />
+
+        <Img 
+          width={100} 
+          height={100} 
+          src="https://dd.dexscreener.com/ds-data/tokens/solana/8KxEiudmUF5tpJKK4uHzjDuJPGKUz9hYUDBEVcfdpump.png?key=733897" 
+          alt="Invest Assist Logo" 
+        />
+        <Text style={footerAddress}>
+          <strong>Invest Assist</strong>, Financial Intelligence Platform
+        </Text>
+      </Section>
     </Body>
   </Html>
 );
@@ -65,80 +136,126 @@ export const WelcomeEmail: React.FC<Readonly<WelcomeEmailProps>> = ({
 export default WelcomeEmail;
 
 const main = {
-  backgroundColor: "#f6f9fc",
+  backgroundColor: '#f6f9fc',
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif',
 };
 
 const container = {
-  backgroundColor: "#ffffff",
-  margin: "0 auto",
-  padding: "20px 0 48px",
-  marginBottom: "64px",
-  borderRadius: "5px",
-  boxShadow: "0 2px 8px rgba(0, 0, 0, 0.05)",
+  width: '680px',
+  maxWidth: '100%',
+  margin: '0 auto',
+  backgroundColor: '#ffffff',
 };
 
-const h1 = {
-  color: "#1a1a1a",
-  fontSize: "24px",
-  fontWeight: "600",
-  lineHeight: "40px",
-  margin: "0 0 20px",
-  textAlign: "center" as const,
+const logo = {
+  display: 'flex',
+  justifyContent: 'center',
+  background: '#f6f9fc',
+  padding: '20px 30px',
 };
 
-const text = {
-  color: "#4a4a4a",
-  fontSize: "16px",
-  lineHeight: "24px",
-  margin: "0 0 20px",
-  padding: "0 20px",
+const header = {
+  borderRadius: '5px 5px 0 0',
+  display: 'flex',
+  flexDirection: 'column' as const,
+  backgroundColor: '#0070f3',
 };
 
-const list = {
-  color: "#4a4a4a",
-  fontSize: "16px",
-  lineHeight: "24px",
-  margin: "0 0 20px",
-  padding: "0 20px 0 40px",
+const headerContent = { 
+  padding: '20px 30px 15px',
+  color: '#ffffff',
 };
 
-const listItem = {
-  margin: "0 0 10px",
+const headerContentTitle = {
+  color: '#fff',
+  fontSize: '27px',
+  fontWeight: 'bold',
+  lineHeight: '27px',
+  margin: '0 0 10px',
+};
+
+const headerContentSubtitle = {
+  color: '#fff',
+  fontSize: '17px',
+  margin: '0',
+};
+
+const headerImageContainer = {
+  padding: '30px 10px',
+  textAlign: 'center' as const,
+};
+
+const headerImage = {
+  maxWidth: '100%',
+};
+
+const content = {
+  padding: '30px 30px 40px 30px',
+};
+
+const paragraph = {
+  fontSize: '15px',
+  lineHeight: '21px',
+  color: '#3c3f44',
+  margin: '0 0 15px',
+};
+
+const divider = {
+  margin: '30px 0',
+  borderColor: '#e6ebf1',
 };
 
 const buttonContainer = {
-  textAlign: "center" as const,
-  margin: "30px 0",
+  textAlign: 'center' as const,
+  margin: '30px 0',
 };
 
 const button = {
-  backgroundColor: "#0070f3",
-  borderRadius: "5px",
-  color: "#fff",
-  fontSize: "16px",
-  fontWeight: "600",
-  textDecoration: "none",
-  textAlign: "center" as const,
-  display: "inline-block",
-  padding: "12px 24px",
-};
-
-const hr = {
-  borderColor: "#e6ebf1",
-  margin: "20px 0",
+  backgroundColor: '#0070f3',
+  borderRadius: '5px',
+  color: '#fff',
+  fontSize: '16px',
+  fontWeight: '600',
+  textDecoration: 'none',
+  textAlign: 'center' as const,
+  display: 'inline-block',
+  padding: '12px 24px',
 };
 
 const footer = {
-  color: "#8898aa",
-  fontSize: "14px",
-  lineHeight: "22px",
-  margin: "0 0 10px",
-  padding: "0 20px",
+  width: '680px',
+  maxWidth: '100%',
+  margin: '32px auto 0 auto',
+  padding: '0 30px',
+  textAlign: 'center' as const,
 };
 
-const imageContainer = {
-  textAlign: "center" as const,
-  margin: "0 0 20px",
+const footerText = {
+  fontSize: '12px',
+  lineHeight: '15px',
+  color: '#8898aa',
+  margin: '0 0 15px',
+};
+
+const footerLink = {
+  display: 'inline-block',
+  color: '#8898aa',
+  textDecoration: 'underline',
+  fontSize: '12px',
+  marginRight: '10px',
+  marginBottom: '0',
+  marginTop: '8px',
+};
+
+const footerDivider = {
+  margin: '30px 0',
+  borderColor: '#e6ebf1',
+};
+
+const footerAddress = {
+  margin: '4px 0',
+  fontSize: '12px',
+  lineHeight: '15px',
+  color: '#8898aa',
 }; 
