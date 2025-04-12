@@ -9,8 +9,9 @@ import Footer from "@/components/ui/footer"
 import WalletContextProvider from "@/components/contexts/WalletContextProvider"
 import { Toaster } from 'react-hot-toast';
 import ProfileForm from '@/components/profile/ProfileForm'
-// import Script from "next/script"
 import { Analytics } from '@vercel/analytics/next';
+import { getTokenPrice } from "@/lib/solana/fetchTokenPirce";
+// import Script from "next/script"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -19,10 +20,13 @@ const inter = Inter({
   adjustFontFallback: true
 })
 
-export const metadata: Metadata = {
-  title: "InvestAssist: Stock Quotes, Market News, & Analysis",
-  description:
-    "InvestAssist is a source of free stock quotes, business and finance news, portfolio management tools, and international market data.",
+export async function generateMetadata(): Promise<Metadata> {
+  const priceData = await getTokenPrice();
+  return {
+    title: `InvestAssist - $IA: ${priceData.price}`,
+    description:
+      "InvestAssist is a source of free stock and crypto quotes, business and finance news, portfolio management tools, and global market data.",
+  }
 }
 
 export const revalidate = 300 // Revalidate every 5 minutes

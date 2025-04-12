@@ -131,7 +131,7 @@ function EmptyVideos() {
     return (
         <div className="container mx-auto px-4 py-4 min-h-screen overflow-x-hidden z-10 max-w-[1920px]">
             <h1 className="text-2xl font-bold mb-6 max-w-[1600px] mx-auto">Trending TikTok Videos</h1>
-            <div className="p-6 rounded-xl text-center max-w-[1600px] mx-auto bg-gray-100 dark:bg-gray-800">
+            <div className="p-6 rounded-xl text-center max-w-[1600px] mx-auto bg-gray-100 dark:bg-black">
                 <p className="text-base text-gray-600 dark:text-gray-400">No trending videos available at the moment.</p>
             </div>
         </div>

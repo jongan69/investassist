@@ -13,22 +13,21 @@ const truncateAddressesInText = (text: string) => {
 };
 
 export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas: any, isCasLoading: boolean, casError: string }) {
-    {/* Tweeted CAS Section */ }
     return (
-        <div className="prose prose-sm prose-invert max-w-full py-1">
-            <h1 className="text-xl font-bold mb-4 tracking-tight text-foreground">
+        <div className="rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md p-6">
+            <h2 className="text-xl font-bold mb-6 text-foreground">
                 Tweeted Contract Addresses
-            </h1>
+            </h2>
             {casError ? (
-                <p className="leading-relaxed text-sm font-medium text-destructive">
+                <p className="text-sm p-4 rounded-lg bg-destructive/10 text-destructive">
                     {casError}
                 </p>
             ) : isCasLoading ? (
-                <p className="leading-relaxed text-sm animate-pulse text-muted-foreground">
+                <p className="text-sm animate-pulse text-muted-foreground p-4">
                     Loading Contract Addresses...
                 </p>
             ) : tweetedCas && tweetedCas.length > 0 ? (
-                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-muted-foreground scrollbar-track-transparent hover:scrollbar-thumb-primary transition-all">
+                <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-secondary/30 scrollbar-track-transparent hover:scrollbar-thumb-primary/50 transition-all">
                     {tweetedCas.map((cas: any, index: number) => (
                         <div
                             key={index}
@@ -43,10 +42,10 @@ export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas:
                                                     {cas.tokenInfo.name} ({cas.tokenInfo.symbol})
                                                 </span>
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-green-500">
+                                                    <span className="text-xs font-medium px-2 py-1 rounded-full bg-green-500/10 text-green-500">
                                                         ${cas.tokenInfo.price}
                                                     </span>
-                                                    <span className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-blue-500">
+                                                    <span className="text-xs font-medium px-2 py-1 rounded-full bg-blue-500/10 text-blue-500">
                                                         MC: ${cas?.tokenInfo?.marketCap?.toLocaleString() ?? 'N/A'}
                                                     </span>
                                                 </div>
@@ -61,14 +60,14 @@ export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas:
                                         </div>
                                     </div>
                                 </div>
-                                <div className="rounded-lg bg-muted p-3 space-y-3">
+                                <div className="rounded-lg bg-secondary/20 p-3 space-y-3">
                                     {cas.tweets.map((tweet: any, tweetIndex: number) => (
                                         <div
                                             key={tweetIndex}
                                             className="text-sm text-muted-foreground border-l-2 pl-3 border-border hover:border-primary transition-colors duration-200"
                                         >
                                             <div className="flex items-center gap-3 mb-2">
-                                                <span className="font-semibold hover:text-primary transition-colors">@{tweet.username}</span>
+                                                <span className="font-semibold text-foreground hover:text-primary transition-colors">@{tweet.username}</span>
                                                 <span className="text-xs text-muted-foreground">
                                                     {new Date(tweet.createdAt).toLocaleTimeString()}
                                                 </span>
@@ -76,7 +75,7 @@ export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas:
                                                     <Link
                                                         href={tweet.url}
                                                         target="_blank"
-                                                        className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-primary hover:bg-accent transition-colors duration-200"
+                                                        className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors duration-200"
                                                     >
                                                         View Link
                                                     </Link>
@@ -85,7 +84,7 @@ export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas:
                                                     <Link
                                                         href={`/coins/${cas.tokenInfo.symbol}?ca=${cas.tokenInfo.contractAddress}`}
                                                         target="_blank"
-                                                        className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-primary hover:bg-accent transition-colors duration-200"
+                                                        className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors duration-200"
                                                     >
                                                         View Coin
                                                     </Link>
@@ -93,7 +92,7 @@ export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas:
                                                     <Link
                                                         href={`https://solscan.io/address/${cas.address}`}
                                                         target="_blank"
-                                                        className="text-xs font-medium px-2 py-1 rounded-full bg-muted text-primary hover:bg-accent transition-colors duration-200"
+                                                        className="text-xs font-medium px-2 py-1 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors duration-200"
                                                     >
                                                         View Address
                                                     </Link>
@@ -108,7 +107,7 @@ export function TweetedCas({ tweetedCas, isCasLoading, casError }: { tweetedCas:
                     ))}
                 </div>
             ) : (
-                <p className="leading-relaxed text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground p-4">
                     No Contract Addresses available
                 </p>
             )}

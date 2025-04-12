@@ -492,9 +492,9 @@ export default async function Page({ searchParams }: Props) {
                                     ? 'text-red-500 dark:text-red-400'
                                     : 'text-muted-foreground'
                                   }`}>
-                                  {key === 'averageDailyVolume' || key === 'marketCap' 
+                                  {key === 'averageDailyVolume' || key === 'marketCap'
                                     ? formatNumber(value)
-                                    : typeof value === 'number' 
+                                    : typeof value === 'number'
                                       ? `${value > 0 ? '+' : ''}${value.toFixed(2)}%`
                                       : value}
                                 </span>
@@ -517,7 +517,9 @@ export default async function Page({ searchParams }: Props) {
             <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
               <CarPriceIndex />
             </Suspense>
-            <TrendingTopics />
+            <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+              <TrendingTopics />
+            </Suspense>
             <div className="flex flex-col">
               <div className="px-6 sm:px-4">
                 <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>

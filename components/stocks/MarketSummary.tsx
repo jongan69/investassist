@@ -78,11 +78,13 @@ export default function MarketSummary({
     return null; // Ensure the theme is resolved and component is mounted
   }
 
+  const isDark = resolvedTheme === 'dark';
+  
   return (
     <motion.div 
       className={cn(
         "group relative overflow-hidden rounded-xl",
-        `bg-gradient-to-r from-${resolvedTheme === 'dark' ? 'white' : 'black'} to-${sentimentColor}`,
+        isDark ? "bg-gradient-to-r from-white/10 to-white/5" : "bg-gradient-to-r from-black/10 to-black/5",
         "shadow-lg transition-all duration-300 hover:shadow-2xl p-6",
         "max-w-full mx-auto",
         className
@@ -90,27 +92,42 @@ export default function MarketSummary({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
+      style={{
+        borderLeft: `4px solid ${sentimentColor}`
+      }}
     >
-      <div className="space-y-4 p-4">
+      <div className="space-y-4">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <h2 className={`text-xl font-bold ${resolvedTheme === 'dark' ? 'text-white group-hover:text-gray-300' : 'text-black group-hover:text-gray-700'} transition-colors`}>
+          <h2 className={cn(
+            "text-xl font-bold transition-colors",
+            isDark ? "text-white group-hover:text-gray-300" : "text-black group-hover:text-gray-700"
+          )}>
             {isLoading ? "AI Market Analysis" : `${model} Market Analysis`}
           </h2>
           {isLoading && (
             <div className="flex gap-1 px-1">
               <motion.span 
-                className={`animate-pulse h-2 w-2 rounded-full ${resolvedTheme === 'dark' ? 'bg-white' : 'bg-black'}`}
+                className={cn(
+                  "h-2 w-2 rounded-full",
+                  isDark ? "bg-white" : "bg-black"
+                )}
                 animate={{ scale: [1, 1.5, 1] }}
                 transition={{ repeat: Infinity, duration: 0.6 }}
               />
               <motion.span 
-                className={`animate-pulse h-2 w-2 rounded-full ${resolvedTheme === 'dark' ? 'bg-white' : 'bg-black'} delay-75`}
+                className={cn(
+                  "h-2 w-2 rounded-full",
+                  isDark ? "bg-white" : "bg-black"
+                )}
                 animate={{ scale: [1, 1.5, 1] }}
                 transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }}
               />
               <motion.span 
-                className={`animate-pulse h-2 w-2 rounded-full ${resolvedTheme === 'dark' ? 'bg-white' : 'bg-black'} delay-150`}
+                className={cn(
+                  "h-2 w-2 rounded-full",
+                  isDark ? "bg-white" : "bg-black"
+                )}
                 animate={{ scale: [1, 1.5, 1] }}
                 transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }}
               />
@@ -119,16 +136,19 @@ export default function MarketSummary({
         </div>
 
         {/* Content */}
-        <div className="prose prose-sm prose-invert max-w-full py-1">
-          <p className={`${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} leading-relaxed text-sm tracking-wide`}>
+        <div className="prose prose-sm max-w-full">
+          <p className={cn(
+            "leading-relaxed text-sm tracking-wide",
+            isDark ? "text-white/90" : "text-black/90"
+          )}>
             {summary}
           </p>
         </div>
       </div>
       
       {/* Decorative Elements */}
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 py-6" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-current/20 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-current/5" />
     </motion.div>
   );
 } 

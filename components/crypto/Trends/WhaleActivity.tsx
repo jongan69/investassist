@@ -3,12 +3,11 @@ import Link from 'next/link'
 import { Fragment } from 'react';
 
 export function WhaleActivity({ trends }: { trends: any }) {
-    {/* Whale Activity Section */ }
     return (
-        <div className="prose prose-sm prose-invert max-w-full py-4">
-            <h1 className="text-xl font-bold mb-6 text-foreground">
+        <div className="rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md p-6">
+            <h2 className="text-xl font-bold mb-6 text-foreground">
                 Whale Activity
-            </h1>
+            </h2>
             {['bullish', 'bearish'].map((type, index) => (
                 <Fragment key={type}>
                     {index === 1 && (
@@ -17,7 +16,7 @@ export function WhaleActivity({ trends }: { trends: any }) {
                                 <div className="w-full border-t border-border" />
                             </div>
                             <div className="relative flex justify-center">
-                                <span className="px-2 text-xs font-medium bg-background text-muted-foreground">
+                                <span className="px-2 text-xs font-medium bg-card text-muted-foreground">
                                     Bearish Activity
                                 </span>
                             </div>
@@ -25,7 +24,7 @@ export function WhaleActivity({ trends }: { trends: any }) {
                     )}
                     <div className="rounded-lg overflow-hidden border border-border shadow-sm">
                         <table className="min-w-full divide-y divide-border">
-                            <thead className="bg-muted">
+                            <thead className="bg-secondary/20">
                                 <tr>
                                     <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-1/3">Symbol</th>
                                     <th className="px-4 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider w-1/3">Name</th>
@@ -57,10 +56,11 @@ export function WhaleActivity({ trends }: { trends: any }) {
                                                                 className="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold"
                                                                 style={{ 
                                                                     backgroundColor: type === 'bullish' 
-                                                                        ? 'rgb(34 197 94)' // solid green
-                                                                        : 'rgb(239 68 68)', // solid red
-                                                                    color: 'white',
-                                                                    boxShadow: '0 1px 2px rgba(0,0,0,0.1)'
+                                                                        ? 'rgb(34 197 94 / 0.1)' // green with opacity
+                                                                        : 'rgb(239 68 68 / 0.1)', // red with opacity
+                                                                    color: type === 'bullish' 
+                                                                        ? 'rgb(34 197 94)' // green
+                                                                        : 'rgb(239 68 68)', // red
                                                                 }}
                                                             >
                                                                 {score}

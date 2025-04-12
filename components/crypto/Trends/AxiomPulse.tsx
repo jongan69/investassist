@@ -72,8 +72,8 @@ function ErrorTokens() {
   return (
     <div className="container mx-auto px-4 py-4 min-h-screen overflow-x-hidden z-10 max-w-[1920px]">
       <h1 className="text-2xl font-bold mb-6 max-w-[1600px] mx-auto">Axiom Pulse</h1>
-      <div className="p-6 rounded-xl text-center max-w-[1600px] mx-auto bg-red-50 dark:bg-red-900/30">
-        <p className="text-base text-red-600 dark:text-red-400">Failed to load tokens. Please try again later.</p>
+      <div className="p-6 rounded-xl text-center max-w-[1600px] mx-auto bg-destructive/10 text-destructive">
+        <p className="text-base">Failed to load tokens. Please try again later.</p>
       </div>
     </div>
   );
@@ -84,8 +84,8 @@ function EmptyTokens() {
   return (
     <div className="container mx-auto px-4 py-4 min-h-screen overflow-x-hidden z-10 max-w-[1920px]">
       <h1 className="text-2xl font-bold mb-6 max-w-[1600px] mx-auto">Axiom Pulse</h1>
-      <div className="p-6 rounded-xl text-center max-w-[1600px] mx-auto bg-gray-100 dark:bg-gray-800">
-        <p className="text-base text-gray-600 dark:text-gray-400">No tokens available at the moment.</p>
+      <div className="p-6 rounded-xl text-center max-w-[1600px] mx-auto bg-card border border-border">
+        <p className="text-base text-muted-foreground">No tokens available at the moment.</p>
       </div>
     </div>
   );
@@ -127,7 +127,7 @@ function TokenCard({ token }: { token: Token }) {
 
   return (
     <div 
-      className="w-full rounded-xl border bg-card p-3 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-primary/50"
+      className="w-full rounded-xl border bg-card p-3 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:border-primary/50"
       onClick={handleCardClick}
     >
       <div className="flex items-start mb-2">
@@ -148,7 +148,7 @@ function TokenCard({ token }: { token: Token }) {
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="font-semibold text-xs break-words">{token.tokenName}</h2>
+          <h2 className="font-semibold text-xs break-words text-foreground">{token.tokenName}</h2>
           <p className="text-xs text-muted-foreground truncate">{token.tokenTicker}</p>
         </div>
       </div>
@@ -168,19 +168,19 @@ function TokenCard({ token }: { token: Token }) {
       <div className="grid grid-cols-2 gap-1.5 mb-2">
         <div className="bg-secondary/20 p-1.5 rounded">
           <p className="text-[10px] text-muted-foreground">Volume</p>
-          <p className="font-semibold text-xs">{formatNumber(token.volumeSol || 0)} SOL</p>
+          <p className="font-semibold text-xs text-foreground">{formatNumber(token.volumeSol || 0)} SOL</p>
         </div>
         <div className="bg-secondary/20 p-1.5 rounded">
           <p className="text-[10px] text-muted-foreground">Liquidity</p>
-          <p className="font-semibold text-xs">{formatNumber(token.liquiditySol || 0)} SOL</p>
+          <p className="font-semibold text-xs text-foreground">{formatNumber(token.liquiditySol || 0)} SOL</p>
         </div>
         <div className="bg-secondary/20 p-1.5 rounded">
           <p className="text-[10px] text-muted-foreground">Holders</p>
-          <p className="font-semibold text-xs">{token.numHolders?.toFixed(0) || '0'}</p>
+          <p className="font-semibold text-xs text-foreground">{token.numHolders?.toFixed(0) || '0'}</p>
         </div>
         <div className="bg-secondary/20 p-1.5 rounded">
           <p className="text-[10px] text-muted-foreground">Bonding Curve</p>
-          <p className="font-semibold text-xs">{token.bondingCurvePercent?.toFixed(2) || '0'}%</p>
+          <p className="font-semibold text-xs text-foreground">{token.bondingCurvePercent?.toFixed(2) || '0'}%</p>
         </div>
       </div>
 
@@ -280,46 +280,38 @@ function AxiomPulseClient() {
     return () => clearInterval(intervalId);
   }, [hasFetched]);
 
-  if (loading && tokens.length === 0) {
-    return <LoadingTokens />;
-  }
-
-  if (error) {
-    return <ErrorTokens />;
-  }
-
-  if (!tokens || tokens.length === 0) {
-    return <EmptyTokens />;
-  }
-
   return (
-    <div className="container mx-auto px-4 py-4 min-h-screen overflow-x-hidden z-10 max-w-[1920px]">
-      <div className="flex justify-between items-center mb-6 max-w-[1600px] mx-auto">
-        <h1 className="text-2xl font-bold">Axiom Pulse</h1>
-        <div className="text-sm text-muted-foreground">
-          Last updated: {formatDistanceToNow(lastUpdated, { addSuffix: true })}
-          <button 
-            onClick={fetchData} 
-            className="ml-2 text-primary hover:text-primary/80"
-            disabled={loading}
-          >
-            {loading ? 'Refreshing...' : 'Refresh'}
-          </button>
+    <div className="rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md p-6 max-w-full mx-auto mb-8">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold text-foreground">
+            Axiom Pulse
+          </h2>
+          <div className="text-xs text-muted-foreground">
+            Last updated: {formatDistanceToNow(lastUpdated, { addSuffix: true })}
+          </div>
         </div>
-      </div>
-
-      <div className="max-h-[700px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-[1600px] mx-auto">
-          {tokens.map((token, index) => (
-            <TokenCard key={`${token.tokenAddress}-${index}`} token={token} />
-          ))}
-        </div>
+        
+        {loading ? (
+          <LoadingTokens />
+        ) : error ? (
+          <ErrorTokens />
+        ) : tokens.length === 0 ? (
+          <EmptyTokens />
+        ) : (
+          <div className="max-h-[700px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {tokens.map((token, index) => (
+                <TokenCard key={index} token={token} />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-// Main component
 export default function AxiomPulse() {
   return <AxiomPulseClient />;
 }

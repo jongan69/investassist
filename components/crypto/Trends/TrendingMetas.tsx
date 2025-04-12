@@ -30,70 +30,58 @@ export const TrendingMetas: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-4 text-red-500">
+      <div className="p-4 text-destructive bg-destructive/10 rounded-lg">
         {error}
       </div>
     );
   }
 
   return (
-    <motion.div
-      className={cn(
-        "group relative rounded-xl",
-        `bg-gradient-to-r from-${resolvedTheme === 'dark' ? 'white' : 'black'} to-${resolvedTheme === 'dark' ? 'white' : 'black'}`,
-        "shadow-lg transition-all duration-300 hover:shadow-2xl p-6 max-w-full mx-auto"
-      )}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <div className="space-y-4 p-4">
-        <h2 className={`text-xl font-bold ${resolvedTheme === 'dark' ? 'text-white' : 'text-black'} transition-colors`}>
-          Trending Pumpfun Metas
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10">
+    <div className="space-y-4">
+      <h2 className="text-xl font-bold text-foreground">
+        Trending Pumpfun Metas
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {trendingMetas.map((meta, index) => (
           <a
             key={index}
             href={meta.url}
             target="_blank"
             rel="noopener noreferrer"
-            className={`block p-4 rounded-lg border transition-all duration-200 hover:shadow-lg cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 dark:focus:ring-green-400 ${
+            className={cn(
+              "block p-4 rounded-lg border transition-all duration-200 hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary",
               meta.isTrendingTwitterTopic 
                 ? 'border-green-500 bg-green-50/80 dark:bg-green-900/30 hover:bg-green-100/90 dark:hover:bg-green-900/50' 
-                : 'border-black/20 dark:border-white/20 bg-white/80 dark:bg-black/80 hover:bg-black/5 dark:hover:bg-white/5'
-            }`}
+                : 'border-border bg-card hover:bg-accent'
+            )}
             onClick={(e) => {
               e.preventDefault();
               window.open(meta.url, '_blank', 'noopener,noreferrer');
             }}
           >
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-lg font-semibold text-black dark:text-white">{meta.word_with_strength}</h3>
+              <h3 className="text-lg font-semibold text-foreground">{meta.word_with_strength}</h3>
               {meta.isTrendingTwitterTopic && (
                 <span className="px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 bg-green-100/80 dark:bg-green-900/50 rounded-full">
                   Trending on Twitter
                 </span>
               )}
             </div>
-            <div className="space-y-1 text-sm text-black/70 dark:text-white/70">
+            <div className="space-y-1 text-sm text-muted-foreground">
               <p>Score: {meta.score.toFixed(4)}</p>
               <p>Transactions: {meta.total_txns.toLocaleString()}</p>
               <p>Volume: {meta.total_vol.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
             </div>
           </a>
         ))}
-        </div>
       </div>
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent z-0" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 py-6 z-0" />
-    </motion.div>
+    </div>
   );
 }; 

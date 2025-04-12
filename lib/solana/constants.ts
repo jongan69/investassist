@@ -17,6 +17,7 @@ export const SOL_MINT = "So11111111111111111111111111111111111111112";
 
 export const BLOCKENGINE = `mainnet.block-engine.jito.wtf`
 export const INVEST_ASSIST_MINT = "8KxEiudmUF5tpJKK4uHzjDuJPGKUz9hYUDBEVcfdpump";
+export const MOONSHOT_LINK = 'https://moonshot.money/xN27hcrY3fj7yWpX2mguwPgi?ref=vtsmoh24uf'
 export const INVEST_ASSIST_MINT_DECIMALS = 6;
 export const COST_OF_INVESTMENT_PLAN = 1000;
 // You can use any of the other enpoints here
