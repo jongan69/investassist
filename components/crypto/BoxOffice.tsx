@@ -107,7 +107,7 @@ export default function BoxOffice() {
             <div className="max-h-[700px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
                 <div className="grid grid-cols-1 gap-6 lg:gap-8">
                     {filteredTokens.length > 0 ? (
-                        filteredTokens.map((token) => (
+                        filteredTokens?.map((token) => (
                             <div 
                                 key={token.ticker}
                                 onClick={() => window.open(token.metadata.extensions.boxoffice, "_blank")}
