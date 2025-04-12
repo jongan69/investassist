@@ -27,7 +27,7 @@ export async function getTokenPrice() {
         console.error('API error:', data.error);
         throw new Error(data.error);
       }
-      console.log('Price data received:', data);
+      // console.log('Price data received:', data);
       return data;
     } catch (error) {
       console.error('Error fetching price:', error);

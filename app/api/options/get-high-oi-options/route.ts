@@ -6,6 +6,7 @@ import { validateTicker } from "@/lib/utils";
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const ticker = searchParams.get('ticker');
+    const decodedTicker = decodeURIComponent(ticker ?? '');
     const optionType = searchParams.get('optionType');
 
     // Input validation
@@ -16,9 +17,9 @@ export async function GET(request: Request) {
         );
     }
 
-    if (!validateTicker(ticker)) {
+    if (!validateTicker(decodedTicker)) {
         return NextResponse.json(
-            { error: `Invalid ticker symbol: ${ticker}. Please check the symbol and try again.` }, 
+            { error: `Invalid ticker symbol: ${decodedTicker}. Please check the symbol and try again.` }, 
             { status: 400 }
         );
     }
@@ -31,7 +32,7 @@ export async function GET(request: Request) {
     }
 
     try {
-        const result = await getHighOpenInterestContracts(ticker, optionType ?? 'call');
+        const result = await getHighOpenInterestContracts(decodedTicker, optionType ?? 'call');
         
         // If there's an error in the result, return it with appropriate status
         if (result.error) {

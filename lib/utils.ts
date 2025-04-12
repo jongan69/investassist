@@ -314,14 +314,15 @@ export function formatCurrency(amount: number): string {
 }
 
 export function formatNumber(num: number): string {
-  if (num >= 1000000000) {
-    return (num / 1000000000).toFixed(1) + 'B';
+  if (num >= 1e12) {
+    return `${(num / 1e12).toFixed(2)}T`
+  } else if (num >= 1e9) {
+    return `${(num / 1e9).toFixed(2)}B`
+  } else if (num >= 1e6) {
+    return `${(num / 1e6).toFixed(2)}M`
+  } else if (num >= 1e3) {
+    return `${(num / 1e3).toFixed(2)}K`
+  } else {
+    return num.toFixed(4).toString();
   }
-  if (num >= 1000000) {
-    return (num / 1000000).toFixed(1) + 'M';
-  }
-  if (num >= 1000) {
-    return (num / 1000).toFixed(1) + 'K';
-  }
-  return num.toFixed(4).toString();
 }

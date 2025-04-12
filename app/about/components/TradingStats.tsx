@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { formatNumber } from '@/lib/utils';
 interface TokenInfo {
   name: string;
   symbol: string;
@@ -70,12 +71,6 @@ export default function TradingStats({ data }: TradingStatsProps) {
     { value: 'h6', label: '6H' },
     { value: 'h24', label: '24H' },
   ] as const;
-
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) return `$${(num / 1000000).toFixed(2)}M`;
-    if (num >= 1000) return `$${(num / 1000).toFixed(2)}K`;
-    return `$${num.toFixed(2)}`;
-  };
 
   const formatSupply = (supply: string) => {
     const num = parseFloat(supply);

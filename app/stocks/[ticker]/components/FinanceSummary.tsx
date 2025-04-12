@@ -12,6 +12,7 @@ function formatNumber(num: number) {
     return num.toString()
   }
 }
+
 const keysToDisplay = [
   {
     key: "open",

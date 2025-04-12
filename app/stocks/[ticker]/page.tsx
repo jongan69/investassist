@@ -44,6 +44,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function StocksPage({ params, searchParams }: Props) {
   const ticker = (await params).ticker
+  const decodedTicker = decodeURIComponent(ticker)
   const typedSearchParams = await searchParams
   const range = validateRange(typedSearchParams?.range || DEFAULT_RANGE)
   // const highOiOptions = await getHighOpenInterestContracts(ticker)
@@ -82,7 +83,7 @@ export default async function StocksPage({ params, searchParams }: Props) {
               </div>
             }
           >
-            <FinanceSummary ticker={ticker} />
+            <FinanceSummary ticker={decodedTicker} />
           </Suspense>
           <Suspense
             fallback={
@@ -91,7 +92,7 @@ export default async function StocksPage({ params, searchParams }: Props) {
               </div>
             }
           >
-            <OpenInterest ticker={ticker} />
+            <OpenInterest ticker={decodedTicker} />
           </Suspense>
           <Suspense
             fallback={
@@ -100,7 +101,7 @@ export default async function StocksPage({ params, searchParams }: Props) {
               </div>
             }
           >
-            <CompanySummaryCard ticker={ticker} />
+            <CompanySummaryCard ticker={decodedTicker} />
           </Suspense>
           <Suspense
             fallback={
