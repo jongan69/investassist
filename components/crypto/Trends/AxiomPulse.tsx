@@ -157,38 +157,38 @@ function TokenCard({ token }: { token: Token }) {
           {token.sourceTable}
         </span>
         <span className={`text-[10px] font-bold ml-2 ${getScoreColor(token.score)}`}>
-          Score: {token.score.toFixed(2)}
+          Score: {token.score?.toFixed(2) || 'N/A'}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-1.5 mb-2">
         <div className="bg-secondary/20 p-1.5 rounded">
           <p className="text-[10px] text-muted-foreground">Volume</p>
-          <p className="font-semibold text-xs">{formatNumber(token.volumeSol)} SOL</p>
+          <p className="font-semibold text-xs">{formatNumber(token.volumeSol || 0)} SOL</p>
         </div>
         <div className="bg-secondary/20 p-1.5 rounded">
           <p className="text-[10px] text-muted-foreground">Liquidity</p>
-          <p className="font-semibold text-xs">{formatNumber(token.liquiditySol)} SOL</p>
+          <p className="font-semibold text-xs">{formatNumber(token.liquiditySol || 0)} SOL</p>
         </div>
         <div className="bg-secondary/20 p-1.5 rounded">
           <p className="text-[10px] text-muted-foreground">Holders</p>
-          <p className="font-semibold text-xs">{token.numHolders.toFixed(0)}</p>
+          <p className="font-semibold text-xs">{token.numHolders?.toFixed(0) || '0'}</p>
         </div>
         <div className="bg-secondary/20 p-1.5 rounded">
           <p className="text-[10px] text-muted-foreground">Bonding Curve</p>
-          <p className="font-semibold text-xs">{token.bondingCurvePercent.toFixed(2)}%</p>
+          <p className="font-semibold text-xs">{token.bondingCurvePercent?.toFixed(2) || '0'}%</p>
         </div>
       </div>
 
       <div className="flex justify-between text-[10px] text-muted-foreground mb-2">
         <div>
-          <span className="font-medium">{token.numBuys.toFixed(0)}</span> buys
+          <span className="font-medium">{token.numBuys?.toFixed(0) || '0'}</span> buys
         </div>
         <div>
-          <span className="font-medium">{token.numSells.toFixed(0)}</span> sells
+          <span className="font-medium">{token.numSells?.toFixed(0) || '0'}</span> sells
         </div>
         <div>
-          <span className="font-medium">{token.top10HoldersPercent.toFixed(2)}%</span> top 10
+          <span className="font-medium">{token.top10HoldersPercent?.toFixed(2) || '0'}%</span> top 10
         </div>
       </div>
 

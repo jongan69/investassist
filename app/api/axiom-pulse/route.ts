@@ -154,15 +154,12 @@ export async function GET(request: Request) {
         if (token.score > existingToken.score) {
           uniqueTokensMap.set(tokenAddress, token);
         } 
-        // If scores are equal, use additional criteria
+        // If scores are equal, use the calculateTokenScore function
         else if (token.score === existingToken.score) {
-          // Prefer tokens with more holders
-          if (token.numHolders > existingToken.numHolders) {
-            uniqueTokensMap.set(tokenAddress, token);
-          }
-          // If holders are equal, prefer tokens with higher volume
-          else if (token.numHolders === existingToken.numHolders && 
-                   token.volumeSol > existingToken.volumeSol) {
+          const tokenScore = calculateTokenScore(token);
+          const existingScore = calculateTokenScore(existingToken);
+          
+          if (tokenScore > existingScore) {
             uniqueTokensMap.set(tokenAddress, token);
           }
         }
@@ -172,8 +169,20 @@ export async function GET(request: Request) {
     // Convert the map values back to an array
     const deduplicatedTokens = Array.from(uniqueTokensMap.values());
     
+    // Ensure all tokens have a score property
+    const tokensWithScores = deduplicatedTokens.map(token => {
+      // If token doesn't have a score, calculate one
+      if (token.score === undefined) {
+        return {
+          ...token,
+          score: calculateTokenScore(token)
+        };
+      }
+      return token;
+    });
+    
     // Calculate scores and sort tokens (if not already sorted)
-    const sortedTokens = deduplicatedTokens.sort((a, b) => b.score - a.score);
+    const sortedTokens = tokensWithScores.sort((a, b) => b.score - a.score);
     
     return NextResponse.json(sortedTokens);
   } catch (error) {
