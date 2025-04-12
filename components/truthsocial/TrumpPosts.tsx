@@ -15,23 +15,68 @@ interface MediaAttachment {
   preview_url: string;
   description: string | null;
   meta: {
+    colors?: {
+      background: string;
+      foreground: string;
+      accent: string;
+    };
     original: {
       width: number;
       height: number;
+      frame_rate?: string;
+      duration?: number;
+      bitrate?: number;
+      size?: string;
+      aspect?: number;
+    };
+    small?: {
+      width: number;
+      height: number;
+      size: string;
+      aspect: number;
     };
   };
+  blurhash?: string;
+  processing?: string;
+}
+
+interface Card {
+  id: string | null;
+  url: string;
+  title: string;
+  description: string;
+  type: string;
+  author_name: string;
+  author_url: string;
+  provider_name: string;
+  provider_url: string;
+  html: string;
+  width: number;
+  height: number;
+  image: string;
+  embed_url: string;
+  blurhash: string | null;
+  links: any | null;
+  group: any | null;
 }
 
 interface Account {
   id: string;
   username: string;
+  acct: string;
   display_name: string;
   avatar: string;
   avatar_static: string;
+  header: string;
+  header_static: string;
   followers_count: number;
   following_count: number;
   statuses_count: number;
+  last_status_at: string;
   verified: boolean;
+  location: string;
+  website: string;
+  note: string;
 }
 
 interface Post {
@@ -44,6 +89,11 @@ interface Post {
   reblogs_count: number;
   favourites_count: number;
   url: string;
+  language: string | null;
+  card: Card | null;
+  sensitive: boolean;
+  spoiler_text: string;
+  visibility: string;
 }
 
 // Loading component
@@ -108,7 +158,6 @@ function EmptyPosts() {
 // Post card component
 function PostCard({ post, formattedDate }: { post: Post; formattedDate: string }) {
   const { resolvedTheme } = useTheme();
-  const isDark = resolvedTheme === 'dark';
   
   // Function to handle card click and open the post
   const handleCardClick = () => {
@@ -129,6 +178,7 @@ function PostCard({ post, formattedDate }: { post: Post; formattedDate: string }
               src={post.account.avatar} 
               alt={post.account.display_name}
               fill
+              unoptimized
               className="object-cover"
               sizes="32px"
             />
@@ -145,6 +195,11 @@ function PostCard({ post, formattedDate }: { post: Post; formattedDate: string }
             <p className="text-xs text-muted-foreground truncate">@{post.account.username}</p>
             <p className="text-xs text-muted-foreground" suppressHydrationWarning>
               {formattedDate}
+              {post.language && (
+                <span className="ml-1 text-xs text-muted-foreground">
+                  • {post.language.toUpperCase()}
+                </span>
+              )}
             </p>
           </div>
         </div>
@@ -165,6 +220,7 @@ function PostCard({ post, formattedDate }: { post: Post; formattedDate: string }
                       src={media.url}
                       alt={media.description || "Post image"}
                       fill
+                      unoptimized
                       className="object-cover rounded-lg"
                     />
                   </div>
@@ -175,12 +231,43 @@ function PostCard({ post, formattedDate }: { post: Post; formattedDate: string }
                       controls
                       className="w-full h-full rounded-lg"
                       poster={media.preview_url}
+                      preload="metadata"
                     />
                   </div>
                 ) : null}
               </div>
             ))}
           </div>
+        )}
+        
+        {/* Link Card */}
+        {post.card && post.card.type === "link" && (
+          <a 
+            href={post.card.url} 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="block rounded-lg border overflow-hidden hover:border-primary/50 transition-all duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {post.card.image && (
+              <div className="relative aspect-video">
+                <Image
+                  src={post.card.image}
+                  alt={post.card.title}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
+              </div>
+            )}
+            <div className="p-3">
+              <h4 className="font-medium text-sm line-clamp-2">{post.card.title}</h4>
+              {post.card.description && (
+                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{post.card.description}</p>
+              )}
+              <p className="text-xs text-muted-foreground mt-2">{post.card.provider_name}</p>
+            </div>
+          </a>
         )}
         
         <div className="flex justify-between text-xs mt-auto">
