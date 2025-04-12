@@ -27,7 +27,7 @@ interface BoxOfficeToken {
   metadata?: TokenMetadata;
 }
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     // Fetch Box Office data
     const boxOfficeResponse = await fetch('https://boxm.me/get/data?sortOrder=creation_time&sortDirection=asc&page=1&entriesPerPage=100&searchTerm=');

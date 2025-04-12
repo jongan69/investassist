@@ -174,6 +174,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                 <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent z-0" />
                 <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/10 py-6 z-0" />
             </motion.div>
+            <TrendingVideos />
             {(!isCasLoading && tweetedCas && tweetedCas.length === 0) && (
                 <div className="flex justify-center mt-4">
                     <button
@@ -190,7 +191,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                     </button>
                 </div>
             )}
-            <TrendingVideos />
+            
             <TweetedCas tweetedCas={tweetedCas} isCasLoading={isCasLoading} casError={casError ?? ''} />
             {(!isTweetsLoading && latestTweets && latestTweets.length === 0) && (
                 <div className="flex justify-center mt-4">

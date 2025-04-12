@@ -39,6 +39,7 @@ import { TrendingTopics } from "@/components/crypto/Trends/TrendingTopics"
 import RealEstateMarketTrends from "@/components/realestate/RealEstateMarketTrends"
 import { CarPriceIndex } from "@/components/automotive/CarPriceIndex"
 import BoxOffice from "@/components/crypto/BoxOffice"
+import TrumpPosts from "@/components/truthsocial/TrumpPosts"
 
 // Add route segment config
 export const dynamic = 'force-dynamic'
@@ -535,6 +536,12 @@ export default async function Page({ searchParams }: Props) {
               <div className="px-6 sm:px-4 mt-4">
                 <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
                   <NewsSectionWrapper ticker={ticker} />
+                </Suspense>
+              </div>
+
+              <div className="px-6 sm:px-4 mt-4">
+                <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
+                  <TrumpPosts />
                 </Suspense>
               </div>
             </div>
