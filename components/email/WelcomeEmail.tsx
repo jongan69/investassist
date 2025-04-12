@@ -31,10 +31,10 @@ export const WelcomeEmail: React.FC<Readonly<WelcomeEmailProps>> = ({
           Hi {name},
         </Text>
         <Text style={text}>
-          Thank you for signing up for Invest Assist. We're excited to have you on board!
+          Thank you for signing up for Invest Assist. We&apos;re excited to have you on board!
         </Text>
         <Text style={text}>
-          With Invest Assist, you'll receive:
+          With Invest Assist, you&apos;ll receive:
         </Text>
         <ul style={list}>
           <li style={listItem}>Real-time market insights and trends</li>
