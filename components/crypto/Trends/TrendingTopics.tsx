@@ -22,6 +22,13 @@ interface PumpFunResult {
         };
         pumpFunUrl: string;
     }[];
+    dexScreenerData?: {
+        pairs?: Array<{
+            url: string;
+            [key: string]: any;
+        }>;
+        [key: string]: any;
+    } | null;
 }
 
 interface TopicResults {
@@ -37,6 +44,12 @@ const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const BATCH_SIZE = 3; // Number of concurrent requests
 const BATCH_DELAY = 500; // Delay between batches in ms
 
+// Helper function to clean topics by removing symbols
+const cleanTopic = (topic: string): string => {
+  // Remove $, @, #, and other common symbols
+  return topic.replace(/[$@#&*(){}[\]|\\:;'"<>,.?/!~`]/g, '').trim();
+};
+
 export function TrendingTopics() {
     const { resolvedTheme } = useTheme();
     const [topics, setTopics] = useState<string[]>([]);
@@ -50,11 +63,11 @@ export function TrendingTopics() {
     const abortControllers = useRef<{[key: string]: AbortController}>({});
 
     const searchPumpFun = useCallback(async (topic: string) => {
-        // Strip $ symbol from topic if present
-        const cleanTopic = topic.replace('$', '');
+        // Strip $ symbol from topic if present and clean the topic
+        const cleanTopicText = cleanTopic(topic);
 
         // Check cache first
-        const cached = searchCache.current[cleanTopic];
+        const cached = searchCache.current[cleanTopicText];
         if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
             setSearchResults(prev => ({
                 ...prev,
@@ -64,13 +77,13 @@ export function TrendingTopics() {
         }
 
         // Cancel any existing search for this topic
-        if (abortControllers.current[cleanTopic]) {
-            abortControllers.current[cleanTopic].abort();
+        if (abortControllers.current[cleanTopicText]) {
+            abortControllers.current[cleanTopicText].abort();
         }
 
         // Create new abort controller
         const controller = new AbortController();
-        abortControllers.current[cleanTopic] = controller;
+        abortControllers.current[cleanTopicText] = controller;
 
         setIsSearching(prev => ({ ...prev, [topic]: true }));
         try {
@@ -79,7 +92,7 @@ export function TrendingTopics() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ searchTerm: cleanTopic }),
+                body: JSON.stringify({ searchTerm: cleanTopicText }),
                 signal: controller.signal
             });
             
@@ -88,7 +101,7 @@ export function TrendingTopics() {
             const data = await res.json();
             
             // Update cache
-            searchCache.current[cleanTopic] = {
+            searchCache.current[cleanTopicText] = {
                 timestamp: Date.now(),
                 data
             };
@@ -108,7 +121,7 @@ export function TrendingTopics() {
             }
         } finally {
             setIsSearching(prev => ({ ...prev, [topic]: false }));
-            delete abortControllers.current[cleanTopic];
+            delete abortControllers.current[cleanTopicText];
         }
     }, []);
 
@@ -272,6 +285,27 @@ export function TrendingTopics() {
                                                         `${results.totalResults} token${results.totalResults === 1 ? '' : 's'} found`
                                                     )}
                                                 </span>
+                                                <span className="mb-2">
+                                                    <Button
+                                                        variant="outline"
+                                                        size="sm"
+                                                        className="w-full h-8 px-2"
+                                                        onClick={() => {
+                                                            // Check if we have DexScreener data with pairs that have URLs
+                                                            const dexScreenerData = results.dexScreenerData;
+                                                            let dexScreenerUrl = `https://dexscreener.com/search?q=${encodeURIComponent(cleanTopic(topic))}`;
+                                                            
+                                                            // If we have DexScreener data with pairs that have URLs, use the first one
+                                                            if (dexScreenerData?.pairs && dexScreenerData.pairs.length > 0 && dexScreenerData.pairs[0].url) {
+                                                                dexScreenerUrl = dexScreenerData.pairs[0].url;
+                                                            }
+                                                            
+                                                            window.open(dexScreenerUrl, '_blank');
+                                                        }}
+                                                    >
+                                                        View DexScreener
+                                                    </Button>
+                                                </span>
                                                 {topResult && (
                                                     <div className="mt-auto">
                                                         <Button
@@ -286,7 +320,7 @@ export function TrendingTopics() {
                                                                 rel="noopener noreferrer"
                                                                 className="flex items-center justify-center gap-1 text-[11px]"
                                                             >
-                                                                View Token
+                                                                View PumpFun
                                                                 <ExternalLink className="w-3 h-3 shrink-0" />
                                                             </a>
                                                         </Button>
