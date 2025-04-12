@@ -2,7 +2,7 @@ import { saveInvestmentPlan } from "./saveInvestmentPlan";
 import { categorizeTokens } from '@/lib/solana/categorizeTokens';
 
 export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerformance: any, marketData: any[], userPortfolio: any, username: string) => {
-    const formattedSectorPerformance = sectorPerformance.map((sector: any) => ({
+    const formattedSectorPerformance = sectorPerformance?.map((sector: any) => ({
         sector: sector.sector,
         performance: parseFloat(sector.changesPercentage.replace('%', ''))
     }));

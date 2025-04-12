@@ -115,7 +115,7 @@ export function convertToTokenData(enrichedToken: EnrichedTokenData): TokenData 
 
 export async function getTokenAccountsWithMetadata(wallet: string, solanaConnection: Connection): Promise<TokenData[]> {
     const enrichedTokens = await getTokenAccountsWithMetadataRaw(wallet, solanaConnection);
-    return enrichedTokens.map(convertToTokenData);
+    return enrichedTokens?.map(convertToTokenData);
 }
 
 // Add this function to fetch verified tokens
@@ -156,7 +156,7 @@ async function getTokenAccountsWithMetadataRaw(wallet: string, solanaConnection:
     const verifiedTokens = await getVerifiedTokens();
     
     // Create a Set of verified token addresses for faster lookup
-    const verifiedTokenAddresses = new Set(verifiedTokens.map(token => token.address));
+    const verifiedTokenAddresses = new Set(verifiedTokens?.map(token => token.address));
     
     // Filter mintAddresses to only include verified tokens
     const mintAddresses = Object.keys(tokenBalances).filter(address => verifiedTokenAddresses.has(address));

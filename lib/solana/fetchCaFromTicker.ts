@@ -42,9 +42,9 @@ export async function getSolanaTokenCA(ticker: string) {
       }, {});
   
       // For each token, select the SOL pair with highest market cap
-      const bestPairs = Object.values(groupedPairs).map(pairs => {
+      const bestPairs = Object.values(groupedPairs)?.map(pairs => {
         // Only consider SOL pairs
-        const solPairs = pairs.filter((p: { quoteToken: { address: string; }; }) => 
+        const solPairs = pairs?.filter((p: { quoteToken: { address: string; }; }) => 
           p.quoteToken?.address === 'So11111111111111111111111111111111111111112'
         );
         

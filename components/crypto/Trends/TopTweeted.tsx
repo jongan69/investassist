@@ -16,7 +16,7 @@ export function TopTweeted({ trends }: { trends: any }) {
                         </tr>
                     </thead>
                     <tbody className="bg-card divide-y divide-border">
-                        {trends.topTweetedTickers.map((item: any) => (
+                        {trends?.topTweetedTickers?.map((item: any) => (
                             <tr key={item.ticker} className="group">
                                 <td colSpan={2} className="p-0">
                                     <Link

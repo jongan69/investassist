@@ -310,7 +310,7 @@ async function processTokenBatch(
   const processedMints = new Set<string>();
 
   // First pass: Process all non-NFTs in parallel since they use cached Jupiter prices
-  const nonNftPromises = batch.map(async (account) => {
+  const nonNftPromises = batch?.map(async (account) => {
     try {
       const data = account.account.data;
       if (!isParsedTokenAccountData(data)) {

@@ -173,7 +173,7 @@ export async function fetchAllTimeframes(ticker: string) {
 
         // Fetch all timeframes
         await Promise.all(
-            timeframes.map(async (range) => {
+            timeframes?.map(async (range) => {
                 try {
                     const result = await fetchCoinQuote(ticker, range)
                     timeframeData[range] = result

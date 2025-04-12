@@ -114,8 +114,8 @@ export default function CommandMenu() {
   useEffect(() => {
     if (!trends) return;
 
-    const topTweetedTickers = trends.topTweetedTickers || []
-    const whaleTickers = trends.whaleActivity || { bullish: [], bearish: [] }
+    const topTweetedTickers = trends?.topTweetedTickers || []
+    const whaleTickers = trends?.whaleActivity || { bullish: [], bearish: [] }
     const bullishTickers = whaleTickers.bullish.map((ticker) => ({
       ticker: ticker.symbol,
       count: ticker.bullishScore || 0,
@@ -270,7 +270,7 @@ export default function CommandMenu() {
             {search.length === 0 && (
               <>
                 <CommandGroup heading="Trending Tickers">
-                  {isLoading && !topTweetedTickers.length ? (
+                  {isLoading && !topTweetedTickers?.length ? (
                     <CommandItem value="loading" className="justify-center">
                       <p className="text-sm text-muted-foreground animate-pulse">
                         Loading trending tickers...

@@ -20,7 +20,7 @@ export const fetchTweetedCas = async (setTweetedCas: (tweetedCas: any) => void, 
             // Process tokens in batches
             for (let i = 0; i < data.length; i += BATCH_SIZE) {
                 const batch = data.slice(i, i + BATCH_SIZE);
-                const batchPromises = batch.map(async (item: any) => {
+                const batchPromises = batch?.map(async (item: any) => {
                     if (!item.address) return item;
                     
                     try {
