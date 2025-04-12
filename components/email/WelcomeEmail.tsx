@@ -43,7 +43,7 @@ export const WelcomeEmail: React.FC<Readonly<WelcomeEmailProps>> = ({
           <li style={listItem}>Exclusive content and analysis</li>
         </ul>
         <Section style={buttonContainer}>
-          <Button style={button} href="https://investassist.com">
+          <Button style={button} href="https://investassist.app">
             Explore Invest Assist
           </Button>
         </Section>

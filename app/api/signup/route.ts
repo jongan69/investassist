@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
     // Send welcome email
     await resend.emails.send({
-      from: 'Invest Assist <notifications@investassist.com>',
+      from: 'Invest Assist <notifications@investassist.app>',
       to: email,
       subject: 'Welcome to Invest Assist!',
       react: WelcomeEmail({ name: name || undefined }),
