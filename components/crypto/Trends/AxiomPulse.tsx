@@ -27,6 +27,7 @@ interface Token {
   twitter?: string;
   telegram?: string;
   website?: string;
+  protocol: string;
   [key: string]: any;
 }
 
@@ -129,7 +130,7 @@ function TokenCard({ token }: { token: Token }) {
       className="w-full rounded-xl border bg-card p-3 shadow-md hover:shadow-lg transition-all duration-200 cursor-pointer hover:border-primary/50"
       onClick={handleCardClick}
     >
-      <div className="flex items-center mb-2">
+      <div className="flex items-start mb-2">
         <div className="relative h-8 w-8 rounded-full overflow-hidden mr-2 flex-shrink-0">
           {token.tokenImage ? (
             <Image 
@@ -147,17 +148,20 @@ function TokenCard({ token }: { token: Token }) {
           )}
         </div>
         <div className="min-w-0 flex-1">
-          <h2 className="font-semibold text-xs truncate">{token.tokenName}</h2>
+          <h2 className="font-semibold text-xs break-words">{token.tokenName}</h2>
           <p className="text-xs text-muted-foreground truncate">{token.tokenTicker}</p>
         </div>
       </div>
       
-      <div className="flex items-center mb-2">
+      <div className="flex flex-wrap items-center gap-2 mb-2">
         <span className={`px-1.5 py-0.5 rounded-full text-[10px] text-white ${getSourceBadgeColor(token.sourceTable)}`}>
           {token.sourceTable}
         </span>
-        <span className={`text-[10px] font-bold ml-2 ${getScoreColor(token.score)}`}>
+        <span className={`text-[10px] font-bold ${getScoreColor(token.score)}`}>
           Score: {token.score?.toFixed(2) || 'N/A'}
+        </span>
+        <span className="text-[10px] text-muted-foreground break-words">
+          {token.protocol}
         </span>
       </div>
 
