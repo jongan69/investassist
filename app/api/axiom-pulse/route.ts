@@ -139,11 +139,41 @@ export async function GET(request: Request) {
       }
     });
     
-    // Calculate scores and sort tokens
-    const sortedTokens = allTokens.map(token => {
-      const score = calculateTokenScore(token);
-      return { ...token, score };
-    }).sort((a, b) => b.score - a.score);
+    // Deduplicate tokens based on tokenAddress
+    const uniqueTokensMap = new Map<string, Token>();
+    
+    allTokens.forEach(token => {
+      const tokenAddress = token.tokenAddress;
+      
+      if (!uniqueTokensMap.has(tokenAddress)) {
+        uniqueTokensMap.set(tokenAddress, token);
+      } else {
+        const existingToken = uniqueTokensMap.get(tokenAddress)!;
+        
+        // Keep the token with the higher score
+        if (token.score > existingToken.score) {
+          uniqueTokensMap.set(tokenAddress, token);
+        } 
+        // If scores are equal, use additional criteria
+        else if (token.score === existingToken.score) {
+          // Prefer tokens with more holders
+          if (token.numHolders > existingToken.numHolders) {
+            uniqueTokensMap.set(tokenAddress, token);
+          }
+          // If holders are equal, prefer tokens with higher volume
+          else if (token.numHolders === existingToken.numHolders && 
+                   token.volumeSol > existingToken.volumeSol) {
+            uniqueTokensMap.set(tokenAddress, token);
+          }
+        }
+      }
+    });
+    
+    // Convert the map values back to an array
+    const deduplicatedTokens = Array.from(uniqueTokensMap.values());
+    
+    // Calculate scores and sort tokens (if not already sorted)
+    const sortedTokens = deduplicatedTokens.sort((a, b) => b.score - a.score);
     
     return NextResponse.json(sortedTokens);
   } catch (error) {
