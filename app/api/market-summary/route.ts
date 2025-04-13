@@ -50,6 +50,47 @@ function formatEconomicEvents(calendar: any[]) {
   return formattedEvents;
 }
 
+// Helper function to call the fallback API
+async function callFallbackAPI(prompt: string) {
+  try {
+    const response = await fetch('https://aiapi-tno8.onrender.com/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messages: [
+          { role: "system", content: "You are a market analyst providing concise insights." },
+          { role: "user", content: prompt }
+        ],
+        model: "gpt-4o-mini",
+        wrap_input: true
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Fallback API responded with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return {
+      model: "g4f",
+      result: {
+        choices: [
+          {
+            message: {
+              content: data.response || data.message || "No response from fallback API"
+            }
+          }
+        ]
+      }
+    };
+  } catch (error) {
+    console.error('Error calling fallback API:', error);
+    throw error;
+  }
+}
+
 export async function POST(req: Request) {
   const maxRetries = 2; // Maximum number of retry attempts
   const retryDelay = 1000; // Delay between retries in milliseconds
@@ -59,9 +100,17 @@ export async function POST(req: Request) {
     
     // Format economic events data
     const formattedEconomicEvents = formatEconomicEvents(economicEvents?.calendar);
+    
+    // Get today's date in a readable format
+    const today = new Date().toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
 
     const prompt = `
-      As a market analyst, provide a concise summary of the current market conditions based on the following data:
+      As a market analyst, provide a concise summary of the current market conditions for ${today} based on the following data:
       
       Fear & Greed Index: ${fearGreedValue}
       
@@ -83,10 +132,11 @@ export async function POST(req: Request) {
 
     let attempt = 0;
     let responseGenerated = false;
+    let lastError: Error | null = null;
 
     while (attempt < maxRetries && !responseGenerated) {
       try {
-        // Use Promise.race to get the first successful response
+        // Use Promise.race to get the first successful response from primary APIs
         const completion = await Promise.race([
           deepseekOpenAI.chat.completions.create({
             messages: [{ role: "user", content: prompt }],
@@ -112,6 +162,7 @@ export async function POST(req: Request) {
         }
       } catch (apiError) {
         console.error(`Attempt ${attempt + 1} failed:`, apiError);
+        lastError = apiError instanceof Error ? apiError : new Error(String(apiError));
       }
 
       if (!responseGenerated && attempt < maxRetries - 1) {
@@ -120,9 +171,32 @@ export async function POST(req: Request) {
       attempt++;
     }
 
+    // If primary APIs failed, try the fallback API
     if (!responseGenerated) {
-      return NextResponse.json({ error: "Failed to generate market summary" }, { status: 500 });
+      try {
+        console.log('Primary APIs failed, trying fallback API...');
+        const fallbackResponse = await callFallbackAPI(prompt);
+        
+        if (fallbackResponse.result.choices[0].message.content) {
+          return NextResponse.json({
+            summary: fallbackResponse.result.choices[0].message.content,
+            model: fallbackResponse.model
+          });
+        }
+      } catch (fallbackError) {
+        console.error('Fallback API also failed:', fallbackError);
+        const errorMessage = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
+        return NextResponse.json({ 
+          error: "Failed to generate market summary from all available APIs",
+          details: {
+            primaryError: lastError?.message || 'Unknown error',
+            fallbackError: errorMessage
+          }
+        }, { status: 500 });
+      }
     }
+
+    return NextResponse.json({ error: "Failed to generate market summary" }, { status: 500 });
   } catch (error) {
     console.error('Error generating market summary:', error);
     return NextResponse.json(
