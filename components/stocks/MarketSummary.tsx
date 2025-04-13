@@ -94,6 +94,7 @@ export default function MarketSummary({
       style={{
         borderLeft: `4px solid ${sentimentColor}`
       }}
+      suppressHydrationWarning
     >
       <CardHeader>
         <div className="flex items-center justify-between">

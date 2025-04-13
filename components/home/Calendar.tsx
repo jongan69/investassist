@@ -31,10 +31,15 @@ export default function Calendar() {
     const isDark = resolvedTheme === 'dark'
     const [calendarData, setCalendarData] = useState<CalendarData | null>(null)
     const [error, setError] = useState<string | null>(null)
+    const [isLoading, setIsLoading] = useState<boolean>(true)
+    const [retryCount, setRetryCount] = useState<number>(0)
+    const maxRetries = 2
 
     useEffect(() => {
         const loadCalendar = async () => {
             try {
+                setIsLoading(true)
+                setError(null)
                 console.log('Calendar component: Fetching calendar data...');
                 const data = await fetchCalendar();
                 console.log('Calendar component: Received data:', data);
@@ -48,6 +53,15 @@ export default function Calendar() {
                 if (data.error) {
                     console.error('Calendar component: API returned error:', data.error);
                     setError(`API Error: ${data.error}`);
+                    
+                    // Retry logic
+                    if (retryCount < maxRetries) {
+                        console.log(`Calendar component: Retrying (${retryCount + 1}/${maxRetries})...`);
+                        setRetryCount(prev => prev + 1);
+                        setTimeout(loadCalendar, 2000); // Retry after 2 seconds
+                        return;
+                    }
+                    
                     return;
                 }
                 
@@ -58,13 +72,22 @@ export default function Calendar() {
                 }
                 
                 setCalendarData(data);
+                setIsLoading(false);
             } catch (err) {
                 console.error('Calendar component: Error loading calendar:', err);
                 setError('Failed to load calendar data');
+                setIsLoading(false);
+                
+                // Retry logic
+                if (retryCount < maxRetries) {
+                    console.log(`Calendar component: Retrying (${retryCount + 1}/${maxRetries})...`);
+                    setRetryCount(prev => prev + 1);
+                    setTimeout(loadCalendar, 2000); // Retry after 2 seconds
+                }
             }
         }
         loadCalendar()
-    }, [])
+    }, [retryCount])
 
     const getImpactColor = (impact: string) => {
         switch (impact) {
@@ -104,7 +127,16 @@ export default function Calendar() {
                     <CardContent className="p-4">
                         <div className="flex flex-col justify-center items-center h-32">
                             <div className="text-red-500 mb-2">{error}</div>
-                            <div className="text-sm text-muted-foreground">Please try again later or check your network connection.</div>
+                            <div className="text-sm text-muted-foreground mb-4">Please try again later or check your network connection.</div>
+                            <button 
+                                onClick={() => {
+                                    setRetryCount(0);
+                                    setIsLoading(true);
+                                }}
+                                className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
+                            >
+                                Retry
+                            </button>
                         </div>
                     </CardContent>
                 </Card>
@@ -112,7 +144,7 @@ export default function Calendar() {
         )
     }
 
-    if (!calendarData) {
+    if (isLoading) {
         return (
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -161,7 +193,7 @@ export default function Calendar() {
     }
 
     // Check if calendar array is empty
-    if (!calendarData.calendar || calendarData.calendar.length === 0) {
+    if (!calendarData || !calendarData.calendar || calendarData.calendar.length === 0) {
         return (
             <motion.div
                 initial={{ opacity: 0, y: 20 }}

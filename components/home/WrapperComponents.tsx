@@ -179,7 +179,7 @@ export async function NewsSectionWrapper({ ticker }: { ticker: string }) {
 
 export async function SectorPerformanceWrapper() {
   return (
-    <Card className="m-4">
+    <Card className="m-4" suppressHydrationWarning>
       <CardHeader>
         <CardTitle className="text-lg">Sector Performance</CardTitle>
       </CardHeader>

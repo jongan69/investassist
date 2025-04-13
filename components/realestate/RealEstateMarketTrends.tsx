@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,7 +13,6 @@ import {
 } from 'chart.js';
 import { useTheme } from 'next-themes';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
 ChartJS.register(
   CategoryScale,
@@ -119,11 +117,11 @@ export default function RealEstateMarketTrends() {
 
   // FRED Chart Component
   const FredChart = () => (
-    <div className="flex justify-center items-center w-full">
+    <div className="flex justify-center items-center w-full" suppressHydrationWarning>
       <Card className="overflow-hidden border-0 shadow-lg bg-black backdrop-blur-sm" style={{ width: `${chartWidth}px`, height: `${chartHeight}px` }}>
         <CardHeader className="border-b border-gray-700/50 p-2 sm:p-6">
           <CardTitle className="text-sm sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
-            Mortgage Rate Trends (FRED Data)
+            Mortgage Rate Trends
           </CardTitle>
         </CardHeader>
         <CardContent className="p-1 sm:p-6">
@@ -151,7 +149,7 @@ export default function RealEstateMarketTrends() {
   if (!data) return <FredChart />;
 
   return (
-    <div className="w-full max-w-full mx-auto p-1 sm:p-4 space-y-2 sm:space-y-6 px-2 sm:px-4">
+    <div className="w-full max-w-full mx-auto p-1 sm:p-4 space-y-2 sm:space-y-6 px-2 sm:px-4" suppressHydrationWarning>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6">
         {/* Current Rates Cards */}
         <Card>
