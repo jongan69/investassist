@@ -194,13 +194,13 @@ export default function RealEstateMarketTrends() {
     <div className="w-full max-w-full mx-auto p-1 sm:p-4 space-y-2 sm:space-y-6 px-2 sm:px-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6">
         {/* Current Rates Cards */}
-        <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
-          <CardHeader className="border-b dark:border-gray-700/50 p-2 sm:p-6">
+        <Card>
+          <CardHeader>
             <CardTitle className="text-sm sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
               Current 30-Year Fixed Rate
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-2 sm:p-6">
+          <CardContent>
             <div className="space-y-1 sm:space-y-4">
               <div className="flex justify-between">
                 <span className="text-xs sm:text-sm text-muted-foreground">Rate:</span>

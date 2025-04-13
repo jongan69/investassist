@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { RefreshCw } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
 import { fetchLatestTweets } from '@/lib/twitter/fetchLatestTweets';
@@ -125,23 +126,18 @@ export default function CryptoTrends({ data }: { data: any }) {
         <div className="space-y-8">
             <AxiomPulse />
             
-            <motion.div
-                className="rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md p-6 max-w-full mx-auto"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-            >
-                <div className="space-y-6">
+            <Card className="max-w-full mx-auto">
+                <CardHeader>
                     <div className="flex items-center justify-between">
-                        <h2 className="text-xl font-bold text-foreground">
+                        <CardTitle>
                             Crypto Trends
-                        </h2>
+                        </CardTitle>
                         {isLoading && (
                             <div className="flex gap-1 px-1">
                                 {[0, 0.2, 0.4].map((delay) => (
                                     <motion.span
                                         key={delay}
-                                        className="animate-pulse h-2 w-2 rounded-full bg-primary"
+                                        className="h-2 w-2 rounded-full bg-primary animate-pulse"
                                         animate={{ scale: [1, 1.5, 1] }}
                                         transition={{ repeat: Infinity, duration: 0.6, delay }}
                                     />
@@ -149,7 +145,8 @@ export default function CryptoTrends({ data }: { data: any }) {
                             </div>
                         )}
                     </div>
-
+                </CardHeader>
+                <CardContent>
                     {trendsError ? (
                         <p className="text-sm p-4 rounded-lg bg-destructive/10 text-destructive">
                             {trendsError}
@@ -158,7 +155,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                         <Fragment>
                             <Overview trends={trends} data={data} />
                             <TrendingMetas />
-                            <TopTweeted trends={trends} />
+                            {trends?.topTweetedTickers?.length > 0 && <TopTweeted trends={trends} />}
                             <WhaleActivity trends={trends} />
                           
                         </Fragment>
@@ -167,8 +164,8 @@ export default function CryptoTrends({ data }: { data: any }) {
                             Fetching crypto trends...
                         </p>
                     )}
-                </div>
-            </motion.div>
+                </CardContent>
+            </Card>
             
             <TrendingVideos />
             

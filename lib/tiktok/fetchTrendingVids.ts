@@ -6,7 +6,6 @@ export async function fetchTrendingVids() {
             throw new Error(data.error);
         }
         const trendingVids = data.data.itemList;
-        console.log(trendingVids);
         return trendingVids;
     } catch (error) {
         console.error('Error fetching trending videos:', error);

@@ -9,16 +9,17 @@ import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
 import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
 import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest"
 import { fetchWithTimeout, handleApiError, processBatch } from "@/lib/utils"
-
+import { fetchCalendar } from "@/lib/markets/fetchCalendar"   
 export async function MarketSummaryWrapper({
   sentimentColor
 }: {
   sentimentColor: string
 }) {
   try {
-    const [fearGreedValue, sectorPerformance] = await Promise.allSettled([
+    const [fearGreedValue, sectorPerformance, calendar] = await Promise.allSettled([
       fetchWithTimeout(fetchFearGreedIndex(), 5000),
-      fetchWithTimeout(fetchSectorPerformance(), 5000)
+      fetchWithTimeout(fetchSectorPerformance(), 5000),
+      fetchWithTimeout(fetchCalendar(), 5000)
     ]);
 
     // Handle individual failures
@@ -59,6 +60,7 @@ export async function MarketSummaryWrapper({
         sentimentColor={sentimentColor}
         fearGreedValue={validFearGreedValue}
         sectorPerformance={validSectorPerformance}
+        calendar={calendar}
       />
     );
   } catch (error) {

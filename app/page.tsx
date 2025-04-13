@@ -40,6 +40,7 @@ import RealEstateMarketTrends from "@/components/realestate/RealEstateMarketTren
 import { CarPriceIndex } from "@/components/automotive/CarPriceIndex"
 import BoxOffice from "@/components/crypto/BoxOffice"
 import TrumpPosts from "@/components/truthsocial/TrumpPosts"
+import Calendar from "@/components/home/Calendar"
 
 // Add route segment config
 export const dynamic = 'force-dynamic'
@@ -137,6 +138,9 @@ export default async function Page({ searchParams }: Props) {
                 <BitcoinTrendAnalysis btcData={btcData} />
               )}
             </div>
+            <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+              <Calendar />
+            </Suspense>
             <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
               <RealEstateMarketTrends />
             </Suspense>

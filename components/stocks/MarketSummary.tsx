@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { cn } from "@/lib/utils";
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 interface MarketSummaryProps {
   fearGreedValue: {
@@ -20,11 +21,13 @@ interface MarketSummaryProps {
   }[];
   className?: string;
   sentimentColor: string;
+  calendar: any;
 }
 
 export default function MarketSummary({ 
   fearGreedValue, 
   sectorPerformance,
+  calendar,
   className,
   sentimentColor
 }: MarketSummaryProps) {
@@ -57,6 +60,7 @@ export default function MarketSummary({
           body: JSON.stringify({
             fearGreedValue: fearGreedValue.fgi.now.value,
             sectorPerformance: formattedSectorPerformance,
+            economicEvents: calendar,
           }),
         });
 
@@ -81,74 +85,42 @@ export default function MarketSummary({
   const isDark = resolvedTheme === 'dark';
   
   return (
-    <motion.div 
+    <Card 
       className={cn(
-        "group relative overflow-hidden rounded-xl",
-        isDark ? "bg-gradient-to-r from-white/10 to-white/5" : "bg-gradient-to-r from-black/10 to-black/5",
-        "shadow-lg transition-all duration-300 hover:shadow-2xl p-6",
+        "group relative overflow-hidden",
         "max-w-full mx-auto",
         className
       )}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
       style={{
         borderLeft: `4px solid ${sentimentColor}`
       }}
     >
-      <div className="space-y-4">
-        {/* Header */}
+      <CardHeader>
         <div className="flex items-center justify-between">
-          <h2 className={cn(
-            "text-xl font-bold transition-colors",
-            isDark ? "text-white group-hover:text-gray-300" : "text-black group-hover:text-gray-700"
-          )}>
+          <CardTitle>
             {isLoading ? "AI Market Analysis" : `${model} Market Analysis`}
-          </h2>
+          </CardTitle>
           {isLoading && (
             <div className="flex gap-1 px-1">
-              <motion.span 
-                className={cn(
-                  "h-2 w-2 rounded-full",
-                  isDark ? "bg-white" : "bg-black"
-                )}
-                animate={{ scale: [1, 1.5, 1] }}
-                transition={{ repeat: Infinity, duration: 0.6 }}
-              />
-              <motion.span 
-                className={cn(
-                  "h-2 w-2 rounded-full",
-                  isDark ? "bg-white" : "bg-black"
-                )}
-                animate={{ scale: [1, 1.5, 1] }}
-                transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }}
-              />
-              <motion.span 
-                className={cn(
-                  "h-2 w-2 rounded-full",
-                  isDark ? "bg-white" : "bg-black"
-                )}
-                animate={{ scale: [1, 1.5, 1] }}
-                transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }}
-              />
+              {[0, 0.2, 0.4].map((delay) => (
+                <motion.span
+                  key={delay}
+                  className="h-2 w-2 rounded-full bg-primary animate-pulse"
+                  animate={{ scale: [1, 1.5, 1] }}
+                  transition={{ repeat: Infinity, duration: 0.6, delay }}
+                />
+              ))}
             </div>
           )}
         </div>
-
-        {/* Content */}
-        <div className="prose prose-sm max-w-full">
-          <p className={cn(
-            "leading-relaxed text-sm tracking-wide",
-            isDark ? "text-white/90" : "text-black/90"
-          )}>
+      </CardHeader>
+      <CardContent>
+        <div className="prose prose-sm max-w-full dark:prose-invert">
+          <p className="leading-relaxed text-sm tracking-wide">
             {summary}
           </p>
         </div>
-      </div>
-      
-      {/* Decorative Elements */}
-      <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-current/20 to-transparent" />
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent to-current/5" />
-    </motion.div>
+      </CardContent>
+    </Card>
   );
 } 

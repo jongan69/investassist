@@ -10,12 +10,55 @@ let chatgptOpenAI = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+// Helper function to format economic events
+function formatEconomicEvents(calendar: any[]) {
+  if (!calendar || calendar.length === 0) return "No economic events data available";
+  
+  // Sort events by date and time (most recent first)
+  const sortedEvents = [...calendar].sort((a, b) => {
+    const dateA = new Date(a.Datetime);
+    const dateB = new Date(b.Datetime);
+    return dateB.getTime() - dateA.getTime();
+  });
+  
+  // Group events by date
+  const eventsByDate: Record<string, any[]> = {};
+  sortedEvents.forEach(event => {
+    if (!eventsByDate[event.Date]) {
+      eventsByDate[event.Date] = [];
+    }
+    eventsByDate[event.Date].push(event);
+  });
+  
+  // Format events with impact indicators and actual vs expected values
+  let formattedEvents = "";
+  for (const date in eventsByDate) {
+    formattedEvents += `\n${date}:\n`;
+    eventsByDate[date].forEach(event => {
+      const impactIndicator = "🔴".repeat(parseInt(event.Impact));
+      const actualValue = event.Actual !== null ? `Actual: ${event.Actual}` : "";
+      const expectedValue = event.Expected !== null ? `Expected: ${event.Expected}` : "";
+      const priorValue = event.Prior !== null ? `Prior: ${event.Prior}` : "";
+      
+      formattedEvents += `  ${event.Time} - ${impactIndicator} ${event.Release} (${event.For})\n`;
+      if (actualValue || expectedValue || priorValue) {
+        formattedEvents += `    ${[actualValue, expectedValue, priorValue].filter(Boolean).join(", ")}\n`;
+      }
+    });
+  }
+  
+  return formattedEvents;
+}
+
 export async function POST(req: Request) {
   const maxRetries = 2; // Maximum number of retry attempts
   const retryDelay = 1000; // Delay between retries in milliseconds
 
   try {
-    const { fearGreedValue, sectorPerformance } = await req.json();
+    const { fearGreedValue, sectorPerformance, economicEvents } = await req.json();
+    
+    // Format economic events data
+    const formattedEconomicEvents = formatEconomicEvents(economicEvents?.calendar);
 
     const prompt = `
       As a market analyst, provide a concise summary of the current market conditions based on the following data:
@@ -27,11 +70,15 @@ export async function POST(req: Request) {
         ?.map((sector: { sector: any; performance: any; }) => `${sector.sector}: ${sector.performance}%`)
         .join('\n')}
       
+      Economic Events:
+      ${formattedEconomicEvents}
+      
       Please analyze these indicators and provide insights about:
-      1. Overall market sentiment
+      1. Overall market sentiment based on the Fear & Greed Index
       2. Strongest and weakest performing sectors
-      3. Potential opportunities or risks
-      Limit the response to 3-4 sentences.
+      3. Key economic indicators and their implications (focus on high-impact events marked with 🔴)
+      4. Potential opportunities or risks based on the economic data
+      Limit the response to 4-5 sentences.
     `;
 
     let attempt = 0;
@@ -45,14 +92,14 @@ export async function POST(req: Request) {
             messages: [{ role: "user", content: prompt }],
             model: "deepseek-reasoner",
             temperature: 0.7,
-            max_tokens: 200,
+            max_tokens: 300,
           }).then(result => ({ model: "DeepSeek Reasoner", result })),
           
           chatgptOpenAI.chat.completions.create({
             messages: [{ role: "user", content: prompt }],
             model: "gpt-4o-mini", // or another available ChatGPT model
             temperature: 0.7,
-            max_tokens: 200,
+            max_tokens: 300,
           }).then(result => ({ model: "GPT-4o-mini", result }))
         ]);
 
