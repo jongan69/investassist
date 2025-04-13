@@ -52,7 +52,8 @@ export async function GET() {
 
     // Check if responses are ok
     if (!thirtyYearResponse.ok || !fifteenYearResponse.ok) {
-      throw new Error(`API responses not ok: ${thirtyYearResponse.status} ${fifteenYearResponse.status}`);
+      // throw new Error(`API responses not ok: ${thirtyYearResponse.status} ${fifteenYearResponse.status}`);
+      console.error('API responses not ok:', { thirtyYearResponse, fifteenYearResponse });
     }
 
     const [thirtyYearData, fifteenYearData] = await Promise.all([

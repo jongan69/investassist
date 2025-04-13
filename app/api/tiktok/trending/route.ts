@@ -20,7 +20,8 @@ export async function GET(request: Request) {
     const response = await fetch(url, options);
     
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      // throw new Error(`HTTP error! status: ${response.status}`);
+      console.error('HTTP error! status:', response.status);
     }
 
     const data = await response.json();

@@ -44,7 +44,7 @@ export async function GET() {
             metadata
           };
         } catch (error) {
-          console.error(`Error fetching metadata for ${token.name}:`, error);
+          // console.error(`Error fetching metadata for ${token.name}:`, error);
           return token;
         }
       })

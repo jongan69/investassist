@@ -30,11 +30,32 @@ export default function Calendar() {
     const { resolvedTheme } = useTheme()
     const isDark = resolvedTheme === 'dark'
     const [calendarData, setCalendarData] = useState<CalendarData | null>(null)
+    const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
         const loadCalendar = async () => {
-            const data = await fetchCalendar()
-            setCalendarData(data)
+            try {
+                console.log('Calendar component: Fetching calendar data...');
+                const data = await fetchCalendar();
+                console.log('Calendar component: Received data:', data);
+                
+                if (!data || !data.calendar) {
+                    console.error('Calendar component: Invalid data structure:', data);
+                    setError('Invalid data structure received');
+                    return;
+                }
+                
+                if (data.calendar.length === 0) {
+                    console.warn('Calendar component: No calendar events found');
+                } else {
+                    console.log(`Calendar component: Found ${data.calendar.length} events`);
+                }
+                
+                setCalendarData(data);
+            } catch (err) {
+                console.error('Calendar component: Error loading calendar:', err);
+                setError('Failed to load calendar data');
+            }
         }
         loadCalendar()
     }, [])
@@ -59,6 +80,29 @@ export default function Calendar() {
         if (actualNum > expectedNum) return "text-green-500 dark:text-green-500"
         if (actualNum < expectedNum) return "text-red-500 dark:text-red-500"
         return ""
+    }
+
+    if (error) {
+        return (
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+                    <CardHeader className="border-b dark:border-gray-700/50 p-4">
+                        <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                            Economic Calendar
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4">
+                        <div className="flex justify-center items-center h-32">
+                            <div className="text-red-500">{error}</div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        )
     }
 
     if (!calendarData) {
@@ -102,6 +146,30 @@ export default function Calendar() {
                                     transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }}
                                 />
                             </div>
+                        </div>
+                    </CardContent>
+                </Card>
+            </motion.div>
+        )
+    }
+
+    // Check if calendar array is empty
+    if (!calendarData.calendar || calendarData.calendar.length === 0) {
+        return (
+            <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+                    <CardHeader className="border-b dark:border-gray-700/50 p-4">
+                        <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                            Economic Calendar
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-4">
+                        <div className="flex justify-center items-center h-32">
+                            <div className="text-muted-foreground">No economic events available</div>
                         </div>
                     </CardContent>
                 </Card>
