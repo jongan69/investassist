@@ -6,6 +6,7 @@ import { formatDistanceToNow } from "date-fns"
 import { formatNumber } from "@/lib/utils"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
+import { toast } from "sonner"
 
 // Define token interface based on the API response
 interface Token {
@@ -125,6 +126,13 @@ function TokenCard({ token }: { token: Token }) {
     }
   };
 
+  // Function to handle copying contract address
+  const handleCopyAddress = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(token.tokenAddress);
+    toast.success("Contract address copied to clipboard");
+  };
+
   return (
     <div 
       className="w-full rounded-xl border bg-card p-3 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer hover:border-primary/50"
@@ -236,6 +244,31 @@ function TokenCard({ token }: { token: Token }) {
             </svg>
           </a>
         )}
+        
+        {/* Copy contract address button */}
+        <button
+          className="text-primary hover:text-primary/80"
+          onClick={handleCopyAddress}
+          title="Copy contract address"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+          </svg>
+        </button>
+        
+        {/* Phantom button */}
+        <a
+          href={`https://phantom.app/tokens/solana/${token.tokenAddress}?referralId=m0ezk5sfqrs`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:text-primary/80"
+          onClick={(e) => e.stopPropagation()}
+          title="View on Phantom"
+        >
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+          </svg>
+        </a>
       </div>
     </div>
   );
