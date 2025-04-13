@@ -55,7 +55,7 @@ export default function ParallaxHeader({
         'AI-Powered Analysis',
     ];
 
-    console.log(tokenInfo)
+    // console.log(tokenInfo)
     return (
         <div ref={headerRef} className="relative h-[600px] overflow-hidden z-10">
             {/* Background Image with Parallax Effect */}

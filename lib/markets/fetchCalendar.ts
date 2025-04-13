@@ -1,12 +1,11 @@
 export async function fetchCalendar() {
     try {
-        console.log('Fetching calendar data...');
+        // console.log('Fetching calendar data...');
         
         // fetch from calendar API
         const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-        console.log('Base URL:', baseUrl);
+        // console.log('Base URL:', baseUrl);
         const url = `${baseUrl}/api/calendar`;
-        console.log('Full URL:', url);
         
         // Add timeout to the fetch request - increase to 20 seconds
         const controller = new AbortController();
@@ -29,7 +28,7 @@ export async function fetchCalendar() {
             credentials: 'same-origin' as RequestCredentials
         };
         
-        console.log('Fetch options:', JSON.stringify(fetchOptions, null, 2));
+        // console.log('Fetch options:', JSON.stringify(fetchOptions, null, 2));
         
         // Log the start time
         const startTime = Date.now();
@@ -54,7 +53,7 @@ export async function fetchCalendar() {
         }
         
         const data = await response.json();
-        console.log('Calendar data:', data);
+        // console.log('Calendar data:', data);
         
         if (data.error) {
             throw new Error(data.error);
@@ -69,7 +68,7 @@ export async function fetchCalendar() {
         try {
             console.log('Attempting fallback to external API...');
             const externalUrl = 'https://marketapi-mu83.onrender.com/calendar';
-            console.log('External API URL:', externalUrl);
+            // console.log('External API URL:', externalUrl);
             
             const controller = new AbortController();
             const timeoutId = setTimeout(() => {

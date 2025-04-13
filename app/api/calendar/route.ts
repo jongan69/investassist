@@ -1,8 +1,8 @@
 export async function GET() {
     try {
-        console.log('API route: Fetching calendar data...');
+        // console.log('API route: Fetching calendar data...');
         const URL = `https://marketapi-mu83.onrender.com/calendar`;
-        console.log('External API URL:', URL);
+        // console.log('External API URL:', URL);
         
         // Add timeout to the fetch request
         const controller = new AbortController();

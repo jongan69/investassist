@@ -42,7 +42,7 @@ export default function Calendar() {
                 setError(null)
                 console.log('Calendar component: Fetching calendar data...');
                 const data = await fetchCalendar();
-                console.log('Calendar component: Received data:', data);
+                // console.log('Calendar component: Received data:', data);
                 
                 if (!data || !data.calendar) {
                     console.error('Calendar component: Invalid data structure:', data);
