@@ -45,6 +45,12 @@ export default function Calendar() {
                     return;
                 }
                 
+                if (data.error) {
+                    console.error('Calendar component: API returned error:', data.error);
+                    setError(`API Error: ${data.error}`);
+                    return;
+                }
+                
                 if (data.calendar.length === 0) {
                     console.warn('Calendar component: No calendar events found');
                 } else {
@@ -96,8 +102,9 @@ export default function Calendar() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="p-4">
-                        <div className="flex justify-center items-center h-32">
-                            <div className="text-red-500">{error}</div>
+                        <div className="flex flex-col justify-center items-center h-32">
+                            <div className="text-red-500 mb-2">{error}</div>
+                            <div className="text-sm text-muted-foreground">Please try again later or check your network connection.</div>
                         </div>
                     </CardContent>
                 </Card>

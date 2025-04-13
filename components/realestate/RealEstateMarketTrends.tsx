@@ -94,11 +94,6 @@ export default function RealEstateMarketTrends() {
     fetchData();
   }, []);
 
-  if (loading) return <div className="flex justify-center items-center h-64">Loading...</div>;
-  // if (error) return <div className="text-red-500 text-center p-4">{error}</div>;
-  if (error) return null;
-  if (!data) return null;
-
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'short',
@@ -107,88 +102,54 @@ export default function RealEstateMarketTrends() {
   };
 
   const isDark = resolvedTheme === 'dark';
-  const chartData = {
-    labels: data.historicalData.thirtyYear.map(sample => formatDate(sample.time)),
-    datasets: [
-      {
-        label: '30-Year Fixed',
-        data: data.historicalData.thirtyYear.map(sample => sample.rate),
-        borderColor: 'rgb(59, 130, 246)',
-        backgroundColor: 'rgba(59, 130, 246, 0.5)',
-        tension: 0.4,
-      },
-      {
-        label: '15-Year Fixed',
-        data: data.historicalData.fifteenYear.map(sample => sample.rate),
-        borderColor: 'rgb(16, 185, 129)',
-        backgroundColor: 'rgba(16, 185, 129, 0.5)',
-        tension: 0.4,
-      },
-    ],
-  };
+  
+  // Dynamic colors based on theme for FRED charts
+  const bgColor = '%23000000'; // Always black background
+  const fgColor = isDark ? '%23e5e7eb' : '%23333333';
+  const lineColor = isDark ? '%233b82f6' : '%23333333';
+  const linkColor = isDark ? '%233b82f6' : '%23333333';
+  const graphBgColor = '%23000000'; // Always black graph background
+  
+  // Dynamic dimensions based on screen size
+  const chartWidth = isMobile ? 350 : 670;
+  const chartHeight = isMobile ? 250 : 475;
+  
+  const colorParams = `bgcolor=${bgColor}&fgcolor=${fgColor}&linecolor=${lineColor}&linkcolor=${linkColor}&graphbgcolor=${graphBgColor}`;
+  const dimensionParams = `width=${chartWidth}&height=${chartHeight}`;
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-        labels: {
-          color: isDark ? '#e5e7eb' : '#374151',
-          boxWidth: isMobile ? 8 : 12,
-          padding: isMobile ? 4 : 8,
-          font: {
-            size: isMobile ? 10 : 12
-          }
-        },
-      },
-      title: {
-        display: true,
-        text: 'Mortgage Rate Trends',
-        color: isDark ? '#e5e7eb' : '#374151',
-        font: {
-          size: isMobile ? 14 : 16
-        }
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: false,
-        title: {
-          display: true,
-          text: 'Interest Rate (%)',
-          color: isDark ? '#e5e7eb' : '#374151',
-          font: {
-            size: isMobile ? 10 : 12
-          }
-        },
-        grid: {
-          color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-        },
-        ticks: {
-          color: isDark ? '#e5e7eb' : '#374151',
-          font: {
-            size: isMobile ? 10 : 12
-          },
-          maxRotation: isMobile ? 0 : 45,
-          minRotation: isMobile ? 0 : 45,
-        },
-      },
-      x: {
-        grid: {
-          color: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
-        },
-        ticks: {
-          color: isDark ? '#e5e7eb' : '#374151',
-          font: {
-            size: isMobile ? 10 : 12
-          },
-          maxRotation: isMobile ? 45 : 45,
-          minRotation: isMobile ? 45 : 45,
-        },
-      },
-    },
-  };
+  // FRED Chart Component
+  const FredChart = () => (
+    <div className="flex justify-center items-center w-full">
+      <Card className="overflow-hidden border-0 shadow-lg bg-black backdrop-blur-sm" style={{ width: `${chartWidth}px`, height: `${chartHeight}px` }}>
+        <CardHeader className="border-b border-gray-700/50 p-2 sm:p-6">
+          <CardTitle className="text-sm sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
+            Mortgage Rate Trends (FRED Data)
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-1 sm:p-6">
+          <div className="relative w-full h-[300px] sm:h-[525px] overflow-hidden rounded-md bg-black">
+            <iframe 
+              src={`https://fred.stlouisfed.org/graph/graph-landing.php?g=1I69u&${dimensionParams}&${colorParams}`}
+              style={{ 
+                overflow: 'hidden', 
+                width: '100%', 
+                height: '100%',
+                borderRadius: '0.375rem',
+                backgroundColor: 'black',
+                border: 'none',
+              }} 
+              allowTransparency={true} 
+              loading="lazy"
+            ></iframe>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  if (loading) return <FredChart />;
+  if (error) return <FredChart />;
+  if (!data) return <FredChart />;
 
   return (
     <div className="w-full max-w-full mx-auto p-1 sm:p-4 space-y-2 sm:space-y-6 px-2 sm:px-4">
@@ -241,19 +202,8 @@ export default function RealEstateMarketTrends() {
         </Card>
       </div>
 
-      {/* Chart */}
-      <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
-        <CardHeader className="border-b dark:border-gray-700/50 p-2 sm:p-6">
-          <CardTitle className="text-sm sm:text-xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-            Mortgage Rate Trends
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-1 sm:p-6">
-          <div className="relative w-full h-[200px] sm:h-[400px] overflow-hidden">
-            <Line options={chartOptions} data={chartData} />
-          </div>
-        </CardContent>
-      </Card>
+      {/* FRED Chart */}
+      <FredChart />
 
       {/* Loan Details */}
       <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
