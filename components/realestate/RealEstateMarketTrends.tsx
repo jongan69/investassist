@@ -138,7 +138,6 @@ export default function RealEstateMarketTrends() {
                 backgroundColor: 'black',
                 border: 'none',
               }} 
-              allowTransparency={true} 
               loading="lazy"
             ></iframe>
           </div>
