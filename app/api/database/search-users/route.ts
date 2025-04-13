@@ -68,7 +68,7 @@ export async function GET(req: Request) {
                 }
                 return false;
             })
-            .map(account => ({
+            ?.map(account => ({
                 username: account,
                 isTracked: trackedAccounts.trackedAccounts.includes(account),
                 walletAddresses: walletAddresses[account] || {}

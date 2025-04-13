@@ -92,15 +92,15 @@ function Interactions({
       }
 
       // Get the date range for the x-axis
-      const dates = data.map(d => toDate(d))
-      const xPositions = dates.map(d => xScale(d))
+      const dates = data?.map(d => toDate(d))
+      const xPositions = dates?.map(d => xScale(d))
 
       // Find the closest x position to the pointer
       const closestIndex = d3.bisector((x: number) => x).left(xPositions, pointer.x)
 
       // Get the two closest points
-      const d0 = data[Math.max(0, closestIndex - 1)]
-      const d1 = data[Math.min(data.length - 1, closestIndex)]
+      const d0 = data?.[Math.max(0, closestIndex - 1)]
+      const d1 = data?.[Math.min(data.length - 1, closestIndex)]
 
       // Determine which point is closer
       let d = d0
@@ -282,15 +282,15 @@ function GraphSlider({ data, width, height, top, state, dispatch, range }: Graph
   // Pre-calculate scales and domains once
   const [xScale, yScale] = useMemo(() => {
     const xScale = scalePoint()
-      .domain(data.map(toDate))
+      .domain(data?.map(toDate))
       .range([0, width])
       .padding(0.1)
 
     const yScale = scaleLinear({
       range: [height, 0],
       domain: [
-        Math.min(...data.map((d: any) => d.close)) * 0.99, // Add small padding
-        Math.max(...data.map((d: any) => d.close)) * 1.01
+        Math.min(...data?.map((d: any) => d.close)) * 0.99, // Add small padding
+        Math.max(...data?.map((d: any) => d.close)) * 1.01
       ],
       nice: true // Round to nice numbers
     })
@@ -459,7 +459,7 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
 
   // Transform chartQuotes to include OHLC data for candle chart
   const candleChartData = useMemo(() => {
-    return chartQuotes.map((quote, index) => {
+    return chartQuotes?.map((quote, index) => {
       // For demonstration purposes, create simulated OHLC data
       // In a real implementation, you would need actual OHLC data
       const close = quote.close;
@@ -552,7 +552,7 @@ const AreaClosedCoinChart = memo(function AreaClosedCoinChart({
         )}
       </div>
       <div className="mt-2 flex flex-wrap justify-center gap-1 items-center">
-        {rangeOptions.map((r) => (
+        {rangeOptions?.map((r) => (
           <Button
             key={r}
             variant={"ghost"}
@@ -604,7 +604,7 @@ const RangeButtons = memo(function RangeButtons({
 
   return (
     <div className="mt-1 flex flex-row">
-      {rangeOptions.map((r) => (
+      {rangeOptions?.map((r) => (
         <Button
           key={r}
           variant={"ghost"}

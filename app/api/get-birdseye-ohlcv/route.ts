@@ -161,7 +161,7 @@ export async function GET(request: Request) {
 
   // Fetch data for each timeframe concurrently.
   const results = await Promise.all(
-    TIMEFRAMES.map(async (tf) => {
+    TIMEFRAMES?.map(async (tf) => {
       const data = await fetchDataForTimeframe(tokenAddress, tf, startTime, endTime);
       return { timeframe: tf, data };
     })

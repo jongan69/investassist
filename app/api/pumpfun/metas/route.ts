@@ -59,7 +59,7 @@ export async function GET() {
     }
 
     // Add URL to each item
-    const enrichedData = data.map(item => ({
+    const enrichedData = data?.map(item => ({
       ...item,
       url: `https://pump.fun/board?include-nsfw=true&meta=${encodeURIComponent(item.word)}`
     }));

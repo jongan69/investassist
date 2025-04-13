@@ -75,11 +75,11 @@ export async function POST(req: Request) {
       ${JSON.stringify(marketData, null, 2)}
       ${tokenCategories ? `
       Portfolio Categories:
-      - Verified Tokens: ${tokenCategories.verified.map((t: any) => t.symbol).join(', ')}
-      - Liquid Staked Tokens: ${tokenCategories.lst.map((t: any) => t.symbol).join(', ')}
-      - DeFi Tokens: ${tokenCategories.defi.map((t: any) => t.symbol).join(', ')}
-      - Memecoins: ${tokenCategories.memecoins.map((t: any) => t.symbol).join(', ')}
-      - Other: ${tokenCategories.other.map((t: any) => t.symbol).join(', ')}
+      - Verified Tokens: ${tokenCategories.verified?.map((t: any) => t.symbol).join(', ')}
+      - Liquid Staked Tokens: ${tokenCategories.lst?.map((t: any) => t.symbol).join(', ')}
+      - DeFi Tokens: ${tokenCategories.defi?.map((t: any) => t.symbol).join(', ')}
+      - Memecoins: ${tokenCategories.memecoins?.map((t: any) => t.symbol).join(', ')}
+      - Other: ${tokenCategories.other?.map((t: any) => t.symbol).join(', ')}
       
       Current Portfolio includes ${memecoins.length} memecoins worth $${memecoins.reduce((sum: number, m: any) => sum + m.usdValue, 0).toFixed(2)}.
       Include these memecoins in the allocation, but limit their total allocation to max 20%.
@@ -189,7 +189,7 @@ export async function POST(req: Request) {
           ...(memecoinPercentage > 0 ? [{
             asset: "Memecoins",
             percentage: memecoinPercentage,
-            reasoning: `Existing memecoin holdings: ${memecoins.map((m: any) => m.symbol).join(', ')}`
+            reasoning: `Existing memecoin holdings: ${memecoins?.map((m: any) => m.symbol).join(', ')}`
           }] : []),
           {
             asset: "Cryptocurrencies",
@@ -221,7 +221,7 @@ export async function POST(req: Request) {
         ...(memecoinPercentage > 0 ? [{
           asset: "Memecoins",
           percentage: memecoinPercentage,
-          reasoning: `Existing memecoin holdings: ${memecoins.map(m => m.symbol).join(', ')}`
+          reasoning: `Existing memecoin holdings: ${memecoins?.map(m => m.symbol).join(', ')}`
         }] : []),
         {
           asset: "Cryptocurrencies",

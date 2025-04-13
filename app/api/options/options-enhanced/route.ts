@@ -241,7 +241,7 @@ async function calculateFairMarketValue(stock: YahooQuote): Promise<number> {
 
         // Filter out any invalid methods and adjust weights
         const validMethods = methods.filter(m => !isNaN(m.value) && isFinite(m.value));
-        console.log('Valid methods:', validMethods.map(m => m.value));
+        console.log('Valid methods:', validMethods?.map(m => m.value));
 
         if (validMethods.length === 0) {
             console.log('No valid methods available for FMV calculation');
@@ -256,7 +256,7 @@ async function calculateFairMarketValue(stock: YahooQuote): Promise<number> {
         console.log('Weighted average FMV:', weightedAverage, {
             weightedSum,
             totalWeight,
-            weights: validMethods.map(m => m.weight)
+            weights: validMethods?.map(m => m.weight)
         });
 
         // Apply final market adjustment (20% discount for conservative estimate)
@@ -473,7 +473,7 @@ export async function POST(request: Request) {
                 diversification: {
                     sectors: Object.keys(sectorBreakdown).length,
                     stocks: portfolio.length,
-                    sectorBreakdown: Object.entries(sectorBreakdown).map(([sector, data]) => ({
+                    sectorBreakdown: Object.entries(sectorBreakdown)?.map(([sector, data]) => ({
                         sector,
                         investment: data.investment,
                         income: data.income,
@@ -481,7 +481,7 @@ export async function POST(request: Request) {
                     }))
                 }
             },
-            portfolio: portfolio.map(stock => ({
+            portfolio: portfolio?.map(stock => ({
                 symbol: stock.symbol,
                 companyName: stock.longName,
                 sector: stock.sector,

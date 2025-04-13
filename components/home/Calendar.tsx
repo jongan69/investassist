@@ -136,7 +136,7 @@ export default function Calendar() {
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {calendarData.calendar.map((event: CalendarEvent, index: number) => (
+                                {calendarData?.calendar?.map((event: CalendarEvent, index: number) => (
                                     <TableRow 
                                         key={index} 
                                         className={cn(

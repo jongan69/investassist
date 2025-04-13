@@ -91,7 +91,7 @@ export async function GET() {
     }
 
     // Create a set of trending topics for case-insensitive comparison
-    const trendingTopicsSet = new Set(trendingTopics.map(topic => topic.toLowerCase()));
+    const trendingTopicsSet = new Set(trendingTopics?.map(topic => topic.toLowerCase()));
 
     // Function to fetch DexScreener data for a topic
     const fetchDexScreenerData = async (topic: string) => {
@@ -122,7 +122,7 @@ export async function GET() {
     };
 
     // Enrich all items with isTrending field, URL, and DexScreener data
-    const enrichedDataPromises = data1.map(async (item) => {
+    const enrichedDataPromises = data1?.map(async (item) => {
       const dexScreenerData = await fetchDexScreenerData(item.word);
       
       return {

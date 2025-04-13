@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     }
 
     // Transform the data into a cleaner format
-    const transformedData: TransformedToken[] = data.map(token => ({
+    const transformedData: TransformedToken[] = data?.map(token => ({
       mint: token.mint,
       name: token.name,
       symbol: token.symbol,

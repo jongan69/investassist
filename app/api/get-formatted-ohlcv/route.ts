@@ -15,7 +15,7 @@ function formatYahooData(data: any): StandardOHLCV[] {
     const timestamps = data.timestamp;
     const quotes = data.indicators.quote[0];
 
-    return timestamps.map((time: number, index: number) => ({
+    return timestamps?.map((time: number, index: number) => ({
         timestamp: time,
         open: quotes.open[index],
         high: quotes.high[index],

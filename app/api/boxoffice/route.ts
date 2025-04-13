@@ -35,7 +35,7 @@ export async function GET() {
 
     // Fetch metadata for each token
     const tokensWithMetadata = await Promise.all(
-      boxOfficeData.data.map(async (token: BoxOfficeToken) => {
+      boxOfficeData.data?.map(async (token: BoxOfficeToken) => {
         try {
           const metadataResponse = await fetch(token.uri);
           const metadata = await metadataResponse.json();

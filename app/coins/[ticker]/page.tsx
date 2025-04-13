@@ -56,7 +56,7 @@ function LoadingChart() {
           <Skeleton className="h-8 w-36 bg-muted/50" />
         </div>
         <div className="flex gap-1.5">
-          {['1H', '1D', '1W', '1M', 'ALL'].map((_, i) => (
+          {['1H', '1D', '1W', '1M', 'ALL']?.map((_, i) => (
             <Skeleton key={i} className="h-7 w-12 bg-muted/50" />
           ))}
         </div>
