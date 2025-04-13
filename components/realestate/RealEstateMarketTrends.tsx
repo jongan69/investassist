@@ -13,6 +13,7 @@ import {
 } from 'chart.js';
 import { useTheme } from 'next-themes';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 ChartJS.register(
   CategoryScale,
@@ -108,67 +109,126 @@ export default function RealEstateMarketTrends() {
   const linkColor = isDark ? '%233b82f6' : '%23333333';
   const graphBgColor = '%23000000'; // Always black graph background
   
-  // Dynamic dimensions based on screen size
-  const chartWidth = isMobile ? 350 : 670;
-  const chartHeight = isMobile ? 250 : 475;
+  // Dynamic dimensions based on screen size - adjusted for better mobile fit
+  const chartWidth = isMobile ? '100%' : '100%';
+  const chartHeight = isMobile ? 450 : 550; // Increased height to prevent cutoff
   
   const colorParams = `bgcolor=${bgColor}&fgcolor=${fgColor}&linecolor=${lineColor}&linkcolor=${linkColor}&graphbgcolor=${graphBgColor}`;
   const dimensionParams = `width=${chartWidth}&height=${chartHeight}`;
 
   // FRED Chart Component
   const FredChart = () => (
-    <div className="flex justify-center items-center w-full" suppressHydrationWarning>
-      <Card className="overflow-hidden border-0 shadow-lg bg-black backdrop-blur-sm" style={{ width: `${chartWidth}px`, height: `${chartHeight}px` }}>
-        <CardHeader className="border-b border-gray-700/50 p-2 sm:p-6">
-          <CardTitle className="text-sm sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
+    <div className="w-full flex justify-center" suppressHydrationWarning>
+      <div className="overflow-hidden border-0 shadow-lg bg-black backdrop-blur-sm rounded-lg w-full">
+        <div className="border-b border-gray-700/50 p-2 sm:p-4">
+          <h3 className="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
             Mortgage Rate Trends
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-1 sm:p-6">
-          <div className="relative w-full h-[300px] sm:h-[525px] overflow-hidden rounded-md bg-black">
-            <iframe 
-              src={`https://fred.stlouisfed.org/graph/graph-landing.php?g=1I69W&${dimensionParams}&${colorParams}`}
-              style={{ 
-                overflow: 'hidden', 
-                width: '100%', 
-                height: '100%',
-                borderRadius: '0.375rem',
-                backgroundColor: 'black',
-                border: 'none',
-              }} 
-              loading="lazy"
-            ></iframe>
-          </div>
-        </CardContent>
-      </Card>
+          </h3>
+        </div>
+        <div className="bg-black" style={{ height: `${chartHeight}px`, paddingBottom: '20px' }}>
+          <iframe 
+            src={`https://fred.stlouisfed.org/graph/graph-landing.php?g=1I69W&${dimensionParams}&${colorParams}`}
+            style={{ 
+              width: '100%', 
+              height: '100%',
+              border: 'none',
+              display: 'block',
+              margin: 0,
+              padding: 0,
+              backgroundColor: 'black',
+            }} 
+            loading="lazy"
+          ></iframe>
+        </div>
+      </div>
     </div>
   );
 
-  if (loading) return <FredChart />;
-  if (error) return <FredChart />;
-  if (!data) return <FredChart />;
+  // Loading state
+  if (loading) {
+    return (
+      <div className="w-full max-w-full mx-auto p-2 sm:p-4 space-y-3 sm:space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
+            <CardHeader className="p-3 sm:p-4">
+              <Skeleton className="h-6 w-3/4" />
+            </CardHeader>
+            <CardContent className="p-3 sm:p-4 space-y-3">
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-4 w-1/2" />
+            </CardContent>
+          </Card>
+          <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
+            <CardHeader className="p-3 sm:p-4">
+              <Skeleton className="h-6 w-3/4" />
+            </CardHeader>
+            <CardContent className="p-3 sm:p-4 space-y-3">
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-4 w-1/2" />
+            </CardContent>
+          </Card>
+        </div>
+        <FredChart />
+        <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
+          <CardHeader className="p-3 sm:p-4">
+            <Skeleton className="h-6 w-1/2" />
+          </CardHeader>
+          <CardContent className="p-3 sm:p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i}>
+                  <Skeleton className="h-4 w-20 mb-1" />
+                  <Skeleton className="h-5 w-full" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Error state - just show the chart without error message
+  if (error) {
+    return (
+      <div className="w-full max-w-full mx-auto p-2 sm:p-4 space-y-3 sm:space-y-6">
+        <FredChart />
+      </div>
+    );
+  }
+
+  // No data state - just show the chart without message
+  if (!data) {
+    return (
+      <div className="w-full max-w-full mx-auto p-2 sm:p-4 space-y-3 sm:space-y-6">
+        <FredChart />
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full max-w-full mx-auto p-1 sm:p-4 space-y-2 sm:space-y-6 px-2 sm:px-4" suppressHydrationWarning>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-6">
+    <div className="w-full max-w-full mx-auto p-2 sm:p-4 space-y-3 sm:space-y-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {/* Current Rates Cards */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
+        <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
+          <CardHeader className="border-b dark:border-gray-700/50 p-3 sm:p-4">
+            <CardTitle className="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
               Current 30-Year Fixed Rate
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-1 sm:space-y-4">
-              <div className="flex justify-between">
-                <span className="text-xs sm:text-sm text-muted-foreground">Rate:</span>
-                <span className="text-lg sm:text-2xl font-bold text-blue-500">{data.currentRates.thirtyYear.rate}%</span>
+          <CardContent className="p-3 sm:p-4">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm sm:text-base text-muted-foreground">Rate:</span>
+                <span className="text-xl sm:text-2xl font-bold text-blue-500">{data.currentRates.thirtyYear.rate}%</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-xs sm:text-sm text-muted-foreground">APR:</span>
-                <span className="text-base sm:text-xl font-semibold text-blue-500">{data.currentRates.thirtyYear.apr}%</span>
+              <div className="flex justify-between items-center">
+                <span className="text-sm sm:text-base text-muted-foreground">APR:</span>
+                <span className="text-lg sm:text-xl font-semibold text-blue-500">{data.currentRates.thirtyYear.apr}%</span>
               </div>
-              <div className="text-[10px] sm:text-xs text-muted-foreground">
+              <div className="text-xs sm:text-sm text-muted-foreground">
                 Updated: {new Date(data.currentRates.thirtyYear.timestamp).toLocaleString()}
               </div>
             </div>
@@ -176,22 +236,22 @@ export default function RealEstateMarketTrends() {
         </Card>
 
         <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
-          <CardHeader className="border-b dark:border-gray-700/50 p-2 sm:p-6">
-            <CardTitle className="text-sm sm:text-xl font-bold bg-gradient-to-r from-green-500 to-green-600 bg-clip-text text-transparent">
+          <CardHeader className="border-b dark:border-gray-700/50 p-3 sm:p-4">
+            <CardTitle className="text-base sm:text-xl font-bold bg-gradient-to-r from-green-500 to-green-600 bg-clip-text text-transparent">
               Current 15-Year Fixed Rate
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-2 sm:p-6">
-            <div className="space-y-1 sm:space-y-4">
-              <div className="flex justify-between">
-                <span className="text-xs sm:text-sm text-muted-foreground">Rate:</span>
-                <span className="text-lg sm:text-2xl font-bold text-green-500">{data.currentRates.fifteenYear.rate}%</span>
+          <CardContent className="p-3 sm:p-4">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm sm:text-base text-muted-foreground">Rate:</span>
+                <span className="text-xl sm:text-2xl font-bold text-green-500">{data.currentRates.fifteenYear.rate}%</span>
               </div>
-              <div className="flex justify-between">
-                <span className="text-xs sm:text-sm text-muted-foreground">APR:</span>
-                <span className="text-base sm:text-xl font-semibold text-green-500">{data.currentRates.fifteenYear.apr}%</span>
+              <div className="flex justify-between items-center">
+                <span className="text-sm sm:text-base text-muted-foreground">APR:</span>
+                <span className="text-lg sm:text-xl font-semibold text-green-500">{data.currentRates.fifteenYear.apr}%</span>
               </div>
-              <div className="text-[10px] sm:text-xs text-muted-foreground">
+              <div className="text-xs sm:text-sm text-muted-foreground">
                 Updated: {new Date(data.currentRates.fifteenYear.timestamp).toLocaleString()}
               </div>
             </div>
@@ -204,28 +264,28 @@ export default function RealEstateMarketTrends() {
 
       {/* Loan Details */}
       <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
-        <CardHeader className="border-b dark:border-gray-700/50 p-2 sm:p-6">
-          <CardTitle className="text-sm sm:text-xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
+        <CardHeader className="border-b dark:border-gray-700/50 p-3 sm:p-4">
+          <CardTitle className="text-base sm:text-xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
             Loan Details
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-2 sm:p-6">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4">
+        <CardContent className="p-3 sm:p-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <div>
-              <span className="text-xs sm:text-sm text-muted-foreground">Credit Score:</span>
-              <p className="text-xs sm:text-sm font-medium text-foreground">{data.query.creditScoreBucket}</p>
+              <span className="text-xs sm:text-sm text-muted-foreground block mb-1">Credit Score:</span>
+              <p className="text-sm sm:text-base font-medium text-foreground">{data.query.creditScoreBucket}</p>
             </div>
             <div>
-              <span className="text-xs sm:text-sm text-muted-foreground">Loan Amount:</span>
-              <p className="text-xs sm:text-sm font-medium text-foreground">{data.query.loanAmountBucket}</p>
+              <span className="text-xs sm:text-sm text-muted-foreground block mb-1">Loan Amount:</span>
+              <p className="text-sm sm:text-base font-medium text-foreground">{data.query.loanAmountBucket}</p>
             </div>
             <div>
-              <span className="text-xs sm:text-sm text-muted-foreground">Loan Type:</span>
-              <p className="text-xs sm:text-sm font-medium text-foreground">{data.query.loanType}</p>
+              <span className="text-xs sm:text-sm text-muted-foreground block mb-1">Loan Type:</span>
+              <p className="text-sm sm:text-base font-medium text-foreground">{data.query.loanType}</p>
             </div>
             <div>
-              <span className="text-xs sm:text-sm text-muted-foreground">State:</span>
-              <p className="text-xs sm:text-sm font-medium text-foreground">{data.query.stateAbbreviation}</p>
+              <span className="text-xs sm:text-sm text-muted-foreground block mb-1">State:</span>
+              <p className="text-sm sm:text-base font-medium text-foreground">{data.query.stateAbbreviation}</p>
             </div>
           </div>
         </CardContent>
