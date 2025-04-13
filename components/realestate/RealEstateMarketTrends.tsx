@@ -129,7 +129,7 @@ export default function RealEstateMarketTrends() {
         <CardContent className="p-1 sm:p-6">
           <div className="relative w-full h-[300px] sm:h-[525px] overflow-hidden rounded-md bg-black">
             <iframe 
-              src={`https://fred.stlouisfed.org/graph/graph-landing.php?g=1I69u&${dimensionParams}&${colorParams}`}
+              src={`https://fred.stlouisfed.org/graph/graph-landing.php?g=1I69W&${dimensionParams}&${colorParams}`}
               style={{ 
                 overflow: 'hidden', 
                 width: '100%', 
