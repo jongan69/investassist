@@ -3,6 +3,9 @@ import Leaderboard from "@/components/ui/leaderboard";
 import { INVEST_ASSIST_MINT, MOONSHOT_LINK } from "@/lib/solana/constants";
 import TradingStats from './components/TradingStats';
 import ParallaxHeader from './components/ParallaxHeader';
+import BackToTopButton from './components/BackToTopButton';
+import LearnMoreButton from './components/LearnMoreButton';
+// import { useWallet } from "@solana/wallet-adapter-react";
 // import { Pair, TokenInfo } from "@/types/dexscreener";
 
 export const dynamic = 'force-dynamic';
@@ -27,6 +30,7 @@ async function getTokenInfo() {
 
 export default async function AboutPage() {
   const tokenInfo = await getTokenInfo();
+  // const { publicKey } = useWallet();
   // console.log(tokenInfo)
   // Get the pair with highest liquidity, with fallback for empty data
   const mainPair = tokenInfo.pairs && tokenInfo.pairs.length > 0
@@ -72,8 +76,8 @@ export default async function AboutPage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header Section */}
-      <div className="relative z-10">
+      {/* Header Section with fixed height */}
+      <div className="relative h-[500px] sm:h-[600px]">
         <ParallaxHeader
           imageUrl={headerImage}
           tokenInfo={formattedTokenInfo}
@@ -84,19 +88,46 @@ export default async function AboutPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col space-y-24 py-24 relative z-0 bg-white dark:bg-gray-900 -mt-24">
+      <div className="flex flex-col space-y-24 bg-white dark:bg-gray-900">
         {/* About Section */}
         <div className="container mx-auto px-4">
-          <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg p-8 sm:p-12">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-6">About InvestAssist</h2>
-            <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-              InvestAssist is a revolutionary platform that empowers investors with real-time market data and insights.
-              Our mission is to make investing more accessible and informed through cutting-edge technology and comprehensive market analysis.
-            </p>
-            <p className="text-lg text-gray-700 dark:text-gray-300">
-              With InvestAssist, you can track market trends, analyze investment opportunities, and make data-driven decisions
-              to optimize your portfolio performance.
-            </p>
+          <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-8 sm:p-12">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-full transform translate-x-32 -translate-y-32" />
+            <div className="relative z-10">
+              <div className="flex flex-col md:flex-row items-start gap-8">
+                <div className="flex-1">
+                  <h2 className="text-3xl sm:text-4xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 text-transparent bg-clip-text">
+                    About InvestAssist
+                  </h2>
+                  <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
+                    InvestAssist is a revolutionary platform that empowers investors with real-time market data and insights.
+                    Our mission is to make investing more accessible and informed through cutting-edge technology and comprehensive market analysis.
+                  </p>
+                  <p className="text-lg text-gray-700 dark:text-gray-300 mb-8">
+                    With InvestAssist, you can track market trends, analyze investment opportunities, and make data-driven decisions
+                    to optimize your portfolio performance.
+                  </p>
+                  <a 
+                    href={MOONSHOT_LINK}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                  >
+                    Invest Now
+                    <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </a>
+                </div>
+                <div className="flex-shrink-0">
+                  <div className="w-48 h-48 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl shadow-lg p-6 flex items-center justify-center transform rotate-6 hover:rotate-0 transition-transform duration-300">
+                    <svg className="w-32 h-32 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -109,23 +140,53 @@ export default async function AboutPage() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center">Use Cases</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+            <div className="group bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-6 h-6 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
               <h3 className="text-xl font-semibold mb-4">Market Analysis</h3>
-              <p className="text-gray-700 dark:text-gray-300">
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Get real-time market data and trends to make informed investment decisions.
               </p>
+              <a href="/" className="text-blue-600 dark:text-blue-400 font-medium hover:underline inline-flex items-center">
+                Learn More
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
             </div>
-            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+            <div className="group bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
               <h3 className="text-xl font-semibold mb-4">Portfolio Tracking</h3>
-              <p className="text-gray-700 dark:text-gray-300">
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Monitor your investments and track performance across different assets.
               </p>
+              <LearnMoreButton 
+                color="text-green-600 dark:text-green-400" 
+              />
             </div>
-            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+            <div className="group bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
               <h3 className="text-xl font-semibold mb-4">Investment Insights</h3>
-              <p className="text-gray-700 dark:text-gray-300">
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Access AI-powered insights and recommendations for your investment strategy.
               </p>
+              <a href="/insights" className="text-purple-600 dark:text-purple-400 font-medium hover:underline inline-flex items-center">
+                Learn More
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
             </div>
           </div>
         </div>
@@ -134,22 +195,44 @@ export default async function AboutPage() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl sm:text-4xl font-bold mb-8 text-center">Features</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+            <div className="group bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-6 h-6 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
               <h3 className="text-xl font-semibold mb-4">Real-Time Data</h3>
-              <p className="text-gray-700 dark:text-gray-300">
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Access up-to-date market information and price data for informed decision-making.
               </p>
+              <a href="/market-analysis" className="text-orange-600 dark:text-orange-400 font-medium hover:underline inline-flex items-center">
+                Try Now
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
             </div>
-            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg p-8 hover:shadow-xl transition-shadow duration-300">
+            <div className="group bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg p-8 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                <svg className="w-6 h-6 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
               <h3 className="text-xl font-semibold mb-4">AI-Powered Analysis</h3>
-              <p className="text-gray-700 dark:text-gray-300">
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Leverage advanced AI algorithms for market trend analysis and predictions.
               </p>
+              <a href="/insights" className="text-red-600 dark:text-red-400 font-medium hover:underline inline-flex items-center">
+                Try Now
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
             </div>
           </div>
         </div>
 
-        {/* Stats Section - Zillow-like */}
+        {/* Stats Section */}
         <div className="container mx-auto px-4 py-24 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg">
           <div className="max-w-5xl mx-auto">
             <h2 className="text-3xl sm:text-5xl font-bold text-center mb-12 text-gray-900 dark:text-white">
@@ -294,6 +377,9 @@ export default async function AboutPage() {
           </div>
         </div>
       </div>
+
+      {/* Back to Top Button */}
+      <BackToTopButton />
     </div>
   );
 }

@@ -57,7 +57,7 @@ export default function ParallaxHeader({
 
     // console.log(tokenInfo)
     return (
-        <div ref={headerRef} className="relative h-[600px] overflow-hidden z-10">
+        <div ref={headerRef} className="relative h-[500px] sm:h-[600px] overflow-hidden z-10">
             {/* Background Image with Parallax Effect */}
             <div
                 className="absolute inset-0 w-full h-full"
@@ -83,38 +83,38 @@ export default function ParallaxHeader({
             </div>
 
             {/* Content */}
-            <div className="relative h-full flex flex-col items-center justify-center px-4 z-20">
+            <div className="relative h-full flex flex-col items-center justify-center px-4 pt-8 sm:pt-12 z-20">
                 <div className="max-w-4xl w-full mx-auto text-center">
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6">
+                    <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6">
                         InvestAssist
                     </h1>
-                    <p className="text-xl sm:text-2xl text-white/90 mb-8">
+                    <p className="text-lg sm:text-xl md:text-2xl text-white/90 mb-6 sm:mb-8">
                         Your AI-Powered Investment Companion
                     </p>
 
                     {/* Token Info */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <div className="text-white/80 text-sm mb-1">Price</div>
-                            <div className="text-white text-xl font-semibold">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 mb-6 sm:mb-8">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
+                            <div className="text-white/80 text-xs sm:text-sm mb-1">Price</div>
+                            <div className="text-white text-base sm:text-xl font-semibold">
                                 ${tokenInfo.price?.toFixed(6) || '0.00'}
                             </div>
                         </div>
-                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <div className="text-white/80 text-sm mb-1">24h Change</div>
-                            <div className={`text-xl font-semibold ${(tokenInfo.priceChange24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
+                            <div className="text-white/80 text-xs sm:text-sm mb-1">24h Change</div>
+                            <div className={`text-base sm:text-xl font-semibold ${(tokenInfo.priceChange24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                                 {(tokenInfo.priceChange24h || 0) >= 0 ? '+' : ''}{tokenInfo.priceChange24h?.toFixed(2) || '0.00'}%
                             </div>
                         </div>
-                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <div className="text-white/80 text-sm mb-1">Market Cap</div>
-                            <div className="text-white text-xl font-semibold">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
+                            <div className="text-white/80 text-xs sm:text-sm mb-1">Market Cap</div>
+                            <div className="text-white text-base sm:text-xl font-semibold">
                                 ${tokenInfo.marketCap?.toLocaleString() || '0'}
                             </div>
                         </div>
-                        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
-                            <div className="text-white/80 text-sm mb-1">24h Volume</div>
-                            <div className="text-white text-xl font-semibold">
+                        <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
+                            <div className="text-white/80 text-xs sm:text-sm mb-1">24h Volume</div>
+                            <div className="text-white text-base sm:text-xl font-semibold">
                                 ${tokenInfo.volume24h?.toLocaleString() || '0'}
                             </div>
                         </div>
