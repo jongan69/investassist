@@ -1,18 +1,21 @@
 'use client';
 
 import { useState } from 'react';
-
+import { useWallet } from '@solana/wallet-adapter-react';
+import router from 'next/router';
 interface LearnMoreButtonProps {
   color: string;
   message?: string;
 }
 
 export default function LearnMoreButton({ color, message = 'Please connect your wallet' }: LearnMoreButtonProps) {
-  const [isClicked, setIsClicked] = useState(false);
-
+  const { publicKey } = useWallet();
   const handleClick = () => {
-    alert(message);
-    setIsClicked(true);
+    if (!publicKey) {
+      alert(message);
+    } else {
+      router.push(`/users/${publicKey}`);  
+    }
   };
 
   return (

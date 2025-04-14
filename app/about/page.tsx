@@ -205,7 +205,7 @@ export default async function AboutPage() {
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Access up-to-date market information and price data for informed decision-making.
               </p>
-              <a href="/market-analysis" className="text-orange-600 dark:text-orange-400 font-medium hover:underline inline-flex items-center">
+              <a href="/" className="text-orange-600 dark:text-orange-400 font-medium hover:underline inline-flex items-center">
                 Try Now
                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
