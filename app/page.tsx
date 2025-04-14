@@ -41,6 +41,8 @@ import { CarPriceIndex } from "@/components/automotive/CarPriceIndex"
 import BoxOffice from "@/components/crypto/BoxOffice"
 import TrumpPosts from "@/components/truthsocial/TrumpPosts"
 import Calendar from "@/components/home/Calendar"
+import InsiderTrading from "@/components/home/InsiderTrading"
+import { FuturesTable } from "@/components/home/FuturesTable"
 
 // Add route segment config
 export const dynamic = 'force-dynamic'
@@ -176,6 +178,12 @@ export default async function Page({ searchParams }: Props) {
                   <TrumpPosts />
                 </Suspense>
               </div>
+
+              <div className="px-6 sm:px-4 mt-4">
+                <Suspense fallback={<div className="animate-pulse h-32 bg-muted rounded-lg" />}>
+                  <InsiderTrading />
+                </Suspense>
+              </div>
             </div>
 
             <div
@@ -197,6 +205,16 @@ export default async function Page({ searchParams }: Props) {
               </CardHeader>
               <CardContent>
                 <LiveTrades />
+              </CardContent>
+            </Suspense>
+          </Card>
+          <Card className="rounded-md border-none transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+            <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
+              <CardHeader>
+                <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Futures</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <FuturesTable />
               </CardContent>
             </Suspense>
           </Card>
