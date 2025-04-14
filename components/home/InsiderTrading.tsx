@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { 
   Table, 
   TableBody, 
@@ -70,7 +70,7 @@ export default function InsiderTrading() {
   const [expanded, setExpanded] = useState(false);
 
   // Fetch data from the API
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -102,12 +102,12 @@ export default function InsiderTrading() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [option]);
 
   // Fetch data on component mount and when option changes
   useEffect(() => {
     fetchData();
-  }, [option]);
+  }, [fetchData]);
 
   // Filter data when search term changes
   useEffect(() => {

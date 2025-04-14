@@ -76,7 +76,7 @@ export default function MarketSummary({
     };
 
     generateMarketSummary();
-  }, [fearGreedValue, sectorPerformance, isMounted]);
+  }, [fearGreedValue, sectorPerformance, calendar, isMounted]);
 
   if (!resolvedTheme || !isMounted) {
     return null; // Ensure the theme is resolved and component is mounted
