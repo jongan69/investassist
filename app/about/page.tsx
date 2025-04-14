@@ -1,5 +1,3 @@
-import { Suspense } from "react";
-import Leaderboard from "@/components/ui/leaderboard";
 import { INVEST_ASSIST_MINT, MOONSHOT_LINK } from "@/lib/solana/constants";
 import TradingStats from './components/TradingStats';
 import ParallaxHeader from './components/ParallaxHeader';
@@ -181,7 +179,7 @@ export default async function AboutPage() {
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Access AI-powered insights and recommendations for your investment strategy.
               </p>
-              <a href="/insights" className="text-purple-600 dark:text-purple-400 font-medium hover:underline inline-flex items-center">
+              <a href="/" className="text-purple-600 dark:text-purple-400 font-medium hover:underline inline-flex items-center">
                 Learn More
                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -222,7 +220,7 @@ export default async function AboutPage() {
               <p className="text-gray-700 dark:text-gray-300 mb-4">
                 Leverage advanced AI algorithms for market trend analysis and predictions.
               </p>
-              <a href="/insights" className="text-red-600 dark:text-red-400 font-medium hover:underline inline-flex items-center">
+              <a href="/" className="text-red-600 dark:text-red-400 font-medium hover:underline inline-flex items-center">
                 Try Now
                 <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -344,18 +342,6 @@ export default async function AboutPage() {
             </div>
           </div>
         )}
-
-        {/* Leaderboard Section */}
-        <div className="container mx-auto px-4 py-24 bg-white dark:bg-gray-800 shadow-lg rounded-xl">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-3xl sm:text-5xl font-bold text-center mb-12 text-gray-900 dark:text-white">
-              Top Investors
-            </h2>
-            <Suspense fallback={<div className="text-center py-12">Loading leaderboard...</div>}>
-              <Leaderboard />
-            </Suspense>
-          </div>
-        </div>
 
         {/* Join Us Section */}
         <div className="container mx-auto px-4 py-24 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg">

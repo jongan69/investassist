@@ -100,10 +100,27 @@ export function DataTable<TData, TValue>({
             <SelectValue placeholder="Most actives" />
           </SelectTrigger>
           <SelectContent>
-            {ScreenerOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
+            {/* Group screener options by their group */}
+            {Object.entries(
+              ScreenerOptions.reduce((groups, option) => {
+                const group = option.group || "Other";
+                if (!groups[group]) {
+                  groups[group] = [];
+                }
+                groups[group].push(option);
+                return groups;
+              }, {} as Record<string, typeof ScreenerOptions>)
+            ).map(([group, options]) => (
+              <div key={group}>
+                <div className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">
+                  {group}
+                </div>
+                {options.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </div>
             ))}
           </SelectContent>
         </Select>
