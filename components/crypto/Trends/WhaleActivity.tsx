@@ -4,7 +4,7 @@ import { Fragment } from 'react';
 
 export function WhaleActivity({ trends }: { trends: any }) {
     return (
-        <div className="rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md p-6">
+        <div className="rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md p-6 mt-6">
             <h2 className="text-xl font-bold mb-6 text-foreground">
                 Whale Activity
             </h2>

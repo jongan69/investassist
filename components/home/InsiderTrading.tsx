@@ -29,7 +29,8 @@ import {
   ChevronDown,
   ChevronUp,
   Maximize2,
-  Minimize2
+  Minimize2,
+  ExternalLink
 } from 'lucide-react';
 import Switch from '@/components/ui/switch';
 import Label from '@/components/ui/label';
@@ -209,20 +210,75 @@ export default function InsiderTrading() {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <div className="flex items-center gap-2">
-          <CardTitle className="text-xl font-bold">Insider Trading</CardTitle>
+    <Card className="w-full overflow-hidden mb-8">
+      <CardHeader className="flex flex-col space-y-4 pb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-xl font-bold">Insider Trading</CardTitle>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleExpanded}
+              className="h-8 w-8"
+            >
+              {expanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </Button>
+          </div>
           <Button 
-            variant="ghost" 
+            variant="outline" 
             size="icon" 
-            onClick={toggleExpanded}
-            className="h-8 w-8"
+            onClick={fetchData}
+            disabled={loading}
+            className="ml-2"
           >
-            {expanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
-        <div className="flex items-center space-x-3">
+        
+        {/* Mobile Controls - Stacked Layout */}
+        <div className="flex flex-col gap-3 w-full sm:hidden">
+          <div className="relative w-full">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by ticker, owner, or relationship..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8 w-full"
+            />
+          </div>
+          
+          <div className="flex items-center justify-between gap-2">
+            <div className="w-[120px]">
+              <Select value={option} onValueChange={setOption}>
+                <SelectTrigger className="h-9">
+                  <SelectValue placeholder="Select option" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="latest">Latest</SelectItem>
+                  <SelectItem value="latest buys">Latest Buys</SelectItem>
+                  <SelectItem value="latest sales">Latest Sales</SelectItem>
+                  <SelectItem value="top week">Top Week</SelectItem>
+                  <SelectItem value="top week buys">Top Week Buys</SelectItem>
+                  <SelectItem value="top week sales">Top Week Sales</SelectItem>
+                  <SelectItem value="top owner trade">Top Owner Trade</SelectItem>
+                  <SelectItem value="top owner buys">Top Owner Buys</SelectItem>
+                  <SelectItem value="top owner sales">Top Owner Sales</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="flex items-center">
+              <Switch 
+                checked={compactMode} 
+                onCheckedChange={setCompactMode}
+                label="Compact Mode"
+              />
+            </div>
+          </div>
+        </div>
+        
+        {/* Desktop Controls - Horizontal Layout */}
+        <div className="hidden sm:flex sm:flex-row gap-3 w-full">
           <Select value={option} onValueChange={setOption}>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Select option" />
@@ -239,28 +295,18 @@ export default function InsiderTrading() {
               <SelectItem value="top owner sales">Top Owner Sales</SelectItem>
             </SelectContent>
           </Select>
-          <Button 
-            variant="outline" 
-            size="icon" 
-            onClick={fetchData}
-            disabled={loading}
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="pt-2">
-        <div className="mb-6 flex items-center justify-between">
-          <div className="relative flex-1 max-w-md">
+          
+          <div className="relative w-full">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search by ticker, owner, or relationship..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8"
+              className="pl-8 w-full"
             />
           </div>
-          <div className="flex items-center space-x-2 ml-4">
+          
+          <div className="flex items-center">
             <Switch 
               checked={compactMode} 
               onCheckedChange={setCompactMode}
@@ -268,7 +314,9 @@ export default function InsiderTrading() {
             />
           </div>
         </div>
-        
+      </CardHeader>
+      
+      <CardContent className="pt-2">
         {error && (
           <div className="mb-6 rounded-md bg-red-50 p-4 text-red-700">
             {error}
@@ -280,122 +328,184 @@ export default function InsiderTrading() {
             <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
           </div>
         ) : (
-          <div className="rounded-md border">
-            <div className={`overflow-y-auto ${expanded ? "max-h-[600px]" : "max-h-[400px]"}`}>
-              <Table className={compactMode ? "text-sm" : ""}>
-                <TableHeader className="sticky top-0 bg-background z-10">
-                  <TableRow>
-                    <TableHead 
-                      className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
-                      onClick={() => requestSort('Ticker')}
-                    >
-                      <div className="flex items-center">
-                        Ticker {getSortIcon('Ticker')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
-                      onClick={() => requestSort('Owner')}
-                    >
-                      <div className="flex items-center">
-                        Owner {getSortIcon('Owner')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
-                      onClick={() => requestSort('Relationship')}
-                    >
-                      <div className="flex items-center">
-                        Relationship {getSortIcon('Relationship')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
-                      onClick={() => requestSort('Date')}
-                    >
-                      <div className="flex items-center">
-                        Date {getSortIcon('Date')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
-                      onClick={() => requestSort('Transaction')}
-                    >
-                      <div className="flex items-center">
-                        Transaction {getSortIcon('Transaction')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
-                      onClick={() => requestSort('Cost')}
-                    >
-                      <div className="flex items-center">
-                        Cost {getSortIcon('Cost')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
-                      onClick={() => requestSort('Shares')}
-                    >
-                      <div className="flex items-center">
-                        Shares {getSortIcon('Shares')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
-                      onClick={() => requestSort('Value')}
-                    >
-                      <div className="flex items-center">
-                        Value {getSortIcon('Value')}
-                      </div>
-                    </TableHead>
-                    <TableHead 
-                      className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
-                      onClick={() => requestSort('Total')}
-                    >
-                      <div className="flex items-center">
-                        Total {getSortIcon('Total')}
-                      </div>
-                    </TableHead>
-                    <TableHead className={compactMode ? "px-3 py-2" : "px-4 py-3"}>SEC Form 4</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredData.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={10} className="h-24 text-center">
-                        No insider trading data found.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    sortedData.map((item, index) => (
-                      <TableRow key={index} className="hover:bg-muted/50">
-                        <TableCell className={`font-medium ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}>{item.Ticker}</TableCell>
-                        <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Owner}</TableCell>
-                        <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Relationship}</TableCell>
-                        <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{formatDate(item.Date)}</TableCell>
-                        <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{formatTransaction(item.Transaction)}</TableCell>
-                        <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Cost}</TableCell>
-                        <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Shares}</TableCell>
-                        <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Value}</TableCell>
-                        <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Total}</TableCell>
-                        <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>
+          <>
+            {/* Mobile Card View */}
+            <div className="block sm:hidden">
+              {filteredData.length === 0 ? (
+                <div className="text-center p-4">
+                  No insider trading data found.
+                </div>
+              ) : (
+                <div className={`space-y-4 overflow-y-auto ${expanded ? "max-h-[600px]" : "max-h-[400px]"}`}>
+                  {sortedData.map((item, index) => (
+                    <Card key={index} className="overflow-hidden">
+                      <CardHeader className="p-4 pb-2">
+                        <div className="flex justify-between items-center">
+                          <CardTitle className="text-lg font-bold">{item.Ticker}</CardTitle>
+                          {formatTransaction(item.Transaction)}
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-2">
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <div className="font-medium">Owner:</div>
+                          <div>{item.Owner}</div>
+                          
+                          <div className="font-medium">Relationship:</div>
+                          <div>{item.Relationship}</div>
+                          
+                          <div className="font-medium">Date:</div>
+                          <div>{formatDate(item.Date)}</div>
+                          
+                          <div className="font-medium">Cost:</div>
+                          <div>{item.Cost}</div>
+                          
+                          <div className="font-medium">Shares:</div>
+                          <div>{item.Shares}</div>
+                          
+                          <div className="font-medium">Value:</div>
+                          <div>{item.Value}</div>
+                          
+                          <div className="font-medium">Total:</div>
+                          <div>{item.Total}</div>
+                        </div>
+                        
+                        <div className="mt-3 flex justify-end">
                           <a 
                             href={item.SEC} 
                             target="_blank" 
                             rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
+                            className="text-blue-600 hover:underline flex items-center gap-1 text-sm"
                           >
-                            View
+                            View SEC Form <ExternalLink className="h-3 w-3" />
                           </a>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
+            
+            {/* Desktop Table View */}
+            <div className="hidden sm:block rounded-md border overflow-hidden">
+              <div className={`overflow-x-auto ${expanded ? "max-h-[600px]" : "max-h-[400px]"}`}>
+                <div className="min-w-[800px]">
+                  <Table className={compactMode ? "text-sm" : ""}>
+                    <TableHeader className="sticky top-0 bg-background z-10">
+                      <TableRow>
+                        <TableHead 
+                          className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
+                          onClick={() => requestSort('Ticker')}
+                        >
+                          <div className="flex items-center">
+                            Ticker {getSortIcon('Ticker')}
+                          </div>
+                        </TableHead>
+                        <TableHead 
+                          className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
+                          onClick={() => requestSort('Owner')}
+                        >
+                          <div className="flex items-center">
+                            Owner {getSortIcon('Owner')}
+                          </div>
+                        </TableHead>
+                        <TableHead 
+                          className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
+                          onClick={() => requestSort('Relationship')}
+                        >
+                          <div className="flex items-center">
+                            Relationship {getSortIcon('Relationship')}
+                          </div>
+                        </TableHead>
+                        <TableHead 
+                          className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
+                          onClick={() => requestSort('Date')}
+                        >
+                          <div className="flex items-center">
+                            Date {getSortIcon('Date')}
+                          </div>
+                        </TableHead>
+                        <TableHead 
+                          className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
+                          onClick={() => requestSort('Transaction')}
+                        >
+                          <div className="flex items-center">
+                            Transaction {getSortIcon('Transaction')}
+                          </div>
+                        </TableHead>
+                        <TableHead 
+                          className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
+                          onClick={() => requestSort('Cost')}
+                        >
+                          <div className="flex items-center">
+                            Cost {getSortIcon('Cost')}
+                          </div>
+                        </TableHead>
+                        <TableHead 
+                          className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
+                          onClick={() => requestSort('Shares')}
+                        >
+                          <div className="flex items-center">
+                            Shares {getSortIcon('Shares')}
+                          </div>
+                        </TableHead>
+                        <TableHead 
+                          className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
+                          onClick={() => requestSort('Value')}
+                        >
+                          <div className="flex items-center">
+                            Value {getSortIcon('Value')}
+                          </div>
+                        </TableHead>
+                        <TableHead 
+                          className={`cursor-pointer ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}
+                          onClick={() => requestSort('Total')}
+                        >
+                          <div className="flex items-center">
+                            Total {getSortIcon('Total')}
+                          </div>
+                        </TableHead>
+                        <TableHead className={compactMode ? "px-3 py-2" : "px-4 py-3"}>SEC Form 4</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredData.length === 0 ? (
+                        <TableRow>
+                          <TableCell colSpan={10} className="h-24 text-center">
+                            No insider trading data found.
+                          </TableCell>
+                        </TableRow>
+                      ) : (
+                        sortedData.map((item, index) => (
+                          <TableRow key={index} className="hover:bg-muted/50">
+                            <TableCell className={`font-medium ${compactMode ? "px-3 py-2" : "px-4 py-3"}`}>{item.Ticker}</TableCell>
+                            <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Owner}</TableCell>
+                            <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Relationship}</TableCell>
+                            <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{formatDate(item.Date)}</TableCell>
+                            <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{formatTransaction(item.Transaction)}</TableCell>
+                            <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Cost}</TableCell>
+                            <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Shares}</TableCell>
+                            <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Value}</TableCell>
+                            <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>{item.Total}</TableCell>
+                            <TableCell className={compactMode ? "px-3 py-2" : "px-4 py-3"}>
+                              <a 
+                                href={item.SEC} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:underline"
+                              >
+                                View
+                              </a>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </CardContent>
     </Card>

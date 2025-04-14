@@ -48,7 +48,7 @@ export const TrendingMetas: React.FC = () => {
       <h2 className="text-xl font-bold text-foreground">
         Trending Pumpfun Metas
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="flex overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:overflow-x-visible">
         {trendingMetas.map((meta, index) => (
           <a
             key={index}
@@ -56,7 +56,7 @@ export const TrendingMetas: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
-              "block p-4 rounded-lg border transition-all duration-200 hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary",
+              "block p-4 rounded-lg border transition-all duration-200 hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary flex-shrink-0 w-[280px] mr-4 md:mr-0",
               meta.isTrendingTwitterTopic 
                 ? 'border-green-500 bg-green-50/80 dark:bg-green-900/30 hover:bg-green-100/90 dark:hover:bg-green-900/50' 
                 : 'border-border bg-card hover:bg-accent'

@@ -88,7 +88,7 @@ export default function MarketSummary({
     <Card 
       className={cn(
         "group relative overflow-hidden",
-        "max-w-full mx-auto",
+        "w-[calc(100%+1rem)] -ml-2",
         className
       )}
       style={{

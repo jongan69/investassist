@@ -119,15 +119,15 @@ export function CarPriceIndex() {
   return (
     <div className="p-4">
       <Card className="w-full p-6">
-        <CardHeader className="px-0">
+        <CardHeader className="px-0 pb-6">
           <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             Used Car Market Trends
           </CardTitle>
         </CardHeader>
         <CardContent className="px-0">
-          <div className="space-y-6">
+          <div className="space-y-10">
             {/* Market Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="p-4 rounded-lg bg-card/50 border border-border/50">
                 <div className="flex items-center gap-2 mb-2">
                   <TrendingUp className="h-4 w-4 text-primary" />
@@ -157,8 +157,8 @@ export function CarPriceIndex() {
             </div>
 
             {/* Price Range */}
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium pb-4">Price Range</h3>
+            <div className="relative pt-8">
+              <h3 className="text-sm font-medium pb-10">Price Range</h3>
               <div className="relative h-2 bg-muted rounded-full">
                 <div 
                   className="absolute h-full bg-primary rounded-full"
@@ -167,10 +167,10 @@ export function CarPriceIndex() {
                     width: `${((data.priceRange.max - data.priceRange.min) / (data.priceRange.max - data.priceRange.min)) * 100}%`
                   }}
                 />
-                <div className="absolute -top-6 left-0 text-xs text-muted-foreground">
+                <div className="absolute -top-8 left-0 text-xs text-muted-foreground">
                   {formatCurrency(data.priceRange.min)}
                 </div>
-                <div className="absolute -top-6 right-0 text-xs text-muted-foreground">
+                <div className="absolute -top-8 right-0 text-xs text-muted-foreground">
                   {formatCurrency(data.priceRange.max)}
                 </div>
               </div>

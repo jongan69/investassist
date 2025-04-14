@@ -228,7 +228,7 @@ export default function BitcoinTrendAnalysis({ btcData }: { btcData: any }) {
         : "text-neutral-500"
 
   return (
-    <div className="px-6 sm:px-4">
+    <div className="p-4">
       <div className="rounded-lg border border-border/50 bg-card/50 p-4 transition-all duration-300 hover:shadow-md hover:shadow-primary/5">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Left Column - Signals and Analysis */}

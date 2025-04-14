@@ -111,7 +111,7 @@ export default function RealEstateMarketTrends() {
   
   // Dynamic dimensions based on screen size - adjusted for better mobile fit
   const chartWidth = isMobile ? '100%' : '100%';
-  const chartHeight = isMobile ? 450 : 550; // Increased height to prevent cutoff
+  const chartHeight = isMobile ? 350 : 550; // Reduced height for mobile to prevent cutoff
   
   const colorParams = `bgcolor=${bgColor}&fgcolor=${fgColor}&linecolor=${lineColor}&linkcolor=${linkColor}&graphbgcolor=${graphBgColor}`;
   const dimensionParams = `width=${chartWidth}&height=${chartHeight}`;
