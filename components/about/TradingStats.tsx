@@ -142,7 +142,7 @@ export default function TradingStats({ data }: TradingStatsProps) {
       {/* Trading Stats Section */}
       <div className="bg-white/80 dark:bg-white/10 p-8 rounded-xl backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-          <h3 className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">Market Performance</h3>
+          <h3 className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">Performance</h3>
           <div className="flex flex-wrap gap-3">
             {timeframes?.map(({ value, label }) => (
               <button
