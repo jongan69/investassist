@@ -22,11 +22,11 @@ type WalletContextType = {
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
 // Create a wrapper component to handle wallet connection
-const WalletConnectionHandler = ({ 
+const WalletConnectionHandler = ({
     children,
     setWallet,
-    setShowProfileForm 
-}: { 
+    setShowProfileForm
+}: {
     children: React.ReactNode;
     setWallet: (wallet: any) => void;
     setShowProfileForm: (show: boolean) => void;
@@ -35,8 +35,8 @@ const WalletConnectionHandler = ({
     const hasCheckedProfile = useRef<string | null>(null);
 
     // Memoize the wallet address to prevent unnecessary re-renders
-    const walletAddress = useMemo(() => 
-        solanaWallet.publicKey?.toString(), 
+    const walletAddress = useMemo(() =>
+        solanaWallet.publicKey?.toString(),
         [solanaWallet.publicKey]
     );
 
@@ -47,7 +47,7 @@ const WalletConnectionHandler = ({
 
         const checkProfile = async () => {
             if (!solanaWallet.publicKey) return;
-            
+
             const currentAddress = solanaWallet.publicKey.toString();
             // Only check if we haven't checked this address before
             if (hasCheckedProfile.current !== currentAddress) {
@@ -71,7 +71,7 @@ const WalletConnectionHandler = ({
             hasCheckedProfile.current = null;
             setShowProfileForm(false);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line
     }, [solanaWallet.connected, walletAddress, setWallet, setShowProfileForm]);
 
     return <>{children}</>;
@@ -90,7 +90,7 @@ const WalletContextProvider = ({ children }: { children: React.ReactNode }) => {
 
     const handleProfileSubmit = useCallback(async (username: string) => {
         if (!wallet?.publicKey) return;
-        
+
         try {
             await saveUser(username, wallet.publicKey.toString());
             setShowProfileForm(false);
@@ -104,12 +104,12 @@ const WalletContextProvider = ({ children }: { children: React.ReactNode }) => {
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets}>
                 <WalletModalProvider>
-                    <WalletContext.Provider value={{ 
-                        wallet, 
-                        setWallet, 
-                        showProfileForm, 
+                    <WalletContext.Provider value={{
+                        wallet,
+                        setWallet,
+                        showProfileForm,
                         setShowProfileForm,
-                        handleProfileSubmit 
+                        handleProfileSubmit
                     }}>
                         <WalletConnectionHandler
                             setWallet={setWallet}
