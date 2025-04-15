@@ -153,7 +153,6 @@ export default function RealEstateMarketTrends() {
                 overflow: 'hidden',
               }} 
               loading="lazy"
-              allowTransparency={true}
             ></iframe>
           )}
         </div>
