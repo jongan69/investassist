@@ -11,8 +11,9 @@ export default function ContractAddress({ address }: ContractAddressProps) {
   const [copied, setCopied] = useState(false);
   const [roaring, setRoaring] = useState(false);
   const [isClient, setIsClient] = useState(false);
-  const { theme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const isDarkMode = resolvedTheme === 'dark';
+  const [showBubble, setShowBubble] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -54,10 +55,12 @@ export default function ContractAddress({ address }: ContractAddressProps) {
       // Success feedback
       setCopied(true);
       setRoaring(true);
+      setShowBubble(true);
 
       // Reset states
       setTimeout(() => setCopied(false), 2000);
       setTimeout(() => setRoaring(false), 1000);
+      setTimeout(() => setShowBubble(false), 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
       // Show user-friendly error message
@@ -77,32 +80,34 @@ export default function ContractAddress({ address }: ContractAddressProps) {
       <div className={`text-xs sm:text-sm font-mono break-all relative ${isDarkMode ? 'text-white' : 'text-gray-800'}`}>
         <span>Contract Address: </span>
         <br />
-        <span className="text-black-500">
+        <span className={`text-black-500 transition-all duration-300 ${copied ? 'text-green-500 font-bold' : ''}`}>
           {address}
         </span>
-        <span
-          className={`absolute -top-6 sm:-top-8 left-1/2 transform -translate-x-1/2 
-            px-3 py-1 text-sm rounded-full shadow-lg transition-opacity duration-300 
-            ${copied ? 'opacity-100' : 'opacity-0'} 
-            ${isDarkMode ? 'bg-black text-white' : 'bg-white text-black'}`}
-        >
-          HOUSE MODE:
-          <br />
-          <span className="text-green-500">ENABLED</span>
-        </span>
+        
+        {/* Floating bubble message with translucent background */}
+        {showBubble && (
+          <div className={`absolute -top-6 sm:-top-8 left-1/2 transform -translate-x-1/2 
+            px-3 py-1 text-sm rounded-full shadow-lg animate-float-bubble
+            ${isDarkMode ? 'bg-black/80 backdrop-blur-sm text-white' : 'bg-white/90 backdrop-blur-sm text-black'}`}>
+            Time to
+            <br />
+            <span className="text-green-500 font-semibold">Invest</span>
+          </div>
+        )}
       </div>
+      
       <div className="absolute right-2 top-1/2 transform -translate-y-1/2 
         opacity-100 transition-opacity duration-300 pb-8">
         {copied ? '✅' : '📋'}
       </div>
 
-      {/* house emojis that appear on copy */}
+      {/* 📈 emojis that appear on copy */}
       {roaring && (
         <>
-          <span className="absolute -top-4 -left-4 animate-float-up-left text-base sm:text-lg">🏠</span>
-          <span className="absolute -top-4 -right-4 animate-float-up-right text-base sm:text-lg">🏠</span>
+          <span className="absolute -top-4 -left-4 animate-float-up-left text-base sm:text-lg">📈</span>
+          <span className="absolute -top-4 -right-4 animate-float-up-right text-base sm:text-lg">📈</span>
         </>
-      )}
+      )} 
     </div>
   );
 } 

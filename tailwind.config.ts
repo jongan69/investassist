@@ -74,11 +74,20 @@ const config = {
           '0%, 100%': { opacity: '0.05' },
           '50%': { opacity: '0.1' },
         },
+        "float-bubble": {
+          '0%': { transform: 'translateY(0) scale(1)', opacity: '0' },
+          '20%': { transform: 'translateY(-10px) scale(1.05)', opacity: '1' },
+          '40%': { transform: 'translateY(-20px) scale(1.1)', opacity: '1' },
+          '60%': { transform: 'translateY(-30px) scale(1.05)', opacity: '1' },
+          '80%': { transform: 'translateY(-40px) scale(1)', opacity: '0.8' },
+          '100%': { transform: 'translateY(-50px) scale(0.95)', opacity: '0' }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "skeleton": "skeleton ease-in-out infinite",
+        "float-bubble": "float-bubble 2s ease-out forwards",
       },
       backgroundSize: {
         "size-200": "200% 200%",
