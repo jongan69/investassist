@@ -8,15 +8,13 @@ import BackToTopButton from './BackToTopButton';
 import LearnMoreButton from './LearnMoreButton';
 import LoadingSpinner from './LoadingSpinner';
 
-const URL = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-
 async function getTokenInfo() {
   try {
     // Create an AbortController for timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
     
-    const response = await fetch(`${URL}/api/info`, { 
+    const response = await fetch(`/api/info`, { 
       cache: 'no-store',
       signal: controller.signal
     });
