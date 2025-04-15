@@ -113,13 +113,15 @@ export default function Navigation() {
           <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
             <div className="hidden sm:flex flex-row gap-2">
               <CommandMenu />
-              <ThemeToggle/>
             </div>
-            <WalletMultiButton
-              className={`!rounded-lg !px-3 md:!px-6 transition-all duration-200 ${
-                resolvedTheme === 'dark' ? '!bg-black text-white' : '!bg-white text-black'
-              } hover:!bg-helius-orange`}
-            />
+            <div className="flex items-center gap-2">
+              <ThemeToggle/>
+              <WalletMultiButton
+                className={`!rounded-lg !px-3 md:!px-6 transition-all duration-200 ${
+                  resolvedTheme === 'dark' ? '!bg-black text-white' : '!bg-white text-black'
+                } hover:!bg-helius-orange`}
+              />
+            </div>
           </div>
         </div>
 
@@ -139,7 +141,6 @@ export default function Navigation() {
               ))}
               <div className="sm:hidden px-4 flex items-center gap-4">
                 <CommandMenu />
-                <ThemeToggle/>
               </div>
             </nav>
           </Collapsible.Content>
