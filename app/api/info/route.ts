@@ -13,6 +13,12 @@ export async function GET() {
                 ...CoinData,
                 pair: [],
                 message: 'No trading pairs found for this token'
+            }, {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+                    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+                }
             })
         }
         
@@ -26,9 +32,34 @@ export async function GET() {
         }
         // console.log('CoinData', CoinData)
         // console.log('pairData', pairData)
-        return Response.json(tokenInfo)
+        return Response.json(tokenInfo, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            }
+        })
     } catch (error) {
         console.error('Error fetching token info:', error)
-        return Response.json({ error: 'Failed to load token info' })
+        return Response.json({ error: 'Failed to load token info' }, {
+            headers: {
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'GET, OPTIONS',
+                'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            }
+        })
     }
+}
+
+// Add OPTIONS handler for CORS preflight requests
+export async function OPTIONS() {
+    return new Response(null, {
+        status: 204,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '86400' // 24 hours
+        }
+    });
 }
