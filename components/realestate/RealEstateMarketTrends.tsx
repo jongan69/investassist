@@ -142,7 +142,7 @@ export default function RealEstateMarketTrends() {
             ></iframe>
           ) : (
             <iframe 
-              src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1I8L9&width=670&height=475"
+              src={`https://fred.stlouisfed.org/graph/graph-landing.php?g=1I8L9&${dimensionParams}`}
               style={{ 
                 width: '100%', 
                 height: '100%',
