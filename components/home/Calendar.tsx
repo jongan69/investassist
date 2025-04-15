@@ -121,8 +121,8 @@ export default function Calendar() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
-                        <CardHeader className="border-b dark:border-gray-700/50 p-4">
+                    <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+                        <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
                             <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                                 Economic Calendar
                             </CardTitle>
@@ -156,8 +156,8 @@ export default function Calendar() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
-                        <CardHeader className="border-b dark:border-gray-700/50 p-4">
+                    <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+                        <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
                             <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                                 Economic Calendar
                             </CardTitle>
@@ -207,8 +207,8 @@ export default function Calendar() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
-                        <CardHeader className="border-b dark:border-gray-700/50 p-4">
+                    <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+                        <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
                             <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                                 Economic Calendar
                             </CardTitle>
@@ -231,8 +231,8 @@ export default function Calendar() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
-                    <CardHeader className="border-b dark:border-gray-700/50 p-4">
+                <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+                    <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
                         <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
                             Economic Calendar
                         </CardTitle>
@@ -242,7 +242,7 @@ export default function Calendar() {
                         <div className="hidden md:block overflow-x-auto">
                             <Table>
                                 <TableHeader>
-                                    <TableRow className="hover:bg-transparent border-b dark:border-gray-700/50">
+                                    <TableRow className="hover:bg-transparent border-b dark:border-gray-700/50 border-gray-200/50">
                                         <TableHead className="w-[100px] text-muted-foreground">
                                             <Tooltip>
                                                 <TooltipTrigger>Time</TooltipTrigger>
@@ -307,7 +307,7 @@ export default function Calendar() {
                                             key={index} 
                                             className={cn(
                                                 "transition-colors duration-150",
-                                                isDark ? "hover:bg-gray-800/50" : "hover:bg-gray-50"
+                                                isDark ? "hover:bg-gray-800/50" : "hover:bg-gray-100/80"
                                             )}
                                         >
                                             <TableCell className="font-medium">
@@ -357,7 +357,7 @@ export default function Calendar() {
                                             key={index}
                                             className={cn(
                                                 "p-4 transition-colors duration-150",
-                                                isDark ? "hover:bg-gray-800/50" : "hover:bg-gray-50"
+                                                isDark ? "hover:bg-gray-800/50" : "hover:bg-gray-100/80"
                                             )}
                                         >
                                             <div className="flex justify-between items-start mb-2">

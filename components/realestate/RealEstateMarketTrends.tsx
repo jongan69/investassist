@@ -119,26 +119,43 @@ export default function RealEstateMarketTrends() {
   // FRED Chart Component
   const FredChart = () => (
     <div className="w-full flex justify-center" suppressHydrationWarning>
-      <div className="overflow-hidden border-0 shadow-lg bg-black backdrop-blur-sm rounded-lg w-full">
-        <div className="border-b border-gray-700/50 p-2 sm:p-4">
-          <h3 className="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
+      <div className={`overflow-hidden border-0 shadow-lg ${isDark ? 'bg-black' : 'bg-white'} backdrop-blur-sm rounded-lg w-full`}>
+        <div className={`border-b ${isDark ? 'border-gray-700/50' : 'border-gray-200/50'} p-2 sm:p-4`}>
+          <h3 className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gradient-to-r from-blue-600 to-blue-700'} bg-clip-text text-transparent`}>
             Mortgage Rate Trends
           </h3>
         </div>
-        <div className="bg-black" style={{ height: `${chartHeight}px`, paddingBottom: '20px' }}>
-          <iframe 
-            src={`https://fred.stlouisfed.org/graph/graph-landing.php?g=1I69W&${dimensionParams}&${colorParams}`}
-            style={{ 
-              width: '100%', 
-              height: '100%',
-              border: 'none',
-              display: 'block',
-              margin: 0,
-              padding: 0,
-              backgroundColor: 'black',
-            }} 
-            loading="lazy"
-          ></iframe>
+        <div className={isDark ? "bg-black" : "bg-white"} style={{ height: `${chartHeight}px`, paddingBottom: '20px' }}>
+          {isDark ? (
+            <iframe 
+              src={`https://fred.stlouisfed.org/graph/graph-landing.php?g=1I69W&${dimensionParams}&${colorParams}`}
+              style={{ 
+                width: '100%', 
+                height: '100%',
+                border: 'none',
+                display: 'block',
+                margin: 0,
+                padding: 0,
+                backgroundColor: 'black',
+              }} 
+              loading="lazy"
+            ></iframe>
+          ) : (
+            <iframe 
+              src="https://fred.stlouisfed.org/graph/graph-landing.php?g=1I8L9&width=670&height=475"
+              style={{ 
+                width: '100%', 
+                height: '100%',
+                border: 'none',
+                display: 'block',
+                margin: 0,
+                padding: 0,
+                overflow: 'hidden',
+              }} 
+              loading="lazy"
+              allowTransparency={true}
+            ></iframe>
+          )}
         </div>
       </div>
     </div>
@@ -149,7 +166,7 @@ export default function RealEstateMarketTrends() {
     return (
       <div className="w-full max-w-full mx-auto p-2 sm:p-4 space-y-3 sm:space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-          <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
+          <Card className={`overflow-hidden border-0 shadow-lg ${isDark ? 'dark:bg-black/80 bg-black/80' : 'bg-white/80'} backdrop-blur-sm`}>
             <CardHeader className="p-3 sm:p-4">
               <Skeleton className="h-6 w-3/4" />
             </CardHeader>
@@ -159,7 +176,7 @@ export default function RealEstateMarketTrends() {
               <Skeleton className="h-4 w-1/2" />
             </CardContent>
           </Card>
-          <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
+          <Card className={`overflow-hidden border-0 shadow-lg ${isDark ? 'dark:bg-black/80 bg-black/80' : 'bg-white/80'} backdrop-blur-sm`}>
             <CardHeader className="p-3 sm:p-4">
               <Skeleton className="h-6 w-3/4" />
             </CardHeader>
@@ -171,7 +188,7 @@ export default function RealEstateMarketTrends() {
           </Card>
         </div>
         <FredChart />
-        <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
+        <Card className={`overflow-hidden border-0 shadow-lg ${isDark ? 'dark:bg-black/80 bg-black/80' : 'bg-white/80'} backdrop-blur-sm`}>
           <CardHeader className="p-3 sm:p-4">
             <Skeleton className="h-6 w-1/2" />
           </CardHeader>
@@ -212,46 +229,46 @@ export default function RealEstateMarketTrends() {
     <div className="w-full max-w-full mx-auto p-2 sm:p-4 space-y-3 sm:space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
         {/* Current Rates Cards */}
-        <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
-          <CardHeader className="border-b dark:border-gray-700/50 p-3 sm:p-4">
-            <CardTitle className="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-500 to-blue-600 bg-clip-text text-transparent">
+        <Card className={`overflow-hidden border-0 shadow-lg ${isDark ? 'dark:bg-black/80 bg-black/80' : 'bg-white/80'} backdrop-blur-sm`}>
+          <CardHeader className={`border-b ${isDark ? 'dark:border-gray-700/50' : 'border-gray-200/50'} p-3 sm:p-4`}>
+            <CardTitle className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gradient-to-r from-blue-600 to-blue-700'} bg-clip-text text-transparent`}>
               Current 30-Year Fixed Rate
             </CardTitle>
           </CardHeader>
           <CardContent className="p-3 sm:p-4">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm sm:text-base text-muted-foreground">Rate:</span>
-                <span className="text-xl sm:text-2xl font-bold text-blue-500">{data.currentRates.thirtyYear.rate}%</span>
+                <span className={`text-sm sm:text-base ${isDark ? 'text-muted-foreground' : 'text-gray-600'}`}>Rate:</span>
+                <span className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-blue-500' : 'text-blue-600'}`}>{data.currentRates.thirtyYear.rate}%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm sm:text-base text-muted-foreground">APR:</span>
-                <span className="text-lg sm:text-xl font-semibold text-blue-500">{data.currentRates.thirtyYear.apr}%</span>
+                <span className={`text-sm sm:text-base ${isDark ? 'text-muted-foreground' : 'text-gray-600'}`}>APR:</span>
+                <span className={`text-lg sm:text-xl font-semibold ${isDark ? 'text-blue-500' : 'text-blue-600'}`}>{data.currentRates.thirtyYear.apr}%</span>
               </div>
-              <div className="text-xs sm:text-sm text-muted-foreground">
+              <div className={`text-xs sm:text-sm ${isDark ? 'text-muted-foreground' : 'text-gray-500'}`}>
                 Updated: {new Date(data.currentRates.thirtyYear.timestamp).toLocaleString()}
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
-          <CardHeader className="border-b dark:border-gray-700/50 p-3 sm:p-4">
-            <CardTitle className="text-base sm:text-xl font-bold bg-gradient-to-r from-green-500 to-green-600 bg-clip-text text-transparent">
+        <Card className={`overflow-hidden border-0 shadow-lg ${isDark ? 'dark:bg-black/80 bg-black/80' : 'bg-white/80'} backdrop-blur-sm`}>
+          <CardHeader className={`border-b ${isDark ? 'dark:border-gray-700/50' : 'border-gray-200/50'} p-3 sm:p-4`}>
+            <CardTitle className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-green-600 to-green-700'} bg-clip-text text-transparent`}>
               Current 15-Year Fixed Rate
             </CardTitle>
           </CardHeader>
           <CardContent className="p-3 sm:p-4">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm sm:text-base text-muted-foreground">Rate:</span>
-                <span className="text-xl sm:text-2xl font-bold text-green-500">{data.currentRates.fifteenYear.rate}%</span>
+                <span className={`text-sm sm:text-base ${isDark ? 'text-muted-foreground' : 'text-gray-600'}`}>Rate:</span>
+                <span className={`text-xl sm:text-2xl font-bold ${isDark ? 'text-green-500' : 'text-green-600'}`}>{data.currentRates.fifteenYear.rate}%</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm sm:text-base text-muted-foreground">APR:</span>
-                <span className="text-lg sm:text-xl font-semibold text-green-500">{data.currentRates.fifteenYear.apr}%</span>
+                <span className={`text-sm sm:text-base ${isDark ? 'text-muted-foreground' : 'text-gray-600'}`}>APR:</span>
+                <span className={`text-lg sm:text-xl font-semibold ${isDark ? 'text-green-500' : 'text-green-600'}`}>{data.currentRates.fifteenYear.apr}%</span>
               </div>
-              <div className="text-xs sm:text-sm text-muted-foreground">
+              <div className={`text-xs sm:text-sm ${isDark ? 'text-muted-foreground' : 'text-gray-500'}`}>
                 Updated: {new Date(data.currentRates.fifteenYear.timestamp).toLocaleString()}
               </div>
             </div>
@@ -263,29 +280,29 @@ export default function RealEstateMarketTrends() {
       <FredChart />
 
       {/* Loan Details */}
-      <Card className="overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-black/80 backdrop-blur-sm">
-        <CardHeader className="border-b dark:border-gray-700/50 p-3 sm:p-4">
-          <CardTitle className="text-base sm:text-xl font-bold bg-gradient-to-r from-orange-500 to-yellow-500 bg-clip-text text-transparent">
+      <Card className={`overflow-hidden border-0 shadow-lg ${isDark ? 'dark:bg-black/80 bg-black/80' : 'bg-white/80'} backdrop-blur-sm`}>
+        <CardHeader className={`border-b ${isDark ? 'dark:border-gray-700/50' : 'border-gray-200/50'} p-3 sm:p-4`}>
+          <CardTitle className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-orange-500 to-yellow-500' : 'bg-gradient-to-r from-orange-600 to-yellow-600'} bg-clip-text text-transparent`}>
             Loan Details
           </CardTitle>
         </CardHeader>
         <CardContent className="p-3 sm:p-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
             <div>
-              <span className="text-xs sm:text-sm text-muted-foreground block mb-1">Credit Score:</span>
-              <p className="text-sm sm:text-base font-medium text-foreground">{data.query.creditScoreBucket}</p>
+              <span className={`text-xs sm:text-sm ${isDark ? 'text-muted-foreground' : 'text-gray-600'} block mb-1`}>Credit Score:</span>
+              <p className={`text-sm sm:text-base font-medium ${isDark ? 'text-foreground' : 'text-gray-800'}`}>{data.query.creditScoreBucket}</p>
             </div>
             <div>
-              <span className="text-xs sm:text-sm text-muted-foreground block mb-1">Loan Amount:</span>
-              <p className="text-sm sm:text-base font-medium text-foreground">{data.query.loanAmountBucket}</p>
+              <span className={`text-xs sm:text-sm ${isDark ? 'text-muted-foreground' : 'text-gray-600'} block mb-1`}>Loan Amount:</span>
+              <p className={`text-sm sm:text-base font-medium ${isDark ? 'text-foreground' : 'text-gray-800'}`}>{data.query.loanAmountBucket}</p>
             </div>
             <div>
-              <span className="text-xs sm:text-sm text-muted-foreground block mb-1">Loan Type:</span>
-              <p className="text-sm sm:text-base font-medium text-foreground">{data.query.loanType}</p>
+              <span className={`text-xs sm:text-sm ${isDark ? 'text-muted-foreground' : 'text-gray-600'} block mb-1`}>Loan Type:</span>
+              <p className={`text-sm sm:text-base font-medium ${isDark ? 'text-foreground' : 'text-gray-800'}`}>{data.query.loanType}</p>
             </div>
             <div>
-              <span className="text-xs sm:text-sm text-muted-foreground block mb-1">State:</span>
-              <p className="text-sm sm:text-base font-medium text-foreground">{data.query.stateAbbreviation}</p>
+              <span className={`text-xs sm:text-sm ${isDark ? 'text-muted-foreground' : 'text-gray-600'} block mb-1`}>State:</span>
+              <p className={`text-sm sm:text-base font-medium ${isDark ? 'text-foreground' : 'text-gray-800'}`}>{data.query.stateAbbreviation}</p>
             </div>
           </div>
         </CardContent>
