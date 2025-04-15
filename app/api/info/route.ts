@@ -6,6 +6,16 @@ export async function GET() {
         const URL = `https://api.dexscreener.com/latest/dex/tokens/${contractAddress}`
         const response = await fetch(URL, { cache: 'no-store' })
         const CoinData = await response.json()
+        
+        // Check if pairs exist and have at least one entry
+        if (!CoinData.pairs || CoinData.pairs.length === 0) {
+            return Response.json({
+                ...CoinData,
+                pair: [],
+                message: 'No trading pairs found for this token'
+            })
+        }
+        
         const pairAddress = CoinData.pairs[0].pairAddress
         const pairURL = `https://io.dexscreener.com/dex/pair-details/v3/solana/${pairAddress}`
         const pairResponse = await fetch(pairURL, { cache: 'no-store' })

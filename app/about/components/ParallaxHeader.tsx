@@ -17,22 +17,18 @@ interface ExtendedTokenInfo extends TokenInfo {
 
 interface ParallaxHeaderProps {
     imageUrl: string;
-    tokenInfo: ExtendedTokenInfo;
-    mainPair: string;
-    contractAddress: string;
-    moonshotLink: string;
+    tokenInfo?: ExtendedTokenInfo;
+    contractAddress?: string;
+    moonshotLink?: string;
 }
 
 export default function ParallaxHeader({
     imageUrl,
-    tokenInfo,
-    mainPair,
+    tokenInfo = {} as ExtendedTokenInfo,
     contractAddress,
     moonshotLink
 }: ParallaxHeaderProps) {
     const [scrollY, setScrollY] = useState(0);
-    const [searchQuery, setSearchQuery] = useState('');
-    const [showSuggestions, setShowSuggestions] = useState(false);
     const headerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -47,15 +43,21 @@ export default function ParallaxHeader({
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    const suggestions = [
-        'Market Analysis',
-        'Portfolio Tracking',
-        'Investment Insights',
-        'Real-Time Data',
-        'AI-Powered Analysis',
-    ];
 
-    // console.log(tokenInfo)
+    // Format number with appropriate precision
+    const formatNumber = (value: number | undefined, decimals = 2, isPercentage = false) => {
+        if (value === undefined || value === null) return '0.00';
+        return isPercentage 
+            ? `${value >= 0 ? '+' : ''}${value.toFixed(decimals)}%`
+            : value.toFixed(decimals);
+    };
+
+    // Format large numbers with commas
+    const formatLargeNumber = (value: number | undefined) => {
+        if (value === undefined || value === null) return '0';
+        return value.toLocaleString();
+    };
+
     return (
         <div ref={headerRef} className="relative h-[500px] sm:h-[600px] overflow-hidden z-10">
             {/* Background Image with Parallax Effect */}
@@ -67,7 +69,7 @@ export default function ParallaxHeader({
                 }}
             >
                 <Image
-                    src={imageUrl}
+                    src={imageUrl || '/placeholder-image.jpg'}
                     alt="Header Background"
                     fill
                     className="object-cover"
@@ -97,33 +99,52 @@ export default function ParallaxHeader({
                         <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
                             <div className="text-white/80 text-xs sm:text-sm mb-1">Price</div>
                             <div className="text-white text-base sm:text-xl font-semibold">
-                                ${tokenInfo.price?.toFixed(6) || '0.00'}
+                                ${formatNumber(tokenInfo?.price, 6)}
                             </div>
                         </div>
                         <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
                             <div className="text-white/80 text-xs sm:text-sm mb-1">24h Change</div>
-                            <div className={`text-base sm:text-xl font-semibold ${(tokenInfo.priceChange24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                {(tokenInfo.priceChange24h || 0) >= 0 ? '+' : ''}{tokenInfo.priceChange24h?.toFixed(2) || '0.00'}%
+                            <div className={`text-base sm:text-xl font-semibold ${(tokenInfo?.priceChange24h || 0) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {formatNumber(tokenInfo?.priceChange24h, 2, true)}
                             </div>
                         </div>
                         <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
                             <div className="text-white/80 text-xs sm:text-sm mb-1">Market Cap</div>
                             <div className="text-white text-base sm:text-xl font-semibold">
-                                ${tokenInfo.marketCap?.toLocaleString() || '0'}
+                                ${formatLargeNumber(tokenInfo?.marketCap)}
                             </div>
                         </div>
                         <div className="bg-white/10 backdrop-blur-sm rounded-lg sm:rounded-xl p-3 sm:p-4 border border-white/20">
                             <div className="text-white/80 text-xs sm:text-sm mb-1">24h Volume</div>
                             <div className="text-white text-base sm:text-xl font-semibold">
-                                ${tokenInfo.volume24h?.toLocaleString() || '0'}
+                                ${formatLargeNumber(tokenInfo?.volume24h)}
                             </div>
                         </div>
                     </div>
 
                     {/* Contract Address */}
-                    <div className="flex justify-center">
-                        <ContractAddress address={contractAddress} />
-                    </div>
+                    {contractAddress && (
+                        <div className="flex justify-center">
+                            <ContractAddress address={contractAddress} />
+                        </div>
+                    )}
+
+                    {/* Moonshot Link Button */}
+                    {moonshotLink && (
+                        <div className="mt-4">
+                            <a 
+                                href={moonshotLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                            >
+                                Invest Now
+                                <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                </svg>
+                            </a>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

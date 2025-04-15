@@ -184,7 +184,7 @@ export async function SectorPerformanceWrapper() {
         <CardTitle className="text-lg">Sector Performance</CardTitle>
       </CardHeader>
       <CardContent>
-        <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+        <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg pt-4" />}>
           <SectorPerformance />
         </Suspense>
       </CardContent>
