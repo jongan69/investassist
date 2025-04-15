@@ -222,10 +222,10 @@ export default function BitcoinTrendAnalysis({ btcData }: { btcData: any }) {
   const bitcoinWeekly = getBitcoinWeeklyTrend(btcData)
   const bitcoinColor =
     bitcoinWeekly.trend === "bullish"
-      ? "text-green-500"
+      ? "text-green-500 dark:text-green-400"
       : bitcoinWeekly.trend === "bearish"
-        ? "text-red-500"
-        : "text-neutral-500"
+        ? "text-red-500 dark:text-red-400"
+        : "text-neutral-500 dark:text-neutral-400"
 
   return (
     <div className="p-4">
@@ -235,25 +235,25 @@ export default function BitcoinTrendAnalysis({ btcData }: { btcData: any }) {
           <div className="space-y-4">
             <div>
               <h3 className="mb-3 text-sm font-medium flex items-center justify-between">
-                <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Bitcoin Trend Analysis</span>
+                <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">Bitcoin Trend Analysis</span>
                 <div className="flex items-center gap-2">
                   <span className={`text-xs px-2 py-1 rounded-full transition-all duration-300 hover:scale-105 ${bitcoinWeekly.trend === 'bullish'
-                    ? 'bg-green-500/10 text-green-500'
+                    ? 'bg-green-500/10 text-green-500 dark:text-green-400'
                     : bitcoinWeekly.trend === 'bearish'
-                      ? 'bg-red-500/10 text-red-500'
-                      : 'bg-neutral-500/10 text-neutral-500'
+                      ? 'bg-red-500/10 text-red-500 dark:text-red-400'
+                      : 'bg-neutral-500/10 text-neutral-500 dark:text-neutral-400'
                     }`}>
                     {bitcoinWeekly.trend.toUpperCase()}
                   </span>
                   <span className={`text-xs px-2 py-1 rounded-full transition-all duration-300 hover:scale-105 ${bitcoinWeekly.tradingSignal === 'strong_buy'
-                    ? 'bg-green-500/20 text-green-500 font-medium'
+                    ? 'bg-green-500/20 text-green-500 dark:text-green-400 font-medium'
                     : bitcoinWeekly.tradingSignal === 'buy'
-                      ? 'bg-green-500/10 text-green-500'
+                      ? 'bg-green-500/10 text-green-500 dark:text-green-400'
                       : bitcoinWeekly.tradingSignal === 'strong_sell'
-                        ? 'bg-red-500/20 text-red-500 font-medium'
+                        ? 'bg-red-500/20 text-red-500 dark:text-red-400 font-medium'
                         : bitcoinWeekly.tradingSignal === 'sell'
-                          ? 'bg-red-500/10 text-red-500'
-                          : 'bg-neutral-500/10 text-neutral-500'
+                          ? 'bg-red-500/10 text-red-500 dark:text-red-400'
+                          : 'bg-neutral-500/10 text-neutral-500 dark:text-neutral-400'
                     }`}>
                     {bitcoinWeekly.tradingSignal.toUpperCase().replace('_', ' ')}
                   </span>
@@ -306,9 +306,9 @@ export default function BitcoinTrendAnalysis({ btcData }: { btcData: any }) {
                         {signal.replace(/([A-Z])/g, ' $1').trim()}
                       </span>
                       <span className={`transition-colors duration-300 ${value === 'high'
-                        ? 'text-yellow-500'
+                        ? 'text-yellow-500 dark:text-yellow-400'
                         : value === 'low'
-                          ? 'text-blue-500'
+                          ? 'text-blue-500 dark:text-blue-400'
                           : value === 'bullish'
                             ? 'text-green-500 dark:text-green-400'
                             : value === 'bearish'

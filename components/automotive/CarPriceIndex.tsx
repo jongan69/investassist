@@ -58,7 +58,7 @@ export function CarPriceIndex() {
       <div className="p-4">
         <Card className="w-full p-6">
           <CardHeader className="px-0">
-            <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
               Used Car Market Trends
             </CardTitle>
           </CardHeader>
@@ -88,7 +88,7 @@ export function CarPriceIndex() {
       <div className="p-4">
         <Card className="w-full p-6">
           <CardHeader className="px-0">
-            <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+            <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
               Used Car Market Trends
             </CardTitle>
           </CardHeader>
@@ -120,7 +120,7 @@ export function CarPriceIndex() {
     <div className="p-4">
       <Card className="w-full p-6">
         <CardHeader className="px-0 pb-6">
-          <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+          <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
             Used Car Market Trends
           </CardTitle>
         </CardHeader>

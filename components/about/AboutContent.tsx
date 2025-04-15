@@ -156,7 +156,7 @@ export default function AboutContent() {
             <div className="relative z-10">
               <div className="flex flex-col md:flex-row items-start gap-8">
                 <div className="flex-1">
-                  <h2 className="text-3xl sm:text-4xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 text-transparent bg-clip-text">
+                  <h2 className="text-3xl sm:text-4xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 text-black dark:text-white bg-clip-text">
                     About InvestAssist
                   </h2>
                   <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">

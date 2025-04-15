@@ -104,7 +104,7 @@ export default async function Page({ searchParams }: Props) {
 
   return (
     <div className="flex flex-col gap-4 max-w-[2000px] mx-auto px-4">
-      <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent animate-gradient">Invest Assist</h1>
+      <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white animate-gradient">Invest Assist</h1>
       
       <EmailSignupPrompt />
       
@@ -201,7 +201,7 @@ export default async function Page({ searchParams }: Props) {
           <Card className="rounded-md border-none transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
             <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
               <CardHeader>
-                <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Live Trades</CardTitle>
+                <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">Live Trades</CardTitle>
               </CardHeader>
               <CardContent>
                 <LiveTrades />
@@ -211,7 +211,7 @@ export default async function Page({ searchParams }: Props) {
           <Card className="rounded-md border-none transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
             <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
               <CardHeader>
-                <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Futures</CardTitle>
+                <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">Futures</CardTitle>
               </CardHeader>
               <CardContent>
                 <FuturesTable />
@@ -221,7 +221,7 @@ export default async function Page({ searchParams }: Props) {
         </div>
       </div>
       <div>
-        <h2 className="py-4 text-xl font-medium bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">Markets</h2>
+        <h2 className="py-4 text-xl font-medium bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">Markets</h2>
         <Card className="flex flex-col gap-4 p-6 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div className="w-full">

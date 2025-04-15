@@ -113,7 +113,7 @@ export default async function LearnPage() {
               <div className="w-48 h-48 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl transform -translate-y-4"></div>
               <div className="w-48 h-48 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-3xl transform translate-x-4"></div>
             </div>
-            <h1 className="relative text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="relative text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-black dark:text-white">
               Investment Learning Hub
             </h1>
           </div>

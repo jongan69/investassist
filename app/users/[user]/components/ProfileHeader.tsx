@@ -140,7 +140,7 @@ export default function ProfileHeader({ profile }: { profile: Profile }) {
                         <CardHeader className="border-b dark:border-gray-700/50">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 sm:gap-0">
                                 <div>
-                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+                                    <CardTitle className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-black dark:text-white">
                                         {profile.username}&apos;s Holdings
                                     </CardTitle>
                                     <p className="text-sm text-muted-foreground mt-1">{profile.walletAddress}</p>

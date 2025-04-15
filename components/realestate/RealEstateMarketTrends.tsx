@@ -121,7 +121,7 @@ export default function RealEstateMarketTrends() {
     <div className="w-full flex justify-center" suppressHydrationWarning>
       <div className={`overflow-hidden border-0 shadow-lg ${isDark ? 'bg-black' : 'bg-white'} backdrop-blur-sm rounded-lg w-full`}>
         <div className={`border-b ${isDark ? 'border-gray-700/50' : 'border-gray-200/50'} p-2 sm:p-4`}>
-          <h3 className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gradient-to-r from-blue-600 to-blue-700'} bg-clip-text text-transparent`}>
+          <h3 className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gradient-to-r from-blue-600 to-blue-700'} bg-clip-text text-black dark:text-white`}>
             Mortgage Rate Trends
           </h3>
         </div>
@@ -230,7 +230,7 @@ export default function RealEstateMarketTrends() {
         {/* Current Rates Cards */}
         <Card className={`overflow-hidden border-0 shadow-lg ${isDark ? 'dark:bg-black/80 bg-black/80' : 'bg-white/80'} backdrop-blur-sm`}>
           <CardHeader className={`border-b ${isDark ? 'dark:border-gray-700/50' : 'border-gray-200/50'} p-3 sm:p-4`}>
-            <CardTitle className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gradient-to-r from-blue-600 to-blue-700'} bg-clip-text text-transparent`}>
+            <CardTitle className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-blue-500 to-blue-600' : 'bg-gradient-to-r from-blue-600 to-blue-700'} bg-clip-text text-black dark:text-white`}>
               Current 30-Year Fixed Rate
             </CardTitle>
           </CardHeader>
@@ -253,7 +253,7 @@ export default function RealEstateMarketTrends() {
 
         <Card className={`overflow-hidden border-0 shadow-lg ${isDark ? 'dark:bg-black/80 bg-black/80' : 'bg-white/80'} backdrop-blur-sm`}>
           <CardHeader className={`border-b ${isDark ? 'dark:border-gray-700/50' : 'border-gray-200/50'} p-3 sm:p-4`}>
-            <CardTitle className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-green-600 to-green-700'} bg-clip-text text-transparent`}>
+            <CardTitle className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-green-600 to-green-700'} bg-clip-text text-black dark:text-white`}>
               Current 15-Year Fixed Rate
             </CardTitle>
           </CardHeader>
@@ -281,7 +281,7 @@ export default function RealEstateMarketTrends() {
       {/* Loan Details */}
       <Card className={`overflow-hidden border-0 shadow-lg ${isDark ? 'dark:bg-black/80 bg-black/80' : 'bg-white/80'} backdrop-blur-sm`}>
         <CardHeader className={`border-b ${isDark ? 'dark:border-gray-700/50' : 'border-gray-200/50'} p-3 sm:p-4`}>
-          <CardTitle className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-orange-500 to-yellow-500' : 'bg-gradient-to-r from-orange-600 to-yellow-600'} bg-clip-text text-transparent`}>
+          <CardTitle className={`text-base sm:text-xl font-bold ${isDark ? 'bg-gradient-to-r from-orange-500 to-yellow-500' : 'bg-gradient-to-r from-orange-600 to-yellow-600'} bg-clip-text text-black dark:text-white`}>
             Loan Details
           </CardTitle>
         </CardHeader>

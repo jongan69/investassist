@@ -213,8 +213,8 @@ export function TrendingTopics() {
             <div className="p-4">
                 <Card className="w-full p-6">
                     <CardHeader className="px-0">
-                        <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5" />
+                        <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5" />  
                             X Trending Topics
                         </CardTitle>
                     </CardHeader>
@@ -235,8 +235,8 @@ export function TrendingTopics() {
             <div className="p-4">
                 <Card className="w-full p-6">
                     <CardHeader className="px-0">
-                        <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent flex items-center gap-2">
-                            <TrendingUp className="w-5 h-5" />
+                        <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white flex items-center gap-2">
+                            <TrendingUp className="w-5 h-5" />  
                             X Trending Topics
                         </CardTitle>
                     </CardHeader>
@@ -255,7 +255,7 @@ export function TrendingTopics() {
             <div className="p-4">
                 <Card className="w-full p-6">
                     <CardHeader className="px-0">
-                        <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent flex items-center gap-2">
+                        <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white flex items-center gap-2">
                             <TrendingUp className="w-5 h-5" />
                             X Trending Topics
                         </CardTitle>
@@ -274,7 +274,7 @@ export function TrendingTopics() {
         <div className="p-4">
             <Card className="w-full p-6">
                 <CardHeader className="px-0">
-                    <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent flex items-center gap-2">
+                    <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white flex items-center gap-2">
                         <TrendingUp className="w-5 h-5" />
                         X Trending Topics
                     </CardTitle>

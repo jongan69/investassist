@@ -123,7 +123,7 @@ export default function Calendar() {
                 >
                     <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
                         <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
-                            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
                                 Economic Calendar
                             </CardTitle>
                         </CardHeader>
@@ -158,8 +158,8 @@ export default function Calendar() {
                 >
                     <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
                         <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
-                            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                                Economic Calendar
+                            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
+                                Economic Calendar   
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-4">
@@ -209,7 +209,7 @@ export default function Calendar() {
                 >
                     <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
                         <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
-                            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
                                 Economic Calendar
                             </CardTitle>
                         </CardHeader>
@@ -233,7 +233,7 @@ export default function Calendar() {
             >
                 <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
                     <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
-                        <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
+                        <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
                             Economic Calendar
                         </CardTitle>
                     </CardHeader>
