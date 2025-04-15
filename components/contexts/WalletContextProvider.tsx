@@ -71,6 +71,7 @@ const WalletConnectionHandler = ({
             hasCheckedProfile.current = null;
             setShowProfileForm(false);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [solanaWallet.connected, walletAddress, setWallet, setShowProfileForm]);
 
     return <>{children}</>;

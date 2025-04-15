@@ -90,7 +90,7 @@ export default function AboutContent() {
             InvestAssist
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-            We're currently unable to fetch market data. Please check back later or try refreshing the page.
+            We&apos;re currently unable to fetch market data. Please check back later or try refreshing the page.
           </p>
           <a 
             href={MOONSHOT_LINK}
