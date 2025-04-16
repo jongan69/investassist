@@ -8,6 +8,25 @@ import BackToTopButton from './BackToTopButton';
 import LearnMoreButton from './LearnMoreButton';
 import LoadingSpinner from './LoadingSpinner';
 
+// Default placeholder data to use when API fails
+const defaultTokenInfo = {
+  pairs: [],
+  pair: [{
+    holders: {
+      count: 0,
+      totalSupply: '0',
+      holders: []
+    },
+    ti: {
+      createdAt: new Date().toLocaleDateString(),
+      headerImage: './banner.png'
+    }
+  }],
+  ti: null,
+  holders: null,
+  lpHolders: null
+};
+
 async function getTokenInfo() {
   try {
     // Create an AbortController for timeout
@@ -36,20 +55,14 @@ async function getTokenInfo() {
     };
   } catch (error) {
     console.error('Error fetching token info:', error);
-    // Return a consistent structure even on error
-    return { 
-      pairs: [],
-      pair: [],
-      ti: null,
-      holders: null,
-      lpHolders: null
-    };
+    // Return default data structure on error
+    return defaultTokenInfo;
   }
 }
 
 export default function AboutContent() {
   const [isLoading, setIsLoading] = useState(true);
-  const [tokenInfo, setTokenInfo] = useState<any>(null);
+  const [tokenInfo, setTokenInfo] = useState<any>(defaultTokenInfo);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -66,6 +79,8 @@ export default function AboutContent() {
       } catch (err) {
         console.error('Error fetching data:', err);
         setError('Failed to fetch market data');
+        // Use default data on error
+        setTokenInfo(defaultTokenInfo);
       } finally {
         setIsLoading(false);
       }
@@ -77,33 +92,6 @@ export default function AboutContent() {
   // Show loading spinner while fetching data
   if (isLoading) {
     return <LoadingSpinner />;
-  }
-
-  // Show error state if we couldn't fetch data
-  if (error || !tokenInfo || !tokenInfo.pairs || tokenInfo.pairs.length === 0) {
-    return (
-      <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center justify-center p-8">
-        <div className="text-center max-w-2xl">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 dark:text-gray-200 mb-6">
-            InvestAssist
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-            We&apos;re currently unable to fetch market data. Please check back later or try refreshing the page.
-          </p>
-          <a 
-            href={MOONSHOT_LINK}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-          >
-            Visit Moonshot
-            <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </a>
-        </div>
-      </div>
-    );
   }
 
   // Get the pair with highest liquidity, with fallback for empty data
@@ -122,9 +110,9 @@ export default function AboutContent() {
   // Get holder information
   const holderCount = tokenInfo.pair?.[0]?.holders?.count || 0;
   const totalSupply = tokenInfo.pair?.[0]?.holders?.totalSupply || '0';
-  const topHolders = tokenInfo.pair?.[0]?.holders?.holders.slice(0, 5) || [];
+  const topHolders = tokenInfo.pair?.[0]?.holders?.holders?.slice(0, 5) || [];
   const createdAt = tokenInfo.pair?.[0]?.ti?.createdAt ? new Date(tokenInfo.pair[0].ti.createdAt).toLocaleDateString() : '';
-  const headerImage = tokenInfo.pair?.[0]?.ti?.headerImage ?? './banner.png';
+  const headerImage = tokenInfo.pair?.[0]?.ti?.headerImage ?? '/banner.jpg';
 
   // Create a properly formatted tokenInfo object for the ParallaxHeader
   const formattedTokenInfo = {
@@ -150,7 +138,7 @@ export default function AboutContent() {
       {/* Main Content */}
       <div className="flex flex-col space-y-24 bg-white dark:bg-gray-900">
         {/* About Section */}
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 py-24">
           <div className="relative overflow-hidden bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 rounded-xl shadow-lg p-8 sm:p-12">
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-blue-500/10 to-indigo-500/10 rounded-full transform translate-x-32 -translate-y-32" />
             <div className="relative z-10">
