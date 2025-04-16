@@ -28,7 +28,7 @@ export const fetchTrendingMetas = async (
     setTrendingMetas(data);
   } catch (error) {
     console.error('Error fetching trending metas:', error);
-    setError('Failed to load trending metas');
+    setError('Failed to load Trending Metas');
     setTrendingMetas([]);
   } finally {
     setIsLoading(false);

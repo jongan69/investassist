@@ -22,6 +22,7 @@ interface MarketSummaryProps {
   className?: string;
   sentimentColor: string;
   calendar: any;
+  fomc: any;
 }
 
 export default function MarketSummary({ 
@@ -29,7 +30,8 @@ export default function MarketSummary({
   sectorPerformance,
   calendar,
   className,
-  sentimentColor
+  sentimentColor,
+  fomc
 }: MarketSummaryProps) {
   const { resolvedTheme } = useTheme();
   const [summary, setSummary] = useState<string>('Loading market analysis...');
@@ -61,6 +63,7 @@ export default function MarketSummary({
             fearGreedValue: fearGreedValue.fgi.now.value,
             sectorPerformance: formattedSectorPerformance,
             economicEvents: calendar,
+            fomc: fomc
           }),
         });
 

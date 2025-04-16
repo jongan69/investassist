@@ -96,7 +96,13 @@ export async function POST(req: Request) {
   const retryDelay = 1000; // Delay between retries in milliseconds
 
   try {
-    const { fearGreedValue, sectorPerformance, economicEvents } = await req.json();
+    const { fearGreedValue, sectorPerformance, economicEvents, fomc } = await req.json();
+    console.log('fomc data:', fomc);
+
+    const latestMeeting = fomc.value.meeting;
+    const latestMeetingDate = latestMeeting.Date;
+    const nextMeetingDate = fomc.value.next_meeting.Date;
+    const latestMeetingSummary = latestMeeting.Minutes_Summary;
     
     // Format economic events data
     const formattedEconomicEvents = formatEconomicEvents(economicEvents?.calendar);
@@ -121,6 +127,12 @@ export async function POST(req: Request) {
       
       Economic Events:
       ${formattedEconomicEvents}
+
+      FOMC Latest Meeting Summary for ${latestMeetingDate}:
+      ${latestMeetingSummary}
+
+      FOMC Next Meeting Date:
+      ${nextMeetingDate}
       
       Please analyze these indicators and provide insights about:
       1. Overall market sentiment based on the Fear & Greed Index

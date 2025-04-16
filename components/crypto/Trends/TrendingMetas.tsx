@@ -37,18 +37,18 @@ export const TrendingMetas: React.FC = () => {
 
   if (error) {
     return (
-      <div className="p-4 text-destructive bg-destructive/10 rounded-lg">
+      <div className="p-4 text-destructive bg-destructive/10 rounded-lg py-4 my-4">
         {error}
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-bold text-foreground">
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-foreground mb-6">
         Trending Pumpfun Metas
       </h2>
-      <div className="flex overflow-x-auto pb-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:overflow-x-visible">
+      <div className="flex overflow-x-auto pb-6 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:overflow-x-visible">
         {trendingMetas.map((meta, index) => (
           <a
             key={index}
@@ -56,7 +56,7 @@ export const TrendingMetas: React.FC = () => {
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
-              "block p-4 rounded-lg border transition-all duration-200 hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary flex-shrink-0 w-[280px] mr-4 md:mr-0",
+              "block p-6 rounded-lg border transition-all duration-200 hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary flex-shrink-0 w-[300px] mr-6 md:mr-0",
               meta.isTrendingTwitterTopic 
                 ? 'border-green-500 bg-green-50/80 dark:bg-green-900/30 hover:bg-green-100/90 dark:hover:bg-green-900/50' 
                 : 'border-border bg-card hover:bg-accent'
@@ -66,15 +66,15 @@ export const TrendingMetas: React.FC = () => {
               window.open(meta.url, '_blank', 'noopener,noreferrer');
             }}
           >
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-foreground">{meta.word_with_strength}</h3>
               {meta.isTrendingTwitterTopic && (
-                <span className="px-2 py-1 text-xs font-medium text-green-700 dark:text-green-300 bg-green-100/80 dark:bg-green-900/50 rounded-full">
+                <span className="px-3 py-1.5 text-xs font-medium text-green-700 dark:text-green-300 bg-green-100/80 dark:bg-green-900/50 rounded-full">
                   Trending on Twitter
                 </span>
               )}
             </div>
-            <div className="space-y-1 text-sm text-muted-foreground">
+            <div className="space-y-2 text-sm text-muted-foreground">
               <p>Score: {meta.score.toFixed(4)}</p>
               <p>Transactions: {meta.total_txns.toLocaleString()}</p>
               <p>Volume: {meta.total_vol.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>

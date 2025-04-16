@@ -57,8 +57,8 @@ export default function Footer() {
   }
 
   return (
-    <footer className={`container py-8 md:px-10 md:py-4 ${resolvedTheme === 'dark' ? 'bg-black-800' : 'bg-gray-100'}`}>
-      <div className="flex items-center justify-center space-y-4 md:space-y-0 md:space-x-8 md:flex-row">
+    <footer className={`container mt-12 py-8 md:px-10 md:py-4 ${resolvedTheme === 'dark' ? 'bg-black-800' : 'bg-gray-100'} rounded`}>
+      <div className="flex items-center justify-center space-y-4 md:space-y-2 md:space-x-8 md:flex-row">
         <Link
           prefetch={false}
           href="https://x.com/invest_assist"

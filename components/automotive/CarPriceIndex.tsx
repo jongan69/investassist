@@ -58,7 +58,7 @@ export function CarPriceIndex() {
       <div className="p-4">
         <Card className="w-full p-6">
           <CardHeader className="px-0">
-            <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
+            <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               Used Car Market Trends
             </CardTitle>
           </CardHeader>
@@ -88,7 +88,7 @@ export function CarPriceIndex() {
       <div className="p-4">
         <Card className="w-full p-6">
           <CardHeader className="px-0">
-            <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
+            <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               Used Car Market Trends
             </CardTitle>
           </CardHeader>
@@ -120,7 +120,7 @@ export function CarPriceIndex() {
     <div className="p-4">
       <Card className="w-full p-6">
         <CardHeader className="px-0 pb-6">
-          <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
+          <CardTitle className="text-lg bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             Used Car Market Trends
           </CardTitle>
         </CardHeader>
@@ -133,7 +133,7 @@ export function CarPriceIndex() {
                   <TrendingUp className="h-4 w-4 text-primary" />
                   <h3 className="text-sm font-medium text-muted-foreground">Price Trend</h3>
                 </div>
-                <p className={`text-2xl font-bold ${priceTrend >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                <p className={`text-2xl font-bold ${priceTrend >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                   {priceTrend >= 0 ? '+' : ''}{priceTrend.toFixed(1)}%
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">vs. oldest data</p>
@@ -143,7 +143,7 @@ export function CarPriceIndex() {
                   <DollarSign className="h-4 w-4 text-primary" />
                   <h3 className="text-sm font-medium text-muted-foreground">Average Price</h3>
                 </div>
-                <p className="text-2xl font-bold">{formatCurrency(data.averagePrice)}</p>
+                <p className="text-2xl font-bold text-foreground">{formatCurrency(data.averagePrice)}</p>
                 <p className="text-xs text-muted-foreground mt-1">Current market</p>
               </div>
               <div className="p-4 rounded-lg bg-card/50 border border-border/50">
@@ -151,20 +151,27 @@ export function CarPriceIndex() {
                   <Gauge className="h-4 w-4 text-primary" />
                   <h3 className="text-sm font-medium text-muted-foreground">Avg Mileage</h3>
                 </div>
-                <p className="text-2xl font-bold">{data.averageMileage.toLocaleString()} mi</p>
+                <p className="text-2xl font-bold text-foreground">{data.averageMileage.toLocaleString()} mi</p>
                 <p className="text-xs text-muted-foreground mt-1">Current market</p>
               </div>
             </div>
 
             {/* Price Range */}
             <div className="relative pt-8">
-              <h3 className="text-sm font-medium pb-10">Price Range</h3>
-              <div className="relative h-2 bg-muted rounded-full">
+              <h3 className="text-sm font-medium text-foreground pb-10">Price Range</h3>
+              <div className="relative h-2 bg-muted/80 dark:bg-muted/50 rounded-full">
                 <div 
-                  className="absolute h-full bg-primary rounded-full"
+                  className="absolute h-full bg-black dark:bg-white rounded-full"
                   style={{
                     left: `${((data.priceRange.min - data.priceRange.min) / (data.priceRange.max - data.priceRange.min)) * 100}%`,
                     width: `${((data.priceRange.max - data.priceRange.min) / (data.priceRange.max - data.priceRange.min)) * 100}%`
+                  }}
+                />
+                <div 
+                  className="absolute h-4 w-4 rounded-full bg-green-500 dark:bg-green-400 border-2 border-background -top-1"
+                  style={{
+                    left: `${((data.averagePrice - data.priceRange.min) / (data.priceRange.max - data.priceRange.min)) * 100}%`,
+                    transform: 'translateX(-50%)'
                   }}
                 />
                 <div className="absolute -top-8 left-0 text-xs text-muted-foreground">

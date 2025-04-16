@@ -282,7 +282,7 @@ export default function AboutContent() {
 
         {/* Stats Section */}
         <div className="container mx-auto px-4 py-24 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg">
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-screen-2xl mx-auto">
             <h2 className="text-3xl sm:text-5xl font-bold text-center mb-12 text-gray-900 dark:text-white">
               Token Statistics
             </h2>
@@ -323,7 +323,7 @@ export default function AboutContent() {
         {/* Top Holders Section */}
         {topHolders.length > 0 && (
           <div className="container mx-auto px-4 py-24 bg-white dark:bg-gray-800 shadow-lg rounded-xl">
-            <div className="max-w-5xl mx-auto">
+            <div className="max-w-screen-2xl mx-auto">
               <h2 className="text-3xl sm:text-5xl font-bold text-center mb-12 text-gray-900 dark:text-white">
                 Top Holders
               </h2>
@@ -372,7 +372,7 @@ export default function AboutContent() {
         {/* Social Links Section */}
         {socialLinks.length > 0 && (
           <div className="container mx-auto px-4 py-24 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg">
-            <div className="max-w-5xl mx-auto text-center">
+            <div className="max-w-screen-2xl mx-auto text-center">
               <h2 className="text-3xl sm:text-5xl font-bold mb-12 text-gray-900 dark:text-white">
                 Connect With Us
               </h2>
@@ -395,7 +395,7 @@ export default function AboutContent() {
 
         {/* Join Us Section */}
         <div className="container mx-auto px-4 py-24 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-xl shadow-lg">
-          <div className="max-w-5xl mx-auto text-center">
+          <div className="max-w-screen-2xl mx-auto text-center">
             <h2 className="text-3xl sm:text-5xl font-bold mb-8 text-gray-900 dark:text-white">
               Join Us
             </h2>
