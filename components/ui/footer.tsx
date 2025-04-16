@@ -61,7 +61,7 @@ export default function Footer() {
       <div className="flex items-center justify-center space-y-4 md:space-y-0 md:space-x-8 md:flex-row">
         <Link
           prefetch={false}
-          href="https://x.com/invest_ass"
+          href="https://x.com/invest_assist"
           target="_blank"
           rel="noreferrer"
           aria-label="Visit InvestAssist on X"
