@@ -14,7 +14,6 @@ const UserProfileContainer = (await import('@/components/users/UserProfileContai
 // Lib
 import { fetchUserTweets } from "@/lib/twitter/fetchUserTweets"
 import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
-import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -37,6 +36,16 @@ const searchUsersServer = async (query: string) => {
     return response.json();
   } catch (error) {
     console.error('Error searching users:', error);
+    return [];
+  }
+}
+
+const fetchSectorPerformanceServer = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/sector-performance`);
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching sector performance:', error);
     return [];
   }
 }
@@ -294,7 +303,7 @@ async function UserProfileContent({ user }: { user: string }) {
       const [marketData, fearGreedValue, sectorPerformance] = await Promise.all([
         fetchCryptoTrendsServer(),
         fetchFearGreedIndex(),
-        fetchSectorPerformance()
+        fetchSectorPerformanceServer()
       ]);
 
       // Generate investment plan using the server-side API route

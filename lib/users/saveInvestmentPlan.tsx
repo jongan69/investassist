@@ -1,9 +1,8 @@
 import { InvestmentPlanType } from "@/types/users"
 
 export async function saveInvestmentPlan(username: string, investmentPlan: InvestmentPlanType) {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
     try {
-        const response = await fetch(`${baseUrl}/api/save-investment-plan`, {
+        const response = await fetch(`/api/save-investment-plan`, {
             method: 'POST',
             body: JSON.stringify({ username, investmentPlan })
         })

@@ -110,23 +110,23 @@ export default function UserProfileContainer({ profile, tweets, isGeneratingPlan
     >
       {/* Header Section */}
       <motion.div
-        className="w-full bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700"
+        className="w-full bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-900 shadow-lg border-b border-gray-200 dark:border-gray-700"
         variants={itemVariants}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <div className="w-full sm:w-auto min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent truncate">
                 {profile.username}&apos;s Portfolio
               </h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1 break-all">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-2 break-all">
                 {profile.walletAddress}
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Total Value</p>
-                <p className="text-3xl font-bold text-pink-500">
+            <div className="flex items-center gap-6 w-full sm:w-auto justify-between sm:justify-end min-w-0">
+              <div className="text-right min-w-0">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">Total Value</p>
+                <p className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent truncate">
                   ${profile.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
@@ -134,7 +134,7 @@ export default function UserProfileContainer({ profile, tweets, isGeneratingPlan
                 variant="outline"
                 size="icon"
                 onClick={handleShare}
-                className="ml-2"
+                className="ml-4 flex-shrink-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm hover:bg-white dark:hover:bg-gray-800 transition-all duration-300"
                 title="Share to X"
               >
                 <Share2 className="h-4 w-4" />
@@ -145,51 +145,53 @@ export default function UserProfileContainer({ profile, tweets, isGeneratingPlan
       </motion.div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <motion.div variants={itemVariants}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+        <motion.div variants={itemVariants} className="w-full">
           <Tabs defaultValue="overview" className="w-full" onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-2 mb-6">
-              <TabsTrigger value="overview" className="flex items-center gap-2">
-                <Wallet className="h-4 w-4" />
-                <span className="hidden sm:inline">Overview</span>
+            <TabsList className="flex flex-wrap w-full gap-2 sm:gap-3 mb-8 sm:mb-12 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-lg rounded-lg p-1">
+              <TabsTrigger value="overview" className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white transition-all duration-300">
+                <Wallet className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span>Overview</span>
               </TabsTrigger>
-              <TabsTrigger value="holdings" className="flex items-center gap-2">
-                <PieChart className="h-4 w-4" />
-                <span className="hidden sm:inline">Holdings</span>
+              <TabsTrigger value="holdings" className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white transition-all duration-300">
+                <PieChart className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span>Holdings</span>
               </TabsTrigger>
-              <TabsTrigger value="analysis" className="flex items-center gap-2">
-                <TrendingUp className="h-4 w-4" />
-                <span className="hidden sm:inline">Analysis</span>
+              <TabsTrigger value="analysis" className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white transition-all duration-300">
+                <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span>Analysis</span>
               </TabsTrigger>
-              <TabsTrigger value="allocation" className="flex items-center gap-2">
-                <PieChart className="h-4 w-4" />
-                <span className="hidden sm:inline">Allocation</span>
+              <TabsTrigger value="allocation" className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white transition-all duration-300">
+                <PieChart className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span>Allocation</span>
               </TabsTrigger>
-              <TabsTrigger value="tweets" className="flex items-center gap-2">
-                <MessageSquare className="h-4 w-4" />
-                <span className="hidden sm:inline">Tweets</span>
+              <TabsTrigger value="tweets" className="flex items-center gap-2 text-xs sm:text-sm whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white transition-all duration-300">
+                <MessageSquare className="h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
+                <span>Tweets</span>
               </TabsTrigger>
             </TabsList>
 
             {/* Overview Tab */}
-            <TabsContent value="overview" className="space-y-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <Card className="h-[400px]">
-                  <CardHeader>
-                    <CardTitle>Portfolio Allocation</CardTitle>
+            <TabsContent value="overview" className="space-y-6 sm:space-y-8 overflow-y-auto max-h-[calc(100vh-300px)]">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
+                <Card className="h-[300px] sm:h-[400px] overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300">
+                  <CardHeader className="py-2">
+                    <CardTitle className="text-base sm:text-lg bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">Portfolio Allocation</CardTitle>
                   </CardHeader>
-                  <CardContent className="h-[calc(100%-4rem)]">
-                    <ClientAllocationChart
-                      allocations={profile.investmentPlan?.allocations || []}
-                    />
+                  <CardContent className="h-[calc(100%-4rem)] p-6">
+                    <div className="h-full w-full">
+                      <ClientAllocationChart
+                        allocations={profile.investmentPlan?.allocations || []}
+                      />
+                    </div>
                   </CardContent>
                 </Card>
 
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Top Holdings</CardTitle>
+                <Card className="overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300">
+                  <CardHeader className="p-6">
+                    <CardTitle className="text-base sm:text-lg bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">Top Holdings</CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-4">
+                  <CardContent className="space-y-4 p-6 overflow-y-auto max-h-[300px] sm:max-h-[400px]">
                     {profile.holdings.slice(0, 5).map((token, index) => (
                       <TokenCard
                         key={token.tokenAddress}
@@ -201,11 +203,11 @@ export default function UserProfileContainer({ profile, tweets, isGeneratingPlan
                 </Card>
               </div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Investment Analysis</CardTitle>
+              <Card className="overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardHeader className="p-6">
+                  <CardTitle className="text-base sm:text-lg bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">Investment Analysis</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <AnalysisCard plan={profile.investmentPlan} />
                 </CardContent>
               </Card>
@@ -213,22 +215,24 @@ export default function UserProfileContainer({ profile, tweets, isGeneratingPlan
 
             {/* Holdings Tab */}
             <TabsContent value="holdings" className="space-y-4">
-              {profile.holdings.map((token, index) => (
-                <TokenCard
-                  key={token.tokenAddress}
-                  token={token}
-                  rank={index + 1}
-                />
-              ))}
+              <div className="overflow-y-auto max-h-[calc(100vh-300px)]">
+                {profile.holdings.map((token, index) => (
+                  <TokenCard
+                    key={token.tokenAddress}
+                    token={token}
+                    rank={index + 1}
+                  />
+                ))}
+              </div>
             </TabsContent>
 
             {/* Analysis Tab */}
             <TabsContent value="analysis">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Investment Analysis</CardTitle>
+              <Card className="overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardHeader className="p-6">
+                  <CardTitle className="text-base sm:text-lg bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">Investment Analysis</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-6">
                   <AnalysisCard plan={profile.investmentPlan} />
                 </CardContent>
               </Card>
@@ -236,25 +240,27 @@ export default function UserProfileContainer({ profile, tweets, isGeneratingPlan
 
             {/* Allocation Tab */}
             <TabsContent value="allocation">
-              <Card className="h-[600px]">
-                <CardHeader>
-                  <CardTitle>Portfolio Allocation</CardTitle>
+              <Card className="h-[500px] sm:h-[700px] overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardHeader className="p-6 pb-2">
+                  <CardTitle className="text-base sm:text-lg bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">Portfolio Allocation</CardTitle>
                 </CardHeader>
-                <CardContent className="h-[calc(100%-4rem)]">
-                  <ClientAllocationChart
-                    allocations={profile.investmentPlan?.allocations || []}
-                  />
+                <CardContent className="h-[calc(100%-4rem)] p-6 pt-2">
+                  <div className="h-full w-full flex items-center justify-center">
+                    <ClientAllocationChart
+                      allocations={profile.investmentPlan?.allocations || []}
+                    />
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>
 
             {/* Tweets Tab */}
             <TabsContent value="tweets">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Recent Tweets</CardTitle>
+              <Card className="overflow-hidden bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardHeader className="p-6">
+                  <CardTitle className="text-base sm:text-lg bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">Recent Tweets</CardTitle>
                 </CardHeader>
-                <CardContent className="max-h-[600px] overflow-y-auto">
+                <CardContent className="max-h-[400px] sm:max-h-[600px] overflow-y-auto p-6">
                   <UserTweets tweets={tweets} />
                 </CardContent>
               </Card>

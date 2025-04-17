@@ -28,8 +28,7 @@ export async function categorizeTokens(holdings: any[]) {
             allTokens = tokenCache.data;
         } else {
             // Use absolute URL to work in both client and server environments
-            const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
-            const response = await fetch(`${baseUrl}/api/jupiter-tokens`);
+            const response = await fetch(`/api/jupiter-tokens`);
             
             if (!response.ok) {
                 throw new Error('Failed to fetch tokens');
