@@ -172,12 +172,6 @@ interface Profile {
   investmentPlan?: any;
 }
 
-interface ProfileData {
-  exists: boolean;
-  profile: Profile;
-}
-
-
 // Metadata generation
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { user } = await params;
@@ -216,7 +210,15 @@ export default async function UserProfilePage({ params }: Props) {
 async function UserProfileContent({ user }: { user: string }) {
   try {
     const userProfile = await searchUsersServer(user);
-    const userTweets = await fetchUserTweets(userProfile[0]?.username);
+    
+    // Fetch tweets with error handling
+    let userTweets = [];
+    try {
+      userTweets = await fetchUserTweets(userProfile[0]?.username);
+    } catch (tweetError) {
+      console.error('Error fetching tweets:', tweetError);
+      // Continue with empty tweets array if there's an error
+    }
 
     // Fetch holdings data
     const holdingsResponse = await fetch(`${BASE_URL}/api/users/holdings?address=${user}`);

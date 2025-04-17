@@ -24,7 +24,7 @@ interface UserProfileContainerProps {
   isGeneratingPlan?: boolean;
 }
 
-export default function UserProfileContainer({ profile, tweets, isGeneratingPlan = false }: UserProfileContainerProps) {
+export default function UserProfileContainer({ profile, tweets = [], isGeneratingPlan = false }: UserProfileContainerProps) {
   const [activeTab, setActiveTab] = useState('overview');
   const cardRef = React.useRef<HTMLDivElement>(null);
 
@@ -261,7 +261,15 @@ export default function UserProfileContainer({ profile, tweets, isGeneratingPlan
                   <CardTitle className="text-base sm:text-lg bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">Recent Tweets</CardTitle>
                 </CardHeader>
                 <CardContent className="max-h-[400px] sm:max-h-[600px] overflow-y-auto p-6">
-                  <UserTweets tweets={tweets} />
+                  {tweets && tweets.length > 0 ? (
+                    <UserTweets tweets={tweets} />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-40 text-gray-500 dark:text-gray-400">
+                      <MessageSquare className="h-12 w-12 mb-4 opacity-50" />
+                      <p className="text-center">No tweets available at the moment.</p>
+                      <p className="text-sm text-center mt-2">Tweets could not be loaded or the user has no recent tweets.</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
