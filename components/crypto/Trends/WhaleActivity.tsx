@@ -3,12 +3,23 @@ import Link from 'next/link'
 import { Fragment } from 'react';
 
 export function WhaleActivity({ trends }: { trends: any }) {
+    if (!trends?.whaleActivity) {
+        return (
+            <div className="rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md p-4 sm:p-6 mt-6">
+                <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-foreground">
+                    Whale Activity
+                </h2>
+                <p className="text-sm text-muted-foreground">No whale activity data available</p>
+            </div>
+        );
+    }
+
     return (
         <div className="rounded-xl border border-border bg-card shadow-sm transition-all duration-300 hover:shadow-md p-4 sm:p-6 mt-6">
             <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6 text-foreground">
                 Whale Activity
             </h2>
-            {['bullish', 'bearish'].map((type, index) => (
+            {['bullish', 'bearish']?.map((type, index) => (
                 <Fragment key={type}>
                     {index === 1 && (
                         <div className="relative my-6 sm:my-8">
@@ -33,7 +44,7 @@ export function WhaleActivity({ trends }: { trends: any }) {
                                     </tr>
                                 </thead>
                                 <tbody className="bg-card divide-y divide-border">
-                                    {trends.whaleActivity[type as 'bullish' | 'bearish'].map((activity: WhaleActivity) => {
+                                    {trends.whaleActivity[type as 'bullish' | 'bearish']?.map((activity: WhaleActivity) => {
                                         const score = (type === 'bullish' ? activity.bullishScore : activity.bearishScore) ?? 0;
                                         return (
                                             <tr key={activity.symbol} className="group">

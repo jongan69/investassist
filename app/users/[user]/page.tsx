@@ -13,11 +13,23 @@ const UserProfileContainer = (await import('@/components/users/UserProfileContai
 // Lib
 import { searchUsers } from "@/lib/users/searchUsers"
 import { fetchUserTweets } from "@/lib/twitter/fetchUserTweets"
-import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
 import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
 import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+const fetchCryptoTrendsServer = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/crypto-trends`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+  } catch (error) {
+    console.error('Error fetching crypto trends:', error);
+    return [];
+  }
+}
 
 // New interfaces for the holdings response
 interface TokenAccount {
@@ -241,18 +253,6 @@ async function UserProfileContent({ user }: { user: string }) {
     const totalValue = sortedTokens.reduce((sum: number, token: TokenData) => sum + token.usdValue, 0);
     const updatedTotalValue = totalValue + nativeBalance.total_price;
 
-    // Calculate allocations for chart
-    const currentAllocations = [
-      {
-        asset: 'SOL',
-        percentage: (nativeBalance.total_price / updatedTotalValue) * 100
-      },
-      ...sortedTokens.map(token => ({
-        asset: token.symbol,
-        percentage: (token.usdValue / updatedTotalValue) * 100
-      }))
-    ].filter(allocation => allocation.percentage > 0.1); // Filter out tiny allocations
-
     // Create a basic profile object
     const profile: Profile = {
       username: userProfile[0]?.username || 'User',
@@ -282,7 +282,7 @@ async function UserProfileContent({ user }: { user: string }) {
     try {
       // Fetch market data, fear/greed index, and sector performance
       const [marketData, fearGreedValue, sectorPerformance] = await Promise.all([
-        fetchCryptoTrends(),
+        fetchCryptoTrendsServer(),
         fetchFearGreedIndex(),
         fetchSectorPerformance()
       ]);
@@ -307,7 +307,7 @@ async function UserProfileContent({ user }: { user: string }) {
       }
 
       investmentPlan = await investmentPlanResponse.json();
-      
+
       // Update profile with the generated investment plan
       profile.investmentPlan = investmentPlan;
     } catch (error) {

@@ -1,7 +1,6 @@
 export const fetchCryptoTrends = async () => {
     try {
-        const URL = process.env.NEXT_PUBLIC_BASE_URL;
-        const response = await fetch(`${URL}/api/crypto-trends`);
+        const response = await fetch(`/api/crypto-trends`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }

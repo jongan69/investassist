@@ -6,9 +6,6 @@ import { useTheme } from 'next-themes';
 import { RefreshCw } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
-import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
-import { fetchLatestTweets } from '@/lib/twitter/fetchLatestTweets';
-import { fetchTweetedCas } from '@/lib/twitter/fetchTweetedCas';
 import { TweetedCas } from './Trends/TweetedCas';
 import { WhaleActivity } from './Trends/WhaleActivity';
 import { LatestTweets } from './Trends/LatestTweets';
@@ -16,9 +13,12 @@ import { Overview } from './Trends/Overview';
 import { TopTweeted } from './Trends/TopTweeted';
 import { TrendingMetas } from './Trends/TrendingMetas';
 import { LaunchLab } from './LaunchLab';
-
 import TrendingVideos from '../tiktok/TrendingVideos';
 import AxiomPulse from './Trends/AxiomPulse';
+
+import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
+import { fetchLatestTweets } from '@/lib/twitter/fetchLatestTweets';
+import { fetchTweetedCas } from '@/lib/twitter/fetchTweetedCas';
 
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();

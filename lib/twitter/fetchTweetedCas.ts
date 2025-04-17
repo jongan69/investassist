@@ -2,8 +2,7 @@ import { getTokenInfo } from '../solana/fetchDefaultTokenData';
 
 export const fetchTweetedCas = async () => {
     try {
-        const URL = process.env.NEXT_PUBLIC_BASE_URL;
-        const response = await fetch(`${URL}/api/twitter/twitter-cas`);
+        const response = await fetch(`/api/twitter/twitter-cas`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
