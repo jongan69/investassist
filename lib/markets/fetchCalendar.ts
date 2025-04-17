@@ -2,12 +2,8 @@ import { MARKET_API } from "../utils/constants";
 
 export async function fetchCalendar() {
     try {
-        // console.log('Fetching calendar data...');
-        
         // fetch from calendar API
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-        // console.log('Base URL:', baseUrl);
-        const url = `${baseUrl}/api/calendar`;
+        const url = `/api/calendar`;
         
         // Add timeout to the fetch request - increase to 20 seconds
         const controller = new AbortController();
