@@ -62,6 +62,18 @@ export function LaunchLab({ className }: TokenListProps) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [sortMethod, setSortMethod] = useState<SortMethod>('finishingRate');
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 640);
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const fetchTokens = async () => {
         try {
@@ -237,15 +249,15 @@ export function LaunchLab({ className }: TokenListProps) {
     }
 
     return (
-        <div className={`${className} h-[calc(100vh-200px)] overflow-y-auto`}>
-            <div className="flex justify-between items-center mb-4">
-                <h1 className="text-2xl font-bold">LaunchLab</h1>
-                <div className="flex items-center gap-4">
+        <div className={`${className} h-[calc(100vh-200px)] overflow-y-auto px-4 sm:px-6`}>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <h1 className="text-xl sm:text-2xl font-bold">LaunchLab</h1>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
                     <Select
                         value={sortMethod}
                         onValueChange={(value) => setSortMethod(value as SortMethod)}
                     >
-                        <SelectTrigger className="w-[180px]">
+                        <SelectTrigger className="w-full sm:w-[180px]">
                             <SelectValue placeholder="Sort by" />
                         </SelectTrigger>
                         <SelectContent>
@@ -258,7 +270,7 @@ export function LaunchLab({ className }: TokenListProps) {
                         size="sm" 
                         onClick={fetchTokens} 
                         disabled={loading}
-                        className="flex items-center gap-2"
+                        className="flex items-center gap-2 w-full sm:w-auto"
                     >
                         <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
                         {loading ? 'Refreshing...' : 'Refresh'}
@@ -266,39 +278,31 @@ export function LaunchLab({ className }: TokenListProps) {
                 </div>
             </div>
             <Tabs defaultValue="all" className="w-full">
-                <TabsList className="mb-4">
-                    <TabsTrigger value="all">All Tokens</TabsTrigger>
-                    <TabsTrigger value="new">New Tokens</TabsTrigger>
-                    <TabsTrigger value="trading">Active Trading</TabsTrigger>
+                <TabsList className="w-full mb-4">
+                    <TabsTrigger value="all" className="flex-1">All Tokens</TabsTrigger>
+                    <TabsTrigger value="new" className="flex-1">New Tokens</TabsTrigger>
+                    <TabsTrigger value="trading" className="flex-1">Active Trading</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="all" className="space-y-8">
-                    {/* Combine both new tokens and trading tokens for the "All Tokens" tab and sort by selected method */}
+                <TabsContent value="all" className="space-y-4 sm:space-y-8">
                     {(() => {
-                        // Create a map to deduplicate tokens by mint address
                         const tokenMap = new Map<string, Token>();
-                        
-                        // Add new tokens first
                         newTokens.forEach(token => {
                             tokenMap.set(token.mint, token);
                         });
-                        
-                        // Add trading tokens, updating existing ones if needed
                         tokens.filter(token => token.source === 'lastTrade').forEach(token => {
                             tokenMap.set(token.mint, token);
                         });
-                        
-                        // Convert map to array and sort by selected method
                         return sortTokens(Array.from(tokenMap.values())).map((token) => (
-                            <TokenCard key={token.mint} token={token} formatNumber={formatNumber} formatScore={formatScore} />
+                            <TokenCard key={token.mint} token={token} formatNumber={formatNumber} formatScore={formatScore} isMobile={isMobile} />
                         ));
                     })()}
                 </TabsContent>
 
-                <TabsContent value="new" className="space-y-8">
+                <TabsContent value="new" className="space-y-4 sm:space-y-8">
                     {newTokens.length > 0 ? (
                         sortTokens(newTokens).map((token) => (
-                            <TokenCard key={token.mint} token={token} formatNumber={formatNumber} formatScore={formatScore} />
+                            <TokenCard key={token.mint} token={token} formatNumber={formatNumber} formatScore={formatScore} isMobile={isMobile} />
                         ))
                     ) : (
                         <Card className="w-full">
@@ -311,9 +315,9 @@ export function LaunchLab({ className }: TokenListProps) {
                     )}
                 </TabsContent>
 
-                <TabsContent value="trading" className="space-y-8">
+                <TabsContent value="trading" className="space-y-4 sm:space-y-8">
                     {sortTokens(tokens.filter((token) => token.source === 'lastTrade')).map((token) => (
-                        <TokenCard key={token.mint} token={token} formatNumber={formatNumber} formatScore={formatScore} />
+                        <TokenCard key={token.mint} token={token} formatNumber={formatNumber} formatScore={formatScore} isMobile={isMobile} />
                     ))}
                 </TabsContent>
             </Tabs>
@@ -321,8 +325,7 @@ export function LaunchLab({ className }: TokenListProps) {
     );
 }
 
-function TokenCard({ token, formatNumber, formatScore }: { token: Token; formatNumber: (num: number) => string; formatScore: (score: number) => string }) {
-    // Ensure we have valid score values with defaults
+function TokenCard({ token, formatNumber, formatScore, isMobile }: { token: Token; formatNumber: (num: number) => string; formatScore: (score: number) => string; isMobile: boolean }) {
     const overallScore = token.score || 0;
     const marketCapScore = token.scoreBreakdown?.marketCapScore || 0;
     const volumeScore = token.scoreBreakdown?.volumeScore || 0;
@@ -331,7 +334,6 @@ function TokenCard({ token, formatNumber, formatScore }: { token: Token; formatN
 
     const raydiumUrl = `https://raydium.io/launchpad/token/?mint=${token.mint}&lreferrer=4cjrPocxTryHXka56qSnNPqJY5METi3UQKMs7EwwPKfs`;
 
-    // Handle Twitter link click to prevent event propagation
     const handleTwitterClick = (e: React.MouseEvent) => {
         e.stopPropagation();
         if (token.twitter) {
@@ -341,38 +343,40 @@ function TokenCard({ token, formatNumber, formatScore }: { token: Token; formatN
 
     return (
         <Link href={raydiumUrl} target="_blank" rel="noopener noreferrer">
-            <Card className="w-full hover:bg-accent/50 transition-colors cursor-pointer mb-8">
-                <CardHeader className="flex flex-row items-center gap-4">
-                    <div className="relative h-12 w-12">
-                        <Image
-                            src={token.imgUrl}
-                            alt={token.name}
-                            fill
-                            className="rounded-full object-cover"
-                            onError={(e) => {
-                                const target = e.target as HTMLImageElement;
-                                target.src = '/placeholder.png';
-                            }}
-                        />
-                    </div>
-                    <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                            <h3 className="text-lg font-semibold">{token.name}</h3>
-                            <Badge variant={token.source === 'new' ? 'default' : 'secondary'}>
-                                {token.source === 'new' ? 'New' : 'Trading'}
-                            </Badge>
+            <Card className="w-full hover:bg-accent/50 transition-colors cursor-pointer">
+                <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center gap-4 p-4 sm:p-6">
+                    <div className="flex items-center gap-4 w-full sm:w-auto">
+                        <div className="relative h-10 w-10 sm:h-12 sm:w-12">
+                            <Image
+                                src={token.imgUrl}
+                                alt={token.name}
+                                fill
+                                className="rounded-full object-cover"
+                                onError={(e) => {
+                                    const target = e.target as HTMLImageElement;
+                                    target.src = '/placeholder.png';
+                                }}
+                            />
                         </div>
-                        <p className="text-sm text-muted-foreground">{token.symbol}</p>
+                        <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                                <h3 className="text-base sm:text-lg font-semibold">{token.name}</h3>
+                                <Badge variant={token.source === 'new' ? 'default' : 'secondary'} className="text-xs">
+                                    {token.source === 'new' ? 'New' : 'Trading'}
+                                </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground">{token.symbol}</p>
+                        </div>
                     </div>
-                    <div className="text-right">
-                        <div className="text-lg font-semibold">${formatNumber(token.marketCap)}</div>
-                        <div className="text-sm text-muted-foreground">Market Cap</div>
+                    <div className="text-right w-full sm:w-auto">
+                        <div className="text-base sm:text-lg font-semibold">${formatNumber(token.marketCap)}</div>
+                        <div className="text-xs sm:text-sm text-muted-foreground">Market Cap</div>
                     </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-4 sm:p-6">
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <div className="flex justify-between text-sm">
+                            <div className="flex justify-between text-xs sm:text-sm">
                                 <span>Overall Score</span>
                                 <span className="font-medium">{formatScore(overallScore)}%</span>
                             </div>
@@ -385,7 +389,7 @@ function TokenCard({ token, formatNumber, formatScore }: { token: Token; formatN
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
+                                <div className="flex justify-between text-xs sm:text-sm">
                                     <span>Market Cap Score</span>
                                     <span>{formatScore(marketCapScore)}%</span>
                                 </div>
@@ -395,7 +399,7 @@ function TokenCard({ token, formatNumber, formatScore }: { token: Token; formatN
                                 />
                             </div>
                             <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
+                                <div className="flex justify-between text-xs sm:text-sm">
                                     <span>Volume Score</span>
                                     <span>{formatScore(volumeScore)}%</span>
                                 </div>
@@ -405,7 +409,7 @@ function TokenCard({ token, formatNumber, formatScore }: { token: Token; formatN
                                 />
                             </div>
                             <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
+                                <div className="flex justify-between text-xs sm:text-sm">
                                     <span>Bonding Progress</span>
                                     <span>{formatScore(finishingRateScore)}%</span>
                                 </div>
@@ -415,7 +419,7 @@ function TokenCard({ token, formatNumber, formatScore }: { token: Token; formatN
                                 />
                             </div>
                             <div className="space-y-2">
-                                <div className="flex justify-between text-sm">
+                                <div className="flex justify-between text-xs sm:text-sm">
                                     <span>Liquidity</span>
                                     <span>{formatScore(liquidityScore)}%</span>
                                 </div>
@@ -426,7 +430,7 @@ function TokenCard({ token, formatNumber, formatScore }: { token: Token; formatN
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center justify-between text-xs sm:text-sm">
                             <div className="flex items-center gap-2">
                                 <span>Volume:</span>
                                 <span className="font-medium">${formatNumber(token.volumeU)}</span>
