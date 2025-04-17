@@ -1,9 +1,7 @@
 export const getProfileByUsername = async (username: string) => {
-    // Get the base URL from environment variable, falling back to localhost in development
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    
+    // Get the base URL from environment variable, falling back to localhost in development    
     try {   
-        const response = await fetch(`${baseUrl}/api/database/get-profile`, {
+        const response = await fetch(`/api/database/get-profile`, {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
