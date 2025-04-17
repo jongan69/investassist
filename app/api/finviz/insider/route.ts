@@ -29,7 +29,6 @@ export async function GET(request: Request) {
         clearTimeout(timeoutId);
         
         if (!response.ok) {
-            const errorText = await response.text().catch(() => 'Could not read error response');
             throw new Error(`External API returned status: ${response.status}`);
         }
         

@@ -26,13 +26,12 @@ export async function GET() {
         
         // Log the end time and duration
         const endTime = Date.now();
-        console.log('API route: Fetch completed at:', new Date().toISOString());
-        console.log('API route: Fetch duration:', endTime - startTime, 'ms');
+        console.log('FOMC API route: Fetch completed at:', new Date().toISOString());
+        console.log('FOMC API route: Fetch duration:', endTime - startTime, 'ms');
         
         clearTimeout(timeoutId);
         
-        console.log('External API response status:', response.status);
-        console.log('External API response headers:', JSON.stringify(Object.fromEntries([...response.headers.entries()]), null, 2));
+        console.log('FOMC API route response status:', response.status);
         
         if (!response.ok) {
             const errorText = await response.text().catch(() => 'Could not read error response');
@@ -42,7 +41,7 @@ export async function GET() {
         
         const fomc = await response.json();
         
-        console.log('fomc data:', fomc);
+        // console.log('fomc data:', fomc);
         
         // Return with CORS headers
         return new Response(JSON.stringify(fomc), {

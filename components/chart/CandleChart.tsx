@@ -6,11 +6,11 @@ import { localPoint } from "@visx/event"
 import { scaleLinear } from "@visx/scale"
 import { ParentSize } from "@visx/responsive"
 import { useIsomorphicLayoutEffect } from "@/hooks/useIsomorphicLayoutEffect"
-import { PatternResult } from "@/lib/candlestickPatterns"
+import { PatternResult } from "@/lib/utils/candlestickPatterns"
 import PatternIndicator from "./PatternIndicator"
 import PatternLegend from "./PatternLegend"
 import "@/styles/patternIndicators.css"
-import { useCandlestickPatterns } from '@/lib/candlestickPatterns'
+import { useCandlestickPatterns } from '@/lib/utils/candlestickPatterns'
 import SwitchComponent from "@/components/ui/switch"
 
 // Add type declaration for d3

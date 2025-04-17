@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from 'react';
-import { PatternResult } from '@/lib/candlestickPatterns';
+import { PatternResult } from '@/lib/utils/candlestickPatterns';
 
 interface PatternIndicatorProps {
   pattern: PatternResult;

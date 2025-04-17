@@ -8,7 +8,7 @@ import { fetchStockSearch } from "@/lib/yahoo-finance/fetchStockSearch"
 import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
 import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
 import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest"
-import { fetchWithTimeout, handleApiError, processBatch } from "@/lib/utils"
+import { fetchWithTimeout, handleApiError, processBatch } from "@/lib/utils/utils"
 import { fetchCalendar } from "@/lib/markets/fetchCalendar"   
 import { fetchFomc } from "@/lib/markets/fetchFomc"
 export async function MarketSummaryWrapper({

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { formatNumber } from '@/lib/utils';
+import { formatNumber } from '@/lib/utils/utils';
 interface TokenInfo {
   name: string;
   symbol: string;

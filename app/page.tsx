@@ -32,17 +32,19 @@ import {
   validateInterval,
   validateRange,
 } from "@/lib/yahoo-finance/fetchChartData"
+
 import { fetchStockNews } from "@/lib/alpaca/fetchStockNews"
-import { tickersFutures, tickerAfterOpen, isMarketOpen } from "@/lib/utils"
+import { tickersFutures, tickerAfterOpen, isMarketOpen } from "@/lib/utils/utils"
 import { getMarketSentiment } from "@/lib/utils/marketSentiment"
 import { TrendingTopics } from "@/components/crypto/Trends/TrendingTopics"
-import RealEstateMarketTrends from "@/components/realestate/RealEstateMarketTrends"
 import { CarPriceIndex } from "@/components/automotive/CarPriceIndex"
+import { FuturesTable } from "@/components/home/FuturesTable"
+
+import RealEstateMarketTrends from "@/components/realestate/RealEstateMarketTrends"
 import BoxOffice from "@/components/crypto/BoxOffice"
 import TrumpPosts from "@/components/truthsocial/TrumpPosts"
 import Calendar from "@/components/home/Calendar"
 import InsiderTrading from "@/components/home/InsiderTrading"
-import { FuturesTable } from "@/components/home/FuturesTable"
 
 // Add route segment config
 export const dynamic = 'force-dynamic'

@@ -1,9 +1,9 @@
 import { fetchTrendingVids } from "@/lib/tiktok/fetchTrendingVids"
 import Image from "next/image"
-import { formatNumber } from "@/lib/utils"
+import { formatNumber } from "@/lib/utils/utils"
 import { Suspense, useEffect, useState } from "react"
 import { useTheme } from "next-themes"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils"
 
 // Separate the video card into its own component for better organization
 function VideoCard({ vid }: { vid: any }) {

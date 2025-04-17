@@ -32,7 +32,6 @@ export async function GET() {
         clearTimeout(timeoutId);
         
         console.log('External API response status:', response.status);
-        console.log('External API response headers:', JSON.stringify(Object.fromEntries([...response.headers.entries()]), null, 2));
         
         if (!response.ok) {
             const errorText = await response.text().catch(() => 'Could not read error response');

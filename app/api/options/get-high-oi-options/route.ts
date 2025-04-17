@@ -1,7 +1,7 @@
 // api/get-high-oi-options?ticker=AAPL&optionType=call
 import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest";
 import { NextResponse } from "next/server";
-import { validateTicker } from "@/lib/utils";
+import { validateTicker } from "@/lib/utils/utils";
 
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);

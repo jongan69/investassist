@@ -2,7 +2,7 @@
 
 import { ColumnDef } from "@tanstack/react-table"
 import type { Quote } from "@/node_modules/yahoo-finance2/dist/esm/src/modules/quote"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils"
 import Link from "next/link"
 
 export const columns: ColumnDef<Quote>[] = [

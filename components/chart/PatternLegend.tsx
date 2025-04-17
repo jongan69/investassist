@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PatternResult } from '@/lib/candlestickPatterns';
+import { PatternResult } from '@/lib/utils/candlestickPatterns';
 
 interface PatternLegendProps {
   patterns: PatternResult[];

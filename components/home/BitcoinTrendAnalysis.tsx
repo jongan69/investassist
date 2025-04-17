@@ -1,4 +1,4 @@
-import { formatNumber } from "@/lib/utils"
+import { formatNumber } from "@/lib/utils/utils"
 
 // Types
 interface BitcoinTrendSignals {

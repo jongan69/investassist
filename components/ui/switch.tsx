@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Switch } from "@radix-ui/react-switch";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 function SwitchComponent({ 
   checked, 

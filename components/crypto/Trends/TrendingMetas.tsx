@@ -5,7 +5,7 @@ import { fetchTrendingMetas } from '@/lib/solana/fetchTrendingMetas';
 import { Card } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface TrendingMeta {
   word: string;

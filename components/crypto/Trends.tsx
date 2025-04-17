@@ -15,8 +15,11 @@ import { LatestTweets } from './Trends/LatestTweets';
 import { Overview } from './Trends/Overview';
 import { TopTweeted } from './Trends/TopTweeted';
 import { TrendingMetas } from './Trends/TrendingMetas';
+import { LaunchLab } from './LaunchLab';
+
 import TrendingVideos from '../tiktok/TrendingVideos';
 import AxiomPulse from './Trends/AxiomPulse';
+
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
     const [isMounted, setIsMounted] = useState(false);
@@ -123,6 +126,7 @@ export default function CryptoTrends({ data }: { data: any }) {
 
     return (
         <div className="space-y-8">
+            <LaunchLab />
             <AxiomPulse />
             
             <Card className="max-w-full mx-auto">

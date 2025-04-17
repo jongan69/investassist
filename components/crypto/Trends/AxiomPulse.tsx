@@ -3,9 +3,9 @@ import { fetchPulse } from "@/lib/axiom/fetchPulse"
 import { useEffect, useState } from "react"
 import Image from "next/image"
 import { formatDistanceToNow } from "date-fns"
-import { formatNumber } from "@/lib/utils"
+import { formatNumber } from "@/lib/utils/utils"
 import { useTheme } from "next-themes"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils"
 import { toast } from "sonner"
 
 // Define token interface based on the API response

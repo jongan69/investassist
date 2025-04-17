@@ -7,6 +7,7 @@ import { ExternalLink } from "lucide-react";
 
 // Internal imports
 import { fetchBoxOffice } from "@/lib/solana/fetchBoxOffice";
+import { Progress } from "@/components/ui/progress";
 
 interface TokenMetadata {
     name: string;
@@ -81,9 +82,9 @@ export default function BoxOffice() {
 
     return (
         <div className="container mx-auto px-4 py-4 sm:py-8 min-h-screen overflow-x-hidden z-10 max-w-[1920px]">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8 max-w-[1600px] mx-auto">
+            <div className="flex flex-col gap-4 mb-6 sm:mb-8 max-w-[1600px] mx-auto">
                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold">Box Office Tokens</h1>
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full">
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
@@ -144,12 +145,20 @@ export default function BoxOffice() {
                                         <span className="text-muted-foreground">Tickets Sold</span>
                                         <span className="font-medium">{token.ticketsSold} / {token.maxTicketSupply}</span>
                                     </div>
-                                    <div className="w-full bg-secondary rounded-full h-2">
+                                    {/* <div className="w-full bg-secondary rounded-full h-2">
                                         <div 
                                             className="bg-primary h-2 rounded-full transition-all duration-500"
                                             style={{ width: `${(token.ticketsSold / token.maxTicketSupply) * 100}%` }}
                                         />
-                                    </div>
+                                    </div> */}
+                                    {!token.status.closed && (
+                                        <Progress 
+                                            value={token.ticketsSold && token.maxTicketSupply && token.maxTicketSupply > 0 ? 
+                                                (Number(token.ticketsSold) / Number(token.maxTicketSupply)) * 100 : 0} 
+                                            className="animate-pulse" 
+                                            variant="launchlab"
+                                        />
+                                    )}
                                     <div className="flex flex-wrap justify-between text-sm gap-2">
                                         <span className="text-muted-foreground">Token Supply</span>
                                         <span className="font-medium">{formatSupply(token.tokenSupply)}</span>

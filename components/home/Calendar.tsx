@@ -5,7 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useTheme } from "next-themes"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils"
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -30,12 +30,17 @@ interface CalendarData {
 
 export default function Calendar() {
     const { resolvedTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
     const isDark = resolvedTheme === 'dark'
     const [calendarData, setCalendarData] = useState<CalendarData | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [retryCount, setRetryCount] = useState<number>(0)
     const maxRetries = 2
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
 
     useEffect(() => {
         const loadCalendar = async () => {
@@ -168,7 +173,7 @@ export default function Calendar() {
                                     <motion.span 
                                         className={cn(
                                             "h-2 w-2 rounded-full",
-                                            isDark ? "bg-white" : "bg-black"
+                                            mounted && isDark ? "bg-white" : "bg-black"
                                         )}
                                         animate={{ scale: [1, 1.5, 1] }}
                                         transition={{ repeat: Infinity, duration: 0.6 }}
@@ -176,7 +181,7 @@ export default function Calendar() {
                                     <motion.span 
                                         className={cn(
                                             "h-2 w-2 rounded-full",
-                                            isDark ? "bg-white" : "bg-black"
+                                            mounted && isDark ? "bg-white" : "bg-black"
                                         )}
                                         animate={{ scale: [1, 1.5, 1] }}
                                         transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }}
@@ -184,7 +189,7 @@ export default function Calendar() {
                                     <motion.span 
                                         className={cn(
                                             "h-2 w-2 rounded-full",
-                                            isDark ? "bg-white" : "bg-black"
+                                            mounted && isDark ? "bg-white" : "bg-black"
                                         )}
                                         animate={{ scale: [1, 1.5, 1] }}
                                         transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }}

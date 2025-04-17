@@ -97,7 +97,7 @@ export async function POST(req: Request) {
 
   try {
     const { fearGreedValue, sectorPerformance, economicEvents, fomc } = await req.json();
-    console.log('fomc data:', fomc);
+    // console.log('fomc data:', fomc);
 
     const latestMeeting = fomc.value.meeting;
     const latestMeetingDate = latestMeeting.Date;

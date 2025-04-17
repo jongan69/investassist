@@ -3,7 +3,7 @@
 import { CellContext, ColumnDef } from "@tanstack/react-table"
 
 import type { ScreenerResult } from "@/node_modules/yahoo-finance2/dist/esm/src/modules/screener"
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils/utils"
 import Link from "next/link"
 
 // Extend the ScreenerResult type to include the missing properties

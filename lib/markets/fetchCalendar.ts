@@ -32,19 +32,18 @@ export async function fetchCalendar() {
         
         // Log the start time
         const startTime = Date.now();
-        console.log('Starting fetch request at:', new Date().toISOString());
+        console.log('Starting calendar fetch request at:', new Date().toISOString());
         
         const response = await fetch(url, fetchOptions);
         
         // Log the end time and duration
         const endTime = Date.now();
-        console.log('Fetch completed at:', new Date().toISOString());
-        console.log('Fetch duration:', endTime - startTime, 'ms');
+        console.log('Calendar API route: Fetch completed at:', new Date().toISOString());
+        console.log('Calendar API route: Fetch duration:', endTime - startTime, 'ms');
         
         clearTimeout(timeoutId);
         
-        console.log('Response status:', response.status);
-        console.log('Response headers:', JSON.stringify(Object.fromEntries([...response.headers.entries()]), null, 2));
+        console.log('Calendar API route response status:', response.status);
         
         if (!response.ok) {
             const errorText = await response.text().catch(() => 'Could not read error response');

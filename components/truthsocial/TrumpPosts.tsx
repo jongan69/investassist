@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { fetchTrumpSocialPosts } from "@/lib/truthsocial/fetchTrumpSocialPosts";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
-import { formatNumber } from "@/lib/utils";
+import { formatNumber } from "@/lib/utils/utils";
 import { useTheme } from "next-themes";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 // Define TypeScript interfaces for the data structure
 interface MediaAttachment {

@@ -5,7 +5,7 @@ import type {
 } from "@/node_modules/yahoo-finance2/dist/esm/src/modules/chart"
 import type { Interval, Range } from "@/types/yahoo-finance"
 import { DEFAULT_RANGE, INTERVALS_FOR_RANGE, VALID_RANGES } from "./constants"
-import { CalculateRange } from "@/lib/utils"
+import { CalculateRange } from "@/lib/utils/utils"
 import yahooFinance from "yahoo-finance2"
 
 export const validateRange = (range: string): Range =>

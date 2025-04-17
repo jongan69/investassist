@@ -6,7 +6,7 @@ import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/comp
 import { Twitter, Send, Globe, Search } from "lucide-react"
 import { getTokenInfoFromTicker } from "@/lib/solana/fetchTokenInfoFromTicker"
 import AxiomTradeButton from "./AxiomTradeButton"
-import { formatNumber } from "@/lib/utils"
+import { formatNumber } from "@/lib/utils/utils"
 
 function formatWholeNumber(num: number) {
   if (num >= 1e12) return `${Math.round(num / 1e12)}T`

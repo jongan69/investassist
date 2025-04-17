@@ -32,20 +32,17 @@ export async function fetchFomc() {
         
         // Log the start time
         const startTime = Date.now();
-        console.log('Starting fetch request at:', new Date().toISOString());
+        console.log('Starting fomc fetch request at:', new Date().toISOString());
         
         const response = await fetch(url, fetchOptions);
         
         // Log the end time and duration
         const endTime = Date.now();
-        console.log('Fetch completed at:', new Date().toISOString());
-        console.log('Fetch duration:', endTime - startTime, 'ms');
+        console.log('FOMC API Fetch completed at:', new Date().toISOString());
+        console.log('FOMC API Fetch duration:', endTime - startTime, 'ms');
         
         clearTimeout(timeoutId);
-        
-        console.log('Response status:', response.status);
-        console.log('Response headers:', JSON.stringify(Object.fromEntries([...response.headers.entries()]), null, 2));
-        
+                
         if (!response.ok) {
             const errorText = await response.text().catch(() => 'Could not read error response');
             console.error('Error response body:', errorText);

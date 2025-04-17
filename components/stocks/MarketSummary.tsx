@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { motion } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -25,8 +25,8 @@ interface MarketSummaryProps {
   fomc: any;
 }
 
-export default function MarketSummary({ 
-  fearGreedValue, 
+export default function MarketSummary({
+  fearGreedValue,
   sectorPerformance,
   calendar,
   className,
@@ -79,16 +79,15 @@ export default function MarketSummary({
     };
 
     generateMarketSummary();
-  }, [fearGreedValue, sectorPerformance, calendar, isMounted]);
+  }, [fearGreedValue, sectorPerformance, calendar, fomc, isMounted]);
 
   if (!resolvedTheme || !isMounted) {
     return null; // Ensure the theme is resolved and component is mounted
   }
 
-  const isDark = resolvedTheme === 'dark';
-  
+
   return (
-    <Card 
+    <Card
       className={cn(
         "group relative overflow-hidden",
         "w-[calc(100%+1rem)] -ml-2",
