@@ -225,45 +225,45 @@ async function UserProfileContent({ user }: { user: string }) {
     const holdingsData: HoldingsResponse = await holdingsResponse.json();
 
     // Extract native SOL balance and price info
-    const nativeBalance = holdingsData.result.nativeBalance;
+    const nativeBalance = holdingsData?.result?.nativeBalance;
     const solBalance = {
-      solBalance: (nativeBalance.lamports / 1e9).toString(),
-      solUsdValue: nativeBalance.total_price.toString()
+      solBalance: (nativeBalance?.lamports / 1e9).toString(),
+      solUsdValue: nativeBalance?.total_price.toString()
     };
 
     // Process token items with enhanced information
-    const tokens = holdingsData.result.items.map((item: TokenItem) => {
+    const tokens = holdingsData?.result?.items.map((item: TokenItem) => {
       // Add null checks for tokenInfo and content
-      const tokenInfo = item.token_info || {};
-      const content = item.content || { metadata: {}, links: {} };
-      const metadata = content.metadata || {};
-      const links = content.links || {};
+      const tokenInfo = item?.token_info || {};
+      const content = item?.content || { metadata: {}, links: {} };
+      const metadata = content?.metadata || {};
+      const links = content?.links || {};
 
       return {
-        name: metadata.name || 'Unknown Token',
-        symbol: metadata.symbol || 'UNKNOWN',
-        amount: tokenInfo.balance ? tokenInfo.balance / Math.pow(10, tokenInfo.decimals || 0) : 0,
-        usdValue: tokenInfo.price_info?.total_price || 0,
-        decimals: tokenInfo.decimals || 0,
-        logo: links.image || '',
-        isNft: item.interface === 'NFT',
-        description: metadata.description || '',
-        tokenAddress: item.id || '',
-        mintAddress: item.id || '',
+        name: metadata?.name || 'Unknown Token',
+        symbol: metadata?.symbol || 'UNKNOWN',
+        amount: tokenInfo?.balance ? tokenInfo?.balance / Math.pow(10, tokenInfo?.decimals || 0) : 0,
+        usdValue: tokenInfo?.price_info?.total_price || 0,
+        decimals: tokenInfo?.decimals || 0,
+        logo: links?.image || '',
+        isNft: item?.interface === 'NFT',
+        description: metadata?.description || '',
+        tokenAddress: item?.id || '',
+        mintAddress: item?.id || '',
         cid: null,
-        tokenProgram: tokenInfo.token_program || '',
-        associatedTokenAddress: tokenInfo.associated_token_address || '',
-        pricePerToken: tokenInfo.price_info?.price_per_token || 0,
-        priceCurrency: tokenInfo.price_info?.currency || 'USDC',
-        supply: tokenInfo.supply || 0,
-        isFrozen: item.ownership?.frozen || false,
-        isDelegated: item.ownership?.delegated || false,
-        authorities: (item.authorities || []).map(auth => ({
-          address: auth.address || '',
-          scopes: auth.scopes || []
+        tokenProgram: tokenInfo?.token_program || '',
+        associatedTokenAddress: tokenInfo?.associated_token_address || '',
+        pricePerToken: tokenInfo?.price_info?.price_per_token || 0,
+        priceCurrency: tokenInfo?.price_info?.currency || 'USDC',
+        supply: tokenInfo?.supply || 0,
+        isFrozen: item?.ownership?.frozen || false,
+        isDelegated: item?.ownership?.delegated || false,
+        authorities: (item?.authorities || []).map(auth => ({
+          address: auth?.address || '',
+          scopes: auth?.scopes || []
         })),
-        royalty: item.royalty || {},
-        creators: item.creators || []
+        royalty: item?.royalty || {},
+        creators: item?.creators || []
       };
     });
 
@@ -272,7 +272,7 @@ async function UserProfileContent({ user }: { user: string }) {
 
     // Calculate total value including SOL
     const totalValue = sortedTokens.reduce((sum: number, token: TokenData) => sum + token.usdValue, 0);
-    const updatedTotalValue = totalValue + nativeBalance.total_price;
+    const updatedTotalValue = totalValue + nativeBalance?.total_price || 0;
 
     // Create a basic profile object
     const profile: Profile = {
@@ -291,7 +291,7 @@ async function UserProfileContent({ user }: { user: string }) {
           tokenAddress: 'So11111111111111111111111111111111111111112',
           mintAddress: 'So11111111111111111111111111111111111111112',
           cid: null,
-          pricePerToken: nativeBalance.price_per_sol
+          pricePerToken: nativeBalance?.price_per_sol || 0
         },
         ...sortedTokens
       ],
