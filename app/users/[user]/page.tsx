@@ -351,6 +351,7 @@ async function UserProfileContent({ user }: { user: string }) {
             <li>Network connectivity issues</li>
             <li>Temporary service disruption</li>
           </ul>
+          <p>{JSON.stringify(error)}</p>
           <p className="text-gray-600 dark:text-gray-300">
             Please try again later or contact support if the issue persists.
           </p>
