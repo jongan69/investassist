@@ -2,14 +2,16 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { ExternalLink, TrendingUp, TrendingDown } from "lucide-react"
 
 import { Card } from "@/components/ui/card"
+
 import { cn } from "@/lib/utils/utils"
 
 import { TokenData } from "@/lib/solana/fetchTokens"
+import { getDexScreenerData } from "@/lib/solana/fetchDexData"
 
 interface TokenCardProps {
   token: TokenData
@@ -17,9 +19,19 @@ interface TokenCardProps {
 }
 
 export function TokenCard({ token, rank }: TokenCardProps) {
-  const priceChange = 0 // TODO: Add price change calculation
+  const tokenMint = token.mintAddress
+  const [priceChange, setPriceChange] = useState(0)
   const isPositive = priceChange >= 0
   const [imgSrc, setImgSrc] = useState(token.logo || '/placeholder-token.jpeg')
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getDexScreenerData(tokenMint)
+      setPriceChange(data.pairs[0].priceChange.h24 ?? 0)
+    }
+    
+    fetchData()
+  }, [tokenMint])
 
   return (
     <motion.div
