@@ -3,7 +3,7 @@ import { fetchTwitterFollowers } from "../twitter/fetchTwitterFollowers";
 export const checkUsername = async (username: string) => {
     try {
         const twitterFollowers = await fetchTwitterFollowers(username);
-        const hasTwitterFollowers = twitterFollowers.length > 0;
+        const hasTwitterFollowers = twitterFollowers > 0;
         console.log('Has followers:', hasTwitterFollowers);
 
 

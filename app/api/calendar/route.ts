@@ -13,7 +13,7 @@ export async function GET() {
         
         // Log the start time
         const startTime = Date.now();
-        console.log('API route: Starting fetch at:', new Date().toISOString());
+        console.log('Calendar API route: Starting fetch at:', new Date().toISOString());
         
         const response = await fetch(URL, { 
             cache: 'no-store',
@@ -26,12 +26,12 @@ export async function GET() {
         
         // Log the end time and duration
         const endTime = Date.now();
-        console.log('API route: Fetch completed at:', new Date().toISOString());
-        console.log('API route: Fetch duration:', endTime - startTime, 'ms');
+        console.log('Calendar API route: Fetch completed at:', new Date().toISOString());
+        console.log('Calendar API route: Fetch duration:', endTime - startTime, 'ms');
         
         clearTimeout(timeoutId);
         
-        console.log('External API response status:', response.status);
+        console.log('Calendar External API response status:', response.status);
         
         if (!response.ok) {
             const errorText = await response.text().catch(() => 'Could not read error response');
@@ -40,7 +40,7 @@ export async function GET() {
         }
         
         const rawData = await response.json();
-        console.log('External API raw data:', rawData);
+        // console.log('Calendar External API raw data:', rawData);
         
         // Transform the data into the expected format
         const transformedData = {
@@ -49,7 +49,7 @@ export async function GET() {
             dates: rawData.events ? [...new Set(rawData.events.map((event: any) => event.Date))] : []
         };
         
-        console.log('Transformed calendar data:', transformedData);
+        // console.log('Transformed calendar data:', transformedData);
         
         // Return with CORS headers
         return new Response(JSON.stringify(transformedData), {

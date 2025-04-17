@@ -40,6 +40,7 @@ const ProfileForm = () => {
 
         try {
             await handleProfileSubmit(username);
+            
         } catch (error) {
             setError('Failed to create profile. Please try again.');
         } finally {

@@ -36,7 +36,7 @@ export default function Navigation() {
   const { publicKey } = useWallet();
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  
+
   useEffect(() => {
     let isMounted = true;
 
@@ -88,14 +88,14 @@ export default function Navigation() {
             >
               <span className="hamburger-icon"></span>
             </button>
-            
+
             <div className="flex-shrink-0">
               {pathname !== "/" && <GoBack />}
             </div>
             <div className="hidden md:flex items-center space-x-4 overflow-x-auto">
               {NAVIGATION.map((item) => (
-                <Link 
-                  key={item.title} 
+                <Link
+                  key={item.title}
                   href={item.href}
                   className={`${navigationMenuTriggerStyle()} whitespace-nowrap`}
                 >
@@ -115,11 +115,10 @@ export default function Navigation() {
               <CommandMenu />
             </div>
             <div className="flex items-center gap-2">
-              <ThemeToggle/>
+              <ThemeToggle />
               <WalletMultiButton
-                className={`!rounded-lg !px-3 md:!px-6 transition-all duration-200 ${
-                  resolvedTheme === 'dark' ? '!bg-black text-white' : '!bg-white text-black'
-                } hover:!bg-helius-orange`}
+                className={`!rounded-lg !px-3 md:!px-6 transition-all duration-200 ${resolvedTheme === 'dark' ? '!bg-black text-white' : '!bg-white text-black'
+                  } hover:!bg-helius-orange`}
               />
             </div>
           </div>
@@ -139,6 +138,11 @@ export default function Navigation() {
                   {item.title}
                 </Link>
               ))}
+              {publicKey && (
+                <Link href={`/users/${publicKey}`} className={`${navigationMenuTriggerStyle()} whitespace-nowrap`}>
+                  Profile
+                </Link>
+              )}
               <div className="sm:hidden px-4 flex items-center gap-4">
                 <CommandMenu />
               </div>

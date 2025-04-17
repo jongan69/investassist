@@ -48,7 +48,7 @@ export async function GET() {
 
         };
         
-        console.log('Transformed futures data:', transformedData);
+        // console.log('Transformed futures data:', transformedData);
         
         // Return with CORS headers
         return new Response(JSON.stringify(transformedData), {
