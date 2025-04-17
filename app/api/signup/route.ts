@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import WelcomeEmail from '@/components/email/WelcomeEmail';
+import { WelcomeEmail } from '@/components/email/WelcomeEmail';
 
 // Initialize Resend with your API key
 const resend = new Resend(process.env.RESEND_API_KEY);
