@@ -4,7 +4,7 @@
       return;
     }
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/database/search-users?q=${encodeURIComponent(query)}`);
+      const response = await fetch(`/api/database/search-users?q=${encodeURIComponent(query)}`);
       const data = await response.json();
       if (data.results) {
         return data.results;

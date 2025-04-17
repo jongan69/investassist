@@ -10,8 +10,8 @@ import UserProfileLoadingWithFeedback from "@/components/users/UserProfileLoadin
 
 // Import the UserProfileContainer component dynamically
 const UserProfileContainer = (await import('@/components/users/UserProfileContainer')).default;
+
 // Lib
-import { searchUsers } from "@/lib/users/searchUsers"
 import { fetchUserTweets } from "@/lib/twitter/fetchUserTweets"
 import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
 import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
@@ -27,6 +27,16 @@ const fetchCryptoTrendsServer = async () => {
     return response.json();
   } catch (error) {
     console.error('Error fetching crypto trends:', error);
+    return [];
+  }
+}
+
+const searchUsersServer = async (query: string) => {
+  try {
+    const response = await fetch(`${BASE_URL}/api/database/search-users?q=${query}`);
+    return response.json();
+  } catch (error) {
+    console.error('Error searching users:', error);
     return [];
   }
 }
@@ -162,7 +172,7 @@ interface ProfileData {
 // Metadata generation
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { user } = await params;
-  const userProfile = await searchUsers(user);
+  const userProfile = await searchUsersServer(user);
   if (!userProfile) {
     return {
       title: "User Profile",
@@ -196,7 +206,7 @@ export default async function UserProfilePage({ params }: Props) {
 
 async function UserProfileContent({ user }: { user: string }) {
   try {
-    const userProfile = await searchUsers(user);
+    const userProfile = await searchUsersServer(user);
     const userTweets = await fetchUserTweets(userProfile[0]?.username);
 
     // Fetch holdings data
