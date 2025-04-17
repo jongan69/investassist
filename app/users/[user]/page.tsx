@@ -353,7 +353,7 @@ async function UserProfileContent({ user }: { user: string }) {
           </ul>
           <p>{JSON.stringify(error)}</p>
           <p className="text-gray-600 dark:text-gray-300">
-            Please try again later or contact support if the issue persists.
+            Please try again later or @invest_assist on twitter if the issue persists.
           </p>
         </div>
       </div>
