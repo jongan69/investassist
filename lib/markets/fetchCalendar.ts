@@ -1,3 +1,5 @@
+import { MARKET_API } from "../utils/constants";
+
 export async function fetchCalendar() {
     try {
         // console.log('Fetching calendar data...');
@@ -66,7 +68,7 @@ export async function fetchCalendar() {
         // Try a fallback to the external API directly if the internal API fails
         try {
             console.log('Attempting fallback to external API...');
-            const externalUrl = 'https://marketapi-mu83.onrender.com/calendar';
+            const externalUrl = `${MARKET_API}/calendar`;
             // console.log('External API URL:', externalUrl);
             
             const controller = new AbortController();

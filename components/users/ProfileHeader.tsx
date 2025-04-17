@@ -1,16 +1,19 @@
 'use client'
-import React from "react";
+
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import * as htmlToImage from 'html-to-image';
+import { PieChartIcon, Share2, TrendingUp, Wallet } from "lucide-react";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PieChartIcon, Share2, TrendingUp, Wallet } from "lucide-react";
-import { motion } from "framer-motion";
-import { BaseInvestmentPlan, Profile } from "@/types/users";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState } from "react";
-import * as htmlToImage from 'html-to-image';
+
 import { AllocationChart } from "./charts/AllocationChart";
 import { HoldingCard } from "./HoldingCard";
 import { AnalysisCard } from "./AnalysisCard";
+
+import { BaseInvestmentPlan, Profile } from "@/types/users";
 
 export default function ProfileHeader({ profile }: { profile: Profile }) {
     const [selectedTab, setSelectedTab] = useState('holdings');

@@ -1,25 +1,130 @@
 import { Suspense } from "react"
-import { useMemo } from "react"
 import type { Metadata } from "next"
 
-import { Connection } from "@solana/web3.js"
-
-import { Skeleton } from "@/components/ui/skeleton"
-import { searchUsers } from "@/lib/users/searchUsers"
-import { getSolBalance } from "@/lib/solana/fetchSolBalance"
-// import { getProfileByUsername } from "@/lib/users/getProfileByUsername"
-// import { getProfileByWalletAddress } from "@/lib/users/getProfileByWallet"
-
-import UserInvestmentPlan from "./components/UserInvestmentPlan"
-import UserTweets from "./components/UserTweets"
-import { getTokenAccountsWithMetadata } from "@/lib/solana/fetchTokensV2"
+// Types
 import type { TokenData } from "@/lib/solana/fetchTokens"
+
+// Client Components
+import { ErrorBoundary } from "@/components/users/ErrorBoundary"
+import UserProfileLoadingWithFeedback from "@/components/users/UserProfileLoadingWithFeedback"
+
+// Import the UserProfileContainer component dynamically
+const UserProfileContainer = (await import('@/components/users/UserProfileContainer')).default;
+// Lib
+import { searchUsers } from "@/lib/users/searchUsers"
 import { fetchUserTweets } from "@/lib/twitter/fetchUserTweets"
-import { Card, CardContent } from "@/components/ui/card"
-import { ClientAllocationChart } from "./components/charts/ClientAllocationChart"
-// Constants
-const RPC_ENDPOINT = 'https://christiane-z5lsaw-fast-mainnet.helius-rpc.com';
-const solanaConnection = new Connection(RPC_ENDPOINT);
+import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
+import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
+import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+// New interfaces for the holdings response
+interface TokenAccount {
+  address: string;
+  balance: number;
+}
+
+interface PriceInfo {
+  price_per_token: number;
+  total_price: number;
+  currency: string;
+}
+
+interface TokenInfo {
+  token_accounts: TokenAccount[];
+  symbol: string;
+  balance: number;
+  supply: number;
+  decimals: number;
+  token_program: string;
+  associated_token_address: string;
+  price_info: PriceInfo;
+}
+
+interface TokenContent {
+  $schema: string;
+  json_uri: string;
+  files: Array<{
+    uri: string;
+    cdn_uri: string;
+    mime: string;
+  }>;
+  metadata: {
+    description: string;
+    name: string;
+    symbol: string;
+    token_standard: string;
+  };
+  links: {
+    image: string;
+  };
+}
+
+interface TokenAuthority {
+  address: string;
+  scopes: string[];
+}
+
+interface TokenItem {
+  interface: string;
+  id: string;
+  content: TokenContent;
+  authorities: TokenAuthority[];
+  compression: {
+    eligible: boolean;
+    compressed: boolean;
+    data_hash: string;
+    creator_hash: string;
+    asset_hash: string;
+    tree: string;
+    seq: number;
+    leaf_id: number;
+  };
+  grouping: any[];
+  royalty: {
+    royalty_model: string;
+    target: null;
+    percent: number;
+    basis_points: number;
+    primary_sale_happened: boolean;
+    locked: boolean;
+  };
+  creators: any[];
+  ownership: {
+    frozen: boolean;
+    delegated: boolean;
+    delegate: null;
+    ownership_model: string;
+    owner: string;
+  };
+  supply: null;
+  mutable: boolean;
+  burnt: boolean;
+  token_info: TokenInfo;
+  inscription: null;
+  spl20: null;
+}
+
+interface NativeBalance {
+  lamports: number;
+  price_per_sol: number;
+  total_price: number;
+}
+
+interface HoldingsResult {
+  total: number;
+  limit: number;
+  page: number;
+  items: TokenItem[];
+  nativeBalance: NativeBalance;
+}
+
+interface HoldingsResponse {
+  jsonrpc: string;
+  result: HoldingsResult;
+  id: string;
+}
 
 // Types
 type Props = {
@@ -41,24 +146,6 @@ interface ProfileData {
   profile: Profile;
 }
 
-// Loading component
-function LoadingProfile() {
-  return (
-    <div className="space-y-8" suppressHydrationWarning>
-      <div className="flex items-center gap-4">
-        <Skeleton className="h-24 w-24 rounded-full bg-muted/50" />
-        <div className="space-y-3">
-          <Skeleton className="h-6 w-48 bg-muted/50" />
-          <Skeleton className="h-4 w-32 bg-muted/50" />
-        </div>
-      </div>
-      <div className="space-y-4">
-        <Skeleton className="h-32 w-full bg-muted/25" />
-        <Skeleton className="h-32 w-full bg-muted/25" />
-      </div>
-    </div>
-  )
-}
 
 // Metadata generation
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -73,8 +160,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: `${userProfile[0]?.username}'s Profile`,
-    description: `Portfolio page for ${userProfile[0]?.username}`,
+    title: `${userProfile[0]?.username ?? 'User'} Profile`,
+    description: `Portfolio page for ${userProfile[0]?.username ?? 'User'}`,
     keywords: ["profile", userProfile[0]?.username],
   }
 }
@@ -86,134 +173,168 @@ export default async function UserProfilePage({ params }: Props) {
     return <div>No username or wallet address provided</div>
   }
 
+  return (
+    <ErrorBoundary fallback={<div>Something went wrong. Please try again later.</div>}>
+      <Suspense fallback={<UserProfileLoadingWithFeedback />}>
+        <UserProfileContent user={user} />
+      </Suspense>
+    </ErrorBoundary>
+  )
+}
+
+async function UserProfileContent({ user }: { user: string }) {
   try {
     const userProfile = await searchUsers(user);
     const userTweets = await fetchUserTweets(userProfile[0]?.username);
-    let isWalletAddress = false;
-    const tokens = await getTokenAccountsWithMetadata(user, solanaConnection);
-    const totalValue = tokens.reduce((sum: number, token: TokenData) => sum + token.usdValue, 0);
-    const solBalance = await getSolBalance(user);
-    
-    // Add SOL balance to total value
-    const updatedTotalValue = totalValue + (solBalance ? parseFloat(solBalance.solUsdValue) : 0);
-    
-    // Format the data to match the Profile type
-    const profileData: ProfileData = {
-      exists: true,
-      profile: {
-        username: userProfile[0]?.username,
-        walletAddress: user,
-        holdings: [
-          // Add SOL as the first token in holdings if balance exists
-          ...(solBalance ? [{
-            name: 'Solana',
-            symbol: 'SOL',
-            amount: parseFloat(solBalance.solBalance),
-            usdValue: parseFloat(solBalance.solUsdValue),
-            decimals: 9,
-            logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
-            isNft: false,
-            description: 'Solana Native Token',
-            tokenAddress: 'So11111111111111111111111111111111111111112',
-            mintAddress: 'So11111111111111111111111111111111111111112',
-            cid: null
-          }] : []),
-          ...tokens.map(token => ({
-            ...token,
-            name: token.name || 'Unknown Token',
-            symbol: token.symbol || '???',
-            amount: token.amount || 0,
-            usdValue: token.usdValue || 0,
-            decimals: token.decimals || 0,
-            logo: token.logo || '',
-            isNft: token.isNft || false,
-            description: token.description || '',
-            tokenAddress: token.tokenAddress || '',
-            cid: token.cid || null
-          }))
-        ],
-        totalValue: updatedTotalValue,
-        investmentPlan: undefined
-      }
+
+    // Fetch holdings data
+    const holdingsResponse = await fetch(`${BASE_URL}/api/users/holdings?address=${user}`);
+    const holdingsData: HoldingsResponse = await holdingsResponse.json();
+
+    // Extract native SOL balance and price info
+    const nativeBalance = holdingsData.result.nativeBalance;
+    const solBalance = {
+      solBalance: (nativeBalance.lamports / 1e9).toString(),
+      solUsdValue: nativeBalance.total_price.toString()
     };
 
-    // Calculate current allocations
-    const currentAllocations = profileData.profile.holdings
-      .filter(token => token.usdValue > 0)
-      .sort((a, b) => b.usdValue - a.usdValue)
-      .map(token => ({
-        asset: token.symbol || 'Unknown',
+    // Process token items with enhanced information
+    const tokens = holdingsData.result.items.map((item: TokenItem) => {
+      // Add null checks for tokenInfo and content
+      const tokenInfo = item.token_info || {};
+      const content = item.content || { metadata: {}, links: {} };
+      const metadata = content.metadata || {};
+      const links = content.links || {};
+
+      return {
+        name: metadata.name || 'Unknown Token',
+        symbol: metadata.symbol || 'UNKNOWN',
+        amount: tokenInfo.balance ? tokenInfo.balance / Math.pow(10, tokenInfo.decimals || 0) : 0,
+        usdValue: tokenInfo.price_info?.total_price || 0,
+        decimals: tokenInfo.decimals || 0,
+        logo: links.image || '',
+        isNft: item.interface === 'NFT',
+        description: metadata.description || '',
+        tokenAddress: item.id || '',
+        mintAddress: item.id || '',
+        cid: null,
+        tokenProgram: tokenInfo.token_program || '',
+        associatedTokenAddress: tokenInfo.associated_token_address || '',
+        pricePerToken: tokenInfo.price_info?.price_per_token || 0,
+        priceCurrency: tokenInfo.price_info?.currency || 'USDC',
+        supply: tokenInfo.supply || 0,
+        isFrozen: item.ownership?.frozen || false,
+        isDelegated: item.ownership?.delegated || false,
+        authorities: (item.authorities || []).map(auth => ({
+          address: auth.address || '',
+          scopes: auth.scopes || []
+        })),
+        royalty: item.royalty || {},
+        creators: item.creators || []
+      };
+    });
+
+    // Sort tokens by USD value
+    const sortedTokens = tokens.sort((a: TokenData, b: TokenData) => b.usdValue - a.usdValue);
+
+    // Calculate total value including SOL
+    const totalValue = sortedTokens.reduce((sum: number, token: TokenData) => sum + token.usdValue, 0);
+    const updatedTotalValue = totalValue + nativeBalance.total_price;
+
+    // Calculate allocations for chart
+    const currentAllocations = [
+      {
+        asset: 'SOL',
+        percentage: (nativeBalance.total_price / updatedTotalValue) * 100
+      },
+      ...sortedTokens.map(token => ({
+        asset: token.symbol,
         percentage: (token.usdValue / updatedTotalValue) * 100
-      }));
+      }))
+    ].filter(allocation => allocation.percentage > 0.1); // Filter out tiny allocations
 
-    return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900/50">
-        {/* Header Section */}
-        <div className="w-full bg-white dark:bg-gray-800 shadow-sm">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-            <div className="flex flex-col lg:flex-row gap-8">
-              {/* User Info */}
-              <div className="lg:w-1/3">
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  {profileData.profile.username}&apos;s Portfolio
-                </h1>
-                <p className="text-sm text-gray-500 mt-1 break-all">{profileData.profile.walletAddress}</p>
-                <div className="mt-6">
-                  <p className="text-sm text-gray-500">Total Value</p>
-                  <p className="text-3xl font-bold text-pink-500">${updatedTotalValue.toFixed(2)}</p>
-                </div>
-              </div>
-              
-              {/* Allocation Chart */}
-              <div className="lg:w-2/3">
-                <Card className="h-[400px] lg:h-[350px]">
-                  <CardContent className="h-full p-4">
-                    <div className="flex flex-col h-full">
-                      <h2 className="text-lg font-semibold">Portfolio Allocation</h2>
-                      <div className="flex-1 min-h-0 w-full">
-                        <ClientAllocationChart allocations={currentAllocations} />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
-        </div>
+    // Create a basic profile object
+    const profile: Profile = {
+      username: userProfile[0]?.username || 'User',
+      walletAddress: user,
+      holdings: [
+        {
+          name: 'Solana',
+          symbol: 'SOL',
+          amount: parseFloat(solBalance.solBalance),
+          usdValue: parseFloat(solBalance.solUsdValue),
+          decimals: 9,
+          logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+          isNft: false,
+          description: 'Solana Native Token',
+          tokenAddress: 'So11111111111111111111111111111111111111112',
+          mintAddress: 'So11111111111111111111111111111111111111112',
+          cid: null,
+          pricePerToken: nativeBalance.price_per_sol
+        },
+        ...sortedTokens
+      ],
+      totalValue: updatedTotalValue
+    };
 
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-            {/* Left Column - Holdings */}
-            <div className="space-y-4">
-              <div className="sticky top-4">
-                <h2 className="text-xl font-semibold mb-4">Holdings</h2>
-                <div className="overflow-y-auto max-h-[calc(100vh-300px)]">
-                  <Suspense fallback={<LoadingProfile />}>
-                    <UserInvestmentPlan
-                      profile={profileData.profile}
-                      isWalletAddress={isWalletAddress}
-                    />
-                  </Suspense>
-                </div>
-              </div>
-            </div>
-            
-            {/* Right Column - Tweets */}
-            <div className="space-y-4">
-              <h2 className="text-xl font-semibold mb-4">Recent Tweets</h2>
-              <div className="overflow-y-auto max-h-[calc(100vh-300px)] pr-4 rounded-lg">
-                <Suspense fallback={<LoadingProfile />}>
-                  <UserTweets tweets={userTweets} />
-                </Suspense>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
+    // Fetch market data for investment plan generation
+    let investmentPlan = null;
+    try {
+      // Fetch market data, fear/greed index, and sector performance
+      const [marketData, fearGreedValue, sectorPerformance] = await Promise.all([
+        fetchCryptoTrends(),
+        fetchFearGreedIndex(),
+        fetchSectorPerformance()
+      ]);
+
+      // Generate investment plan using the server-side API route
+      const investmentPlanResponse = await fetch(`${BASE_URL}/api/generate-investment-plan`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          fearGreedValue,
+          sectorPerformance,
+          marketData,
+          userPortfolio: profile,
+          username: profile.username
+        }),
+      });
+
+      if (!investmentPlanResponse.ok) {
+        throw new Error(`HTTP error! Status: ${investmentPlanResponse.status}`);
+      }
+
+      investmentPlan = await investmentPlanResponse.json();
+      
+      // Update profile with the generated investment plan
+      profile.investmentPlan = investmentPlan;
+    } catch (error) {
+      console.error('Error generating investment plan:', error);
+      // Continue without investment plan if there's an error
+    }
+
+    return <UserProfileContainer profile={profile} tweets={userTweets} />;
   } catch (error) {
     console.error('Error loading profile:', error);
-    return <div>Error loading profile</div>
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-lg shadow-md max-w-md">
+          <h2 className="text-2xl font-bold text-red-500 mb-4">Error Loading Profile</h2>
+          <p className="text-gray-600 dark:text-gray-300 mb-4">
+            We encountered an error while loading the profile data. This could be due to:
+          </p>
+          <ul className="text-left text-gray-600 dark:text-gray-300 mb-6 list-disc pl-5">
+            <li>Invalid wallet address</li>
+            <li>Network connectivity issues</li>
+            <li>Temporary service disruption</li>
+          </ul>
+          <p className="text-gray-600 dark:text-gray-300">
+            Please try again later or contact support if the issue persists.
+          </p>
+        </div>
+      </div>
+    );
   }
 }

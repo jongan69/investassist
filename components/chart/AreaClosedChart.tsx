@@ -1,16 +1,19 @@
 // @ts-nocheck
 "use client"
+
 import { memo, useCallback, useMemo, useReducer } from "react"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+
 import { scalePoint } from "d3-scale"
 import { bisectRight } from "d3-array"
-
 import { localPoint } from "@visx/event"
 import { LinearGradient } from "@visx/gradient"
 import { AreaClosed, LinePath } from "@visx/shape"
 import { scaleLinear } from "@visx/scale"
 import { ParentSize } from "@visx/responsive"
-import { Button } from "../ui/button"
-import { usePathname, useRouter, useSearchParams } from "next/navigation"
+
+import { Button } from "@/components/ui/button"
+
 import { DEFAULT_RANGE } from "@/lib/yahoo-finance/constants"
 import { Range } from "@/lib/yahoo-finance/types"
 

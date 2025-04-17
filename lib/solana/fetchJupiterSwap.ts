@@ -1,5 +1,5 @@
-import { JUPITER } from "./constants";
-import { getTokenInfo } from "./fetchDefaultTokenData";
+import { JUPITER } from "@/lib/utils/constants";
+import { getTokenInfo } from "@/lib/solana/fetchDefaultTokenData";
 
 export const fetchJupiterSwap = async (id: string | undefined) => {
   try {

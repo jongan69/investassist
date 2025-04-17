@@ -1,4 +1,4 @@
-import { INVEST_ASSIST_MINT } from "./constants";
+import { INVEST_ASSIST_MINT } from "@/lib/utils/constants";
 
 const URL = process.env.NEXT_PUBLIC_BASE_URL!;
 

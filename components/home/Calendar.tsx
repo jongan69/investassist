@@ -1,14 +1,16 @@
 "use client"
-import { fetchCalendar } from "@/lib/markets/fetchCalendar"
+
+import { useEffect, useState } from "react"
+import { useTheme } from "next-themes"
+import { motion } from "framer-motion"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { useTheme } from "next-themes"
-import { cn } from "@/lib/utils/utils"
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { cn } from "@/lib/utils/utils"
+import { fetchCalendar } from "@/lib/markets/fetchCalendar"
 
 interface CalendarEvent {
     Date: string

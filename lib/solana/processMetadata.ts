@@ -1,6 +1,6 @@
-import { DEXSCREENER } from "./constants";
+import { DEXSCREENER } from "../utils/constants";
 import { getDexScreenerData } from "./fetchDexData";
-import { DEFAULT_IMAGE_URL } from "./constants";
+import { DEFAULT_IMAGE_URL } from "../utils/constants";
 
 interface TokenInfo {
     name: string;

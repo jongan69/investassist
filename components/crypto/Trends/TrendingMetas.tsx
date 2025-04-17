@@ -2,9 +2,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { fetchTrendingMetas } from '@/lib/solana/fetchTrendingMetas';
-import { Card } from '@/components/ui/card';
-import { motion } from 'framer-motion';
-import { useTheme } from 'next-themes';
 import { cn } from "@/lib/utils/utils";
 
 interface TrendingMeta {
@@ -18,30 +15,15 @@ interface TrendingMeta {
 }
 
 export const TrendingMetas: React.FC = () => {
-  const { resolvedTheme } = useTheme();
   const [trendingMetas, setTrendingMetas] = useState<TrendingMeta[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchTrendingMetas(setTrendingMetas, setIsLoading, setError);
+    const trendingMetas = async () => {
+      const trendingMetasData = await fetchTrendingMetas();
+      setTrendingMetas(trendingMetasData);
+    }
+    trendingMetas();
   }, []);
-
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center p-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-4 text-destructive bg-destructive/10 rounded-lg py-4 my-4">
-        {error}
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">

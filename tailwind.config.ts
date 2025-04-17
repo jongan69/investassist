@@ -82,12 +82,23 @@ const config = {
           '80%': { transform: 'translateY(-40px) scale(1)', opacity: '0.8' },
           '100%': { transform: 'translateY(-50px) scale(0.95)', opacity: '0' }
         },
+        "progress-indeterminate": {
+          '0%': { backgroundPosition: '200% 0' },
+          '100%': { backgroundPosition: '-200% 0' }
+        },
+        "pulse-ring": {
+          '0%': { transform: 'scale(0.8)', opacity: '0.5' },
+          '50%': { transform: 'scale(1.2)', opacity: '0.3' },
+          '100%': { transform: 'scale(0.8)', opacity: '0.5' }
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "skeleton": "skeleton ease-in-out infinite",
         "float-bubble": "float-bubble 2s ease-out forwards",
+        "progress-indeterminate": "progress-indeterminate 1.5s ease infinite",
+        "pulse-ring": "pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
       },
       backgroundSize: {
         "size-200": "200% 200%",

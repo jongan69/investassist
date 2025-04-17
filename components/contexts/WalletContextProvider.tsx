@@ -4,7 +4,7 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui"
 import * as walletAdapterWallets from '@solana/wallet-adapter-wallets'
 import * as web3 from '@solana/web3.js';
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { HELIUS } from '@/lib/solana/constants';
+import { HELIUS } from '@/lib/utils/constants';
 import '../../styles/custom-wallet-styles.css'; // Custom wallet Button styles
 import { getProfileByWalletAddress } from '@/lib/users/getProfileByWallet';
 import { saveUser } from '@/lib/users/saveUser';

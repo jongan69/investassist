@@ -1,4 +1,4 @@
-import { INVEST_ASSIST_MINT } from '@/lib/solana/constants'
+import { INVEST_ASSIST_MINT } from '@/lib/utils/constants'
 
 const contractAddress = INVEST_ASSIST_MINT
 export async function GET() {

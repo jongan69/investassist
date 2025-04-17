@@ -1,9 +1,11 @@
 import { Suspense } from "react"
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import MarketSummary from '@/components/stocks/MarketSummary'
 import TrendingStocks from "@/components/stocks/Trending"
-import NewsSection from "@/components/NewsSection"
+import NewsSection from "@/components/home/NewsSection"
 import SectorPerformance from "@/components/stocks/SectorPerformance"
+
 import { fetchStockSearch } from "@/lib/yahoo-finance/fetchStockSearch"
 import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
 import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
@@ -11,6 +13,8 @@ import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest
 import { fetchWithTimeout, handleApiError, processBatch } from "@/lib/utils/utils"
 import { fetchCalendar } from "@/lib/markets/fetchCalendar"   
 import { fetchFomc } from "@/lib/markets/fetchFomc"
+
+
 export async function MarketSummaryWrapper({
   sentimentColor
 }: {

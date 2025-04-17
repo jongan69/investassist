@@ -1,4 +1,4 @@
-import { DEFAULT_IMAGE_URL } from "@/lib/solana/constants";
+import { DEFAULT_IMAGE_URL } from "@/lib/utils/constants";
 export const fetchIpfsMetadata = async (cid: string) => {
   try {
     if (!cid) {

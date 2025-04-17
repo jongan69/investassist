@@ -1,4 +1,4 @@
-import { DEFAULT_IMAGE_URL } from "@/lib/solana/constants";
+import { DEFAULT_IMAGE_URL } from "@/lib/utils/constants";
 import { NextResponse } from 'next/server';
 
 export const runtime = 'edge';

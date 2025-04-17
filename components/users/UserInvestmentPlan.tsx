@@ -1,9 +1,13 @@
 "use client"
+
 import React, { useState } from 'react';
-import { Profile, BaseInvestmentPlan } from '@/types/users';
+
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, Wallet, PieChart as PieChartIcon } from "lucide-react";
-import ProfileHeader from './ProfileHeader';
+
+import UserProfileContainer from './UserProfileContainer';
+
+import { Profile, BaseInvestmentPlan } from '@/types/users';
+
 interface UserInvestmentPlanProps {
     profile: Profile;
     marketData?: any[];
@@ -16,10 +20,13 @@ interface UserInvestmentPlanProps {
         changesPercentage: string;
     }[];
     isWalletAddress?: boolean;
+    tweets?: any[];
 }
 
 const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({
-    profile }) => {
+    profile,
+    tweets = []
+}) => {
     const [generatedPlan, setGeneratedPlan] = useState<BaseInvestmentPlan | null>(null);
 
     if (!profile) {
@@ -47,7 +54,15 @@ const UserInvestmentPlan: React.FC<UserInvestmentPlanProps> = ({
         );
     }
 
-    return <ProfileHeader profile={profile} />;
+    // If we have a generated plan, update the profile with it
+    if (generatedPlan) {
+        profile = {
+            ...profile,
+            investmentPlan: generatedPlan
+        };
+    }
+
+    return <UserProfileContainer profile={profile} tweets={tweets} />;
 };
 
 export default UserInvestmentPlan;

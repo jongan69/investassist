@@ -50,7 +50,8 @@ export default function CryptoTrends({ data }: { data: any }) {
         try {
             setIsTweetsLoading(true);
             setTweetsError(null);
-            await fetchLatestTweets(setLatestTweets, setIsTweetsLoading, setTweetsError);
+            const latestTweets = await fetchLatestTweets();
+            setLatestTweets(latestTweets);
         } catch (error) {
             console.error('Error refreshing tweets:', error);
             if (isMountedRef.current) {
@@ -64,7 +65,8 @@ export default function CryptoTrends({ data }: { data: any }) {
         try {
             setIsCasLoading(true);
             setCasError(null);
-            await fetchTweetedCas(setTweetedCas, setIsCasLoading, setCasError);
+            const tweetedCas = await fetchTweetedCas();
+            setTweetedCas(tweetedCas);
         } catch (error) {
             console.error('Error refreshing CAS:', error);
             if (isMountedRef.current) {
@@ -86,11 +88,17 @@ export default function CryptoTrends({ data }: { data: any }) {
             abortControllerRef.current = new AbortController();
 
             try {
-                await Promise.all([
-                    fetchCryptoTrends(setTrends, setIsTrendsLoading, setTrendsError),
-                    fetchLatestTweets(setLatestTweets, setIsTweetsLoading, setTweetsError),
-                    fetchTweetedCas(setTweetedCas, setIsCasLoading, setCasError)
+
+
+
+                const [latestTweets, tweetedCas, trendsData] = await Promise.all([
+                    fetchLatestTweets(),
+                    fetchTweetedCas(),
+                    fetchCryptoTrends()
                 ]);
+                setLatestTweets(latestTweets);
+                setTweetedCas(tweetedCas);
+                setTrends(trendsData);
             } catch (error) {
                 if (error instanceof Error && error.name === 'AbortError') {
                     console.log('Fetch aborted');
@@ -116,7 +124,7 @@ export default function CryptoTrends({ data }: { data: any }) {
     }, []);
 
     // Memoized loading state
-    const isLoading = useMemo(() => 
+    const isLoading = useMemo(() =>
         isTrendsLoading || isTweetsLoading || isCasLoading,
         [isTrendsLoading, isTweetsLoading, isCasLoading]
     );
@@ -128,7 +136,7 @@ export default function CryptoTrends({ data }: { data: any }) {
         <div className="space-y-8">
             <LaunchLab />
             <AxiomPulse />
-            
+
             <Card className="max-w-full mx-auto">
                 <CardHeader>
                     <div className="flex items-center justify-between">
@@ -160,7 +168,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                             <TrendingMetas />
                             {trends?.topTweetedTickers?.length > 0 && <TopTweeted trends={trends} />}
                             <WhaleActivity trends={trends} />
-                          
+
                         </Fragment>
                     ) : (
                         <p className="text-sm text-muted-foreground">
@@ -169,9 +177,9 @@ export default function CryptoTrends({ data }: { data: any }) {
                     )}
                 </CardContent>
             </Card>
-            
+
             <TrendingVideos />
-            
+
             {(!isCasLoading && tweetedCas && tweetedCas.length === 0) && (
                 <div className="flex justify-center mt-4">
                     <button
@@ -183,9 +191,9 @@ export default function CryptoTrends({ data }: { data: any }) {
                     </button>
                 </div>
             )}
-            
+
             <TweetedCas tweetedCas={tweetedCas} isCasLoading={isCasLoading} casError={casError ?? ''} />
-            
+
             {(!isTweetsLoading && latestTweets && latestTweets.length === 0) && (
                 <div className="flex justify-center mt-4">
                     <button
@@ -197,7 +205,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                     </button>
                 </div>
             )}
-            
+
             <LatestTweets latestTweets={latestTweets} isTweetsLoading={isTweetsLoading} tweetsError={tweetsError ?? ''} />
         </div>
     );

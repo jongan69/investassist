@@ -8,14 +8,8 @@ interface TrendingMeta {
   url: string;
 }
 
-export const fetchTrendingMetas = async (
-  setTrendingMetas: (trendingMetas: TrendingMeta[]) => void,
-  setIsLoading: (isLoading: boolean) => void,
-  setError: (error: string | null) => void
-) => {
+export const fetchTrendingMetas = async () => {
   try {
-    setIsLoading(true);
-    setError(null);
     const response = await fetch('/api/combinedTrending', { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -25,12 +19,9 @@ export const fetchTrendingMetas = async (
     //     throw new Error('Invalid API response format');
     // }
     // console.log(data);
-    setTrendingMetas(data);
+    return data;
   } catch (error) {
     console.error('Error fetching trending metas:', error);
-    setError('Failed to load Trending Metas');
-    setTrendingMetas([]);
-  } finally {
-    setIsLoading(false);
+    return [];
   }
 };

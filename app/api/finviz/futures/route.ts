@@ -1,7 +1,9 @@
+import { MARKET_API } from "@/lib/utils/constants";
+
 export async function GET() {
     try {
         // console.log('API route: Fetching calendar data...');
-        const URL = `https://marketapi-mu83.onrender.com/futures`;
+        const URL = `${MARKET_API}/futures`;
         // console.log('External API URL:', URL);
         
         // Add timeout to the fetch request

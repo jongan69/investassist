@@ -15,9 +15,9 @@ import { fetchIpfsMetadata } from "./fetchIpfsMetadata";
 import { extractCidFromUrl } from "./extractCidUrl";
 import { processTokenMetadata } from "./processMetadata";
 import { withRetry } from "./withRetry";
-import { HELIUS, JUPITER } from "./constants";
+import { HELIUS, JUPITER } from "../utils/constants";
 import { getDefaultTokenMetadata, getTokenInfo } from "./fetchDefaultTokenData";
-import { DEFAULT_IMAGE_URL } from "./constants";
+import { DEFAULT_IMAGE_URL } from "../utils/constants";
 
 // Initialize connection and metaplex
 const connection = new Connection(HELIUS as string);
@@ -95,18 +95,37 @@ async function withExponentialBackoff<T>(
 
 export interface TokenData {
   name: string;
-  mintAddress: string;
-  tokenAddress: string;
-  amount: number;
-  decimals: number;
-  usdValue: number;
   symbol: string;
+  amount: number;
+  usdValue: number;
+  decimals: number;
   logo: string;
-  cid: null;
   isNft: boolean;
-  collectionName?: string;
-  collectionLogo?: string;
-  description?: string;
+  description: string;
+  tokenAddress: string;
+  mintAddress: string;
+  cid: string | null;
+  // Additional token information
+  tokenProgram?: string;
+  associatedTokenAddress?: string;
+  pricePerToken?: number;
+  priceCurrency?: string;
+  supply?: number | null;
+  isFrozen?: boolean;
+  isDelegated?: boolean;
+  authorities?: Array<{
+    address: string;
+    scopes: string[];
+  }>;
+  royalty?: {
+    royalty_model: string;
+    target: null;
+    percent: number;
+    basis_points: number;
+    primary_sale_happened: boolean;
+    locked: boolean;
+  } | null;
+  creators?: any[];
 }
 
 interface ParsedTokenAccountData {

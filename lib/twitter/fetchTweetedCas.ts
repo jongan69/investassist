@@ -1,10 +1,9 @@
 import { getTokenInfo } from '../solana/fetchDefaultTokenData';
 
-export const fetchTweetedCas = async (setTweetedCas: (tweetedCas: any) => void, setIsLoading: (isLoading: boolean) => void, setError: (error: string | null) => void) => {
+export const fetchTweetedCas = async () => {
     try {
-        setIsLoading(true);
-        setError(null);
-        const response = await fetch('/api/twitter/twitter-cas');
+        const URL = process.env.NEXT_PUBLIC_BASE_URL;
+        const response = await fetch(`${URL}/api/twitter/twitter-cas`);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -54,15 +53,12 @@ export const fetchTweetedCas = async (setTweetedCas: (tweetedCas: any) => void, 
                 }
             }
 
-            setTweetedCas(enrichedData);
+            return enrichedData;
         } else {
-            setTweetedCas([]);
+            return [];
         }
     } catch (error) {
         console.error('Error fetching Twitter trending cas:', error);
-        setError('Failed to load Twitter trending cas');
-        setTweetedCas([]); // Set empty array instead of null to prevent null checks
-    } finally {
-        setIsLoading(false);
+        return [];
     }
 };

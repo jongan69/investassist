@@ -1,3 +1,5 @@
+import { MARKET_API } from "../utils/constants";
+
 export async function fetchFomc() {
     try {
         // console.log('Fetching calendar data...');
@@ -64,7 +66,7 @@ export async function fetchFomc() {
         // Try a fallback to the external API directly if the internal API fails
         try {
             console.log('Attempting fallback to external API...');
-            const externalUrl = 'https://marketapi-mu83.onrender.com/fomc/latest';
+            const externalUrl = `${MARKET_API}/fomc/latest`;
             // console.log('External API URL:', externalUrl);
             
             const controller = new AbortController();

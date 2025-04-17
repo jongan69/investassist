@@ -1,7 +1,4 @@
-import { useTheme } from 'next-themes';
-
 export function Overview({ trends, data }: { trends: any, data: any }) {
-    const { resolvedTheme } = useTheme();
     return (
         <div className="prose prose-sm prose-invert max-w-full py-4">
             <div className="overflow-hidden rounded-lg shadow-sm ring-1 ring-border">

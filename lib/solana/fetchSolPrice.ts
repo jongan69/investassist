@@ -1,4 +1,4 @@
-import { SOL_MINT } from "./constants";
+import { SOL_MINT } from "../utils/constants";
 import { fetchJupiterSwap } from "./fetchJupiterSwap";
 
 export async function fetchSolPrice() {

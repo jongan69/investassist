@@ -26,14 +26,11 @@ import {
   ArrowDown, 
   Search, 
   RefreshCw,
-  ChevronDown,
-  ChevronUp,
   Maximize2,
   Minimize2,
   ExternalLink
 } from 'lucide-react';
 import Switch from '@/components/ui/switch';
-import Label from '@/components/ui/label';
 
 // Define the type for insider trading data
 interface InsiderTrade {

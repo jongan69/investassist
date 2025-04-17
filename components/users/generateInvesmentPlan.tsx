@@ -1,7 +1,9 @@
-import { saveInvestmentPlan } from "./saveInvestmentPlan";
-import { categorizeTokens } from '@/lib/solana/categorizeTokens';
+import { saveInvestmentPlan } from "@/lib/users/saveInvestmentPlan";
+import { categorizeTokens } from "@/lib/solana/categorizeTokens";
 
-export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerformance: any, marketData: any[], userPortfolio: any, username: string) => {
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerformance: any, marketData: any, userPortfolio: any, username: string) => {
     const formattedSectorPerformance = sectorPerformance?.map((sector: any) => ({
         sector: sector.sector,
         performance: parseFloat(sector.changesPercentage.replace('%', ''))
@@ -39,7 +41,10 @@ export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerforma
     }
 
     try {
-        const response = await fetch('/api/generate-investment-plan', {
+        // Check if marketData is an array or an object
+        const isMarketDataArray = Array.isArray(marketData);
+        
+        const response = await fetch(`${BASE_URL}/api/generate-investment-plan`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -48,21 +53,32 @@ export const generateInvestmentPlan = async (fearGreedValue: any, sectorPerforma
                 fearGreedValue,
                 sectorPerformance: formattedSectorPerformance,
                 marketData: {
-                    cryptoMarket: {
+                    cryptoMarket: isMarketDataArray ? {
                         bitcoin: marketData.find(d => d.symbol === 'BTC-USD')?.regularMarketPrice,
                         ethereum: marketData.find(d => d.symbol === 'ETH-USD')?.regularMarketPrice,
                         solana: marketData.find(d => d.symbol === 'SOL-USD')?.regularMarketPrice,
+                    } : {
+                        bitcoin: marketData?.bitcoinPrice ? parseFloat(marketData.bitcoinPrice.replace(',', '')) : null,
+                        ethereum: marketData?.ethereumPrice ? parseFloat(marketData.ethereumPrice.replace(',', '')) : null,
+                        solana: marketData?.solanaPrice ? parseFloat(marketData.solanaPrice.replace(',', '')) : null,
                     },
-                    indices: {
+                    indices: isMarketDataArray ? {
                         sp500: marketData.find(d => d.symbol === 'ES=F')?.regularMarketPrice,
                         nasdaq: marketData.find(d => d.symbol === 'NQ=F')?.regularMarketPrice,
                         dowJones: marketData.find(d => d.symbol === 'YM=F')?.regularMarketPrice,
+                    } : {
+                        sp500: null,
+                        nasdaq: null,
+                        dowJones: null,
                     },
-                    commodities: {
+                    commodities: isMarketDataArray ? {
                         gold: marketData.find(d => d.symbol === 'GC=F')?.regularMarketPrice,
                         silver: marketData.find(d => d.symbol === 'SI=F')?.regularMarketPrice,
+                    } : {
+                        gold: null,
+                        silver: null,
                     },
-                    tenYearYield: marketData.find(d => d.symbol === '^TNX')?.regularMarketPrice,
+                    tenYearYield: isMarketDataArray ? marketData.find(d => d.symbol === '^TNX')?.regularMarketPrice : null,
                 },
                 userPortfolio: {
                     totalValue: updatedPortfolioValue,

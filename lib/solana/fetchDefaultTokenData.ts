@@ -1,4 +1,4 @@
-import { DEXSCREENER } from "./constants";
+import { DEXSCREENER } from "@/lib/utils/constants";
 
 interface TokenInfo {
   name: string;

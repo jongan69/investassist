@@ -1,3 +1,5 @@
+import { MARKET_API } from "@/lib/utils/constants";
+
 export async function GET(request: Request) {
     try {
         // Get the option parameter from the URL
@@ -5,7 +7,7 @@ export async function GET(request: Request) {
         const option: string | null = url.searchParams.get('option');
         
         // Construct the URL based on the option
-        const baseURL = 'https://marketapi-mu83.onrender.com/insider';
+        const baseURL = `${MARKET_API}/insider`;
         const apiURL = option 
             ? `${baseURL}?option=${option}` 
             : baseURL;

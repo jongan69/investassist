@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import {
   Body,
   Column,
@@ -133,7 +133,6 @@ export const WelcomeEmail: React.FC<Readonly<WelcomeEmailProps>> = ({
   </Html>
 );
 
-export default WelcomeEmail;
 
 const main = {
   backgroundColor: '#f6f9fc',

@@ -100,15 +100,20 @@ export default function CommandMenu() {
   }, [search]);
 
   useEffect(() => {
-    if (open) {
-      fetchCryptoTrends(setTrends, setIsLoading, setError);
-    } else {
-      // Reset states when closing
-      setTrends(null);
-      setTopTweetedTickers([]);
-      setIsLoading(true);
-      setError(null);
-    }
+    const fetchData = async () => {
+      if (open) {
+        const trendsData = await fetchCryptoTrends();
+        setTrends(trendsData);
+      } else {
+        // Reset states when closing
+        setTrends(null);
+        setTopTweetedTickers([]);
+        setIsLoading(true);
+        setError(null);
+      }
+    };
+    
+    fetchData();
   }, [open]);
 
   useEffect(() => {

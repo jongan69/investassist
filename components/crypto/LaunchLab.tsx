@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { fetchLaunchlab } from '@/lib/launchlab/fetchlaunchlab';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, ArrowUpDown } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 import {
   Select,
   SelectContent,

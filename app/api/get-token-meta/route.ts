@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { HELIUS } from "@/lib/solana/constants";
+import { HELIUS } from "@/lib/utils/constants";
 
 // Helper function to chunk array into smaller arrays
 function chunkArray<T>(array: T[], size: number): T[][] {

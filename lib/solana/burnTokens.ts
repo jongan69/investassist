@@ -1,7 +1,7 @@
 import { Connection, PublicKey, Transaction, sendAndConfirmTransaction } from "@solana/web3.js";
 import { getAssociatedTokenAddress, createBurnInstruction } from "@solana/spl-token";
 import { WalletContextState } from "@solana/wallet-adapter-react";
-import { INVEST_ASSIST_MINT_DECIMALS } from "./constants";
+import { INVEST_ASSIST_MINT_DECIMALS } from "../utils/constants";
 
 export const burnTokens = async (mintAddress: string, wallet: WalletContextState, amount: number, connection: Connection): Promise<string | null> => {
     try {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { INVEST_ASSIST_MINT, MOONSHOT_LINK } from "@/lib/solana/constants";
+import { INVEST_ASSIST_MINT, MOONSHOT_LINK } from "@/lib/utils/constants";
 import TradingStats from './TradingStats';
 import ParallaxHeader from './ParallaxHeader';
 import BackToTopButton from './BackToTopButton';
