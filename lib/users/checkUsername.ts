@@ -10,7 +10,7 @@ export const checkUsername = async (username: string) => {
         const profile = await getProfileByUsername(username);
         console.log('Has profile:', profile?.exist);
 
-        if (profile?.exist || !hasTwitterFollowers) {
+        if (profile?.exist) {
             console.log('Username', username, 'already exists in mongo or has no followers');
             return false;
         }

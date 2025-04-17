@@ -33,7 +33,7 @@ const ProfileForm = () => {
         const isUsernameAvailable = await checkUsername(username);
         console.log('Is username available:', isUsernameAvailable);
         if (!isUsernameAvailable) {
-            setError('Username is already taken or has no followers on Twitter');
+            setError('Username is already taken');
             setIsSubmitting(false);
             return;
         }
