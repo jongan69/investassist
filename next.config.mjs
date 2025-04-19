@@ -11,6 +11,7 @@ const nextConfig = {
         ]
     },
     webpack: (config, { isServer }) => {
+        config.resolve.alias.canvas = false;
         if (!isServer) {
           config.resolve.fallback = {
             ...config.resolve.fallback,
@@ -18,7 +19,13 @@ const nextConfig = {
           };
         }
         return config;
-      },
+    },
+    logging: {
+        level: 'verbose',
+        fetches: {
+            fullUrl: true,
+        },
+    },
 };
 
 const withBundleAnalyzer = bundleAnalyzer({
