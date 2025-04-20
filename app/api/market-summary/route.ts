@@ -1,5 +1,6 @@
 import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
+import { AI_API } from '@/lib/utils/constants';
 
 let deepseekOpenAI = new OpenAI({
   baseURL: 'https://api.deepseek.com',
@@ -53,7 +54,7 @@ function formatEconomicEvents(calendar: any[]) {
 // Helper function to call the fallback API
 async function callFallbackAPI(prompt: string) {
   try {
-    const response = await fetch('https://aiapi-tno8.onrender.com/chat', {
+    const response = await fetch(`${AI_API}/chat`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

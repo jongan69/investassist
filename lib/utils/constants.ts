@@ -26,3 +26,4 @@ export const COST_OF_INVESTMENT_PLAN = 1000;
 // export const NETWORK = "https://api.mainnet-beta.solana.com"; // for mainnet
 
 export const MARKET_API = "https://marketapi-mu83.onrender.com"
+export const AI_API = "https://aiapi-tno8.onrender.com"
