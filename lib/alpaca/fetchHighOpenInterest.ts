@@ -27,7 +27,7 @@ export const getOptionPrices = async (contract: { symbol: string }): Promise<Opt
         if (!response.ok) {
             if (response.status === 429) {
                 console.warn(`Rate limit hit for option prices, waiting before retry`);
-                return getOptionPrices(contract);
+                return null;
             }
             console.error(`Error fetching option prices: ${response.status} ${response.statusText}`);
             return null;

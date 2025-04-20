@@ -16,16 +16,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import BitcoinTrendAnalysis from "@/components/home/BitcoinTrendAnalysis"
-import { 
-  MarketSummaryWrapper, 
-  TrendingStocksWrapper, 
-  NewsSectionWrapper, 
-  SectorPerformanceWrapper 
-} from "@/components/home/WrapperComponents"
-import { EmailSignupPrompt } from "@/components/home/EmailSignupPrompt"
 
-// Internal utility/type imports
+// Internal type imports
 import { DEFAULT_INTERVAL, DEFAULT_RANGE } from "@/lib/yahoo-finance/constants"
 import { Interval } from "@/types/yahoo-finance"
 import {
@@ -33,18 +25,33 @@ import {
   validateRange,
 } from "@/lib/yahoo-finance/fetchChartData"
 
+// Internal utility imports
 import { fetchStockNews } from "@/lib/alpaca/fetchStockNews"
 import { tickersFutures, tickerAfterOpen, isMarketOpen } from "@/lib/utils/utils"
 import { getMarketSentiment } from "@/lib/utils/marketSentiment"
-import { TrendingTopics } from "@/components/crypto/Trends/TrendingTopics"
-import { CarPriceIndex } from "@/components/automotive/CarPriceIndex"
-import { FuturesTable } from "@/components/home/FuturesTable"
 
-import RealEstateMarketTrends from "@/components/realestate/RealEstateMarketTrends"
-import BoxOffice from "@/components/crypto/BoxOffice"
-import TrumpPosts from "@/components/truthsocial/TrumpPosts"
+// Home page component imports
+import BitcoinTrendAnalysis from "@/components/home/BitcoinTrendAnalysis"
+import { 
+  MarketSummaryWrapper, 
+  TrendingStocksWrapper, 
+  NewsSectionWrapper, 
+  SectorPerformanceWrapper 
+} from "@/components/home/WrapperComponents"
+import TradingReports from "@/components/home/TradingReports"
+import { EmailSignupPrompt } from "@/components/home/EmailSignupPrompt"
+import { FuturesTable } from "@/components/home/FuturesTable"
 import Calendar from "@/components/home/Calendar"
 import InsiderTrading from "@/components/home/InsiderTrading"
+
+// Extra components imports
+import { TrendingTopics } from "@/components/crypto/Trends/TrendingTopics"
+import { CarPriceIndex } from "@/components/automotive/CarPriceIndex"
+import RealEstateMarketTrends from "@/components/realestate/RealEstateMarketTrends"
+import TrumpPosts from "@/components/truthsocial/TrumpPosts"
+import BoxOffice from "@/components/crypto/BoxOffice"
+
+
 
 // Add route segment config
 export const dynamic = 'force-dynamic'
@@ -144,6 +151,9 @@ export default async function Page({ searchParams }: Props) {
             </div>
             <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
               <Calendar />
+            </Suspense>
+            <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+              <TradingReports />
             </Suspense>
             <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
               <RealEstateMarketTrends />

@@ -2,14 +2,21 @@ import { NextResponse } from "next/server";
 import { JSDOM } from "jsdom";
 import Bottleneck from "bottleneck";
 import { PdfDocument, processPdf } from "@/lib/utils/pdf-storage";
+import { z } from "zod";
+import { LRUCache } from "lru-cache";
+
+// Define a schema for request validation
+const HouseRepSearchSchema = z.object({
+  lastName: z.string().optional(),
+  filingYear: z.string().optional(),
+  state: z.string().optional(),
+  district: z.string().optional(),
+  page: z.number().optional(),
+  pageSize: z.number().optional(),
+});
 
 // Define types for the request and response
-interface HouseRepSearchRequest {
-  lastName?: string;
-  filingYear?: string;
-  state?: string;
-  district?: string;
-}
+type HouseRepSearchRequest = z.infer<typeof HouseRepSearchSchema>;
 
 // Interface for the parsed House Representative data
 interface HouseRepData {
@@ -25,41 +32,44 @@ interface HouseRepData {
 // Create a rate limiter for PDF processing
 const limiter = new Bottleneck({
   minTime: 1000, // Minimum 1 second between requests
-  maxConcurrent: 2 // Process max 2 PDFs at a time
+  maxConcurrent: 2, // Process max 2 PDFs at a time
+  reservoir: 10, // Maximum number of jobs that can be queued
+  reservoirRefreshAmount: 10,
+  reservoirRefreshInterval: 60 * 1000, // Refresh every minute
 });
+
+// Create a cache for search results to avoid redundant requests
+const searchResultsCache = new LRUCache<string, HouseRepData[]>({
+  max: 100, // Maximum number of items to store
+  ttl: 1000 * 60 * 60, // 1 hour
+  updateAgeOnGet: true,
+});
+
+// Function to generate a cache key for search results
+function generateSearchCacheKey(request: HouseRepSearchRequest): string {
+  return `${request.lastName || ''}-${request.filingYear || ''}-${request.state || ''}-${request.district || ''}`;
+}
 
 // Function to process a single PDF
 async function processAndStorePdf(url: string, pdfData: HouseRepData): Promise<any> {
   try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    
-    const pdfBuffer = await response.arrayBuffer();
-    
     // Create a PdfDocument object
-    // const pdfDocument = {
-    //   documentUrl: url,
-    //   name: pdfData.name,
-    //   office: pdfData.office,
-    //   filingYear: pdfData.filingYear,
-    //   filingType: pdfData.filingType,
-    //   processingStatus: 'pending' as const,
-    //   processedData: {
-    //     transactions: [],
-    //     summary: {},
-    //     rawText: ''
-    //   }
-    // };
+    const pdfDocument: PdfDocument = {
+      documentUrl: url,
+      name: pdfData.name,
+      office: pdfData.office,
+      filingYear: pdfData.filingYear,
+      filingType: pdfData.filingType,
+      processingStatus: 'pending',
+      processedData: {
+        transactions: [],
+        summary: {},
+        rawText: ''
+      }
+    };
     
     // Process and store the PDF
-    const processedData = await processPdf(pdfData as PdfDocument, pdfBuffer);
-    // console.log('Processed data:', processedData);
-    // Only store if we have a document URL
-    if (!pdfData.documentUrl) {
-      throw new Error('Document URL is required');
-    }
+    const processedData = await processPdf(pdfDocument);
     
     return processedData.processedData.transactions;
   } catch (error) {
@@ -79,8 +89,6 @@ async function queuePdfProcessing(documentUrl: string, pdfData: HouseRepData): P
   // Add to processing queue
   limiter.schedule(() => processAndStorePdf(documentUrl, pdfData))
     .then(result => {
-      // Here you would typically update your database with the processed result
-      // console.log('PDF processed:', result);
       console.log('PDF processed');
     })
     .catch(error => {
@@ -88,37 +96,16 @@ async function queuePdfProcessing(documentUrl: string, pdfData: HouseRepData): P
     });
 }
 
-export async function POST(request: Request) {
+// Function to fetch CSRF token
+async function fetchCsrfToken(): Promise<string> {
   try {
-    // Parse the request body
-    const requestBody: HouseRepSearchRequest = await request.json();
-    
-    // Set default values if not provided
-    const searchParams = {
-      LastName: requestBody.lastName || "",
-      FilingYear: requestBody.filingYear || "2025",
-      State: requestBody.state || "",
-      District: requestBody.district || "",
-      // Note: The __RequestVerificationToken is typically a CSRF token that changes with each session
-      // In a real implementation, you would need to fetch this token first
-      __RequestVerificationToken: "CfDJ8PKifB2d25VIr5FlpzbdlcEZdfTWDxWUuOZ2A1-98XLjUMPzuurwBWeUoQqr7mucWaeZ1a0RbAoheaeOAkhh_kTlQ_J1N-alS0avVzMAJtuRype4dywmHOXJbNUAJZGXaMzanB3e00eKNf7YfP-p4HE"
-    };
-
-    // Convert the search parameters to URL-encoded form data
-    const formData = new URLSearchParams();
-    Object.entries(searchParams).forEach(([key, value]) => {
-      formData.append(key, value);
-    });
-
-    // Make the request to the House Financial Disclosure website
     const response = await fetch(
-      "https://disclosures-clerk.house.gov/FinancialDisclosure/ViewMemberSearchResult",
+      "https://disclosures-clerk.house.gov/FinancialDisclosure/ViewMemberSearch",
       {
-        method: "POST",
+        method: "GET",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: formData.toString(),
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+        }
       }
     );
 
@@ -126,8 +113,134 @@ export async function POST(request: Request) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    // Get the HTML response as text
     const htmlContent = await response.text();
+    const dom = new JSDOM(htmlContent);
+    const document = dom.window.document;
+    
+    // Find the CSRF token in the HTML
+    const tokenElement = document.querySelector('input[name="__RequestVerificationToken"]');
+    if (!tokenElement) {
+      throw new Error('CSRF token not found');
+    }
+    
+    return tokenElement.getAttribute('value') || '';
+  } catch (error) {
+    console.error('Error fetching CSRF token:', error);
+    // Return a fallback token if we can't fetch one
+    return "CfDJ8PKifB2d25VIr5FlpzbdlcEZdfTWDxWUuOZ2A1-98XLjUMPzuurwBWeUoQqr7mucWaeZ1a0RbAoheaeOAkhh_kTlQ_J1N-alS0avVzMAJtuRype4dywmHOXJbNUAJZGXaMzanB3e00eKNf7YfP-p4HE";
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    // Parse the request body
+    const requestBody = await request.json();
+    
+    // Validate the request body
+    const validationResult = HouseRepSearchSchema.safeParse(requestBody);
+    if (!validationResult.success) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: "Invalid request parameters",
+          details: validationResult.error.format()
+        },
+        { status: 400 }
+      );
+    }
+    
+    // Check if we have cached results
+    const cacheKey = generateSearchCacheKey(validationResult.data);
+    const cachedResults = searchResultsCache.get(cacheKey);
+    
+    if (cachedResults) {
+      console.log('Using cached search results');
+      
+      // Apply pagination to cached results if needed
+      const page = validationResult.data.page || 1;
+      const pageSize = validationResult.data.pageSize || 100;
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+      const paginatedResults = cachedResults.slice(start, end);
+      
+      return NextResponse.json({
+        success: true,
+        data: paginatedResults,
+        totalResults: cachedResults.length,
+        cached: true
+      });
+    }
+    
+    // Set default values if not provided
+    const searchParams: {
+      LastName: string;
+      FilingYear: string;
+      State: string;
+      District: string;
+      __RequestVerificationToken?: string;
+    } = {
+      LastName: validationResult.data.lastName || "",
+      FilingYear: validationResult.data.filingYear || "2025",
+      State: validationResult.data.state || "",
+      District: validationResult.data.district || "",
+    };
+
+    // Fetch CSRF token
+    const csrfToken = await fetchCsrfToken();
+    searchParams.__RequestVerificationToken = csrfToken;
+
+    // Convert the search parameters to URL-encoded form data
+    const formData = new URLSearchParams();
+    Object.entries(searchParams).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    // Make the request to the House Financial Disclosure website with retry logic
+    let response;
+    let retries = 3;
+    let lastError: Error | null = null;
+    
+    while (retries > 0) {
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+        
+        response = await fetch(
+          "https://disclosures-clerk.house.gov/FinancialDisclosure/ViewMemberSearchResult",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+            },
+            body: formData.toString(),
+            signal: controller.signal
+          }
+        );
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        
+        break;
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
+        retries--;
+        if (retries > 0) {
+          // Exponential backoff
+          await new Promise(resolve => setTimeout(resolve, 1000 * (3 - retries)));
+        }
+      }
+    }
+    
+    if (retries === 0 && lastError) {
+      throw lastError;
+    }
+
+    // Get the HTML response as text
+    const htmlContent = await response!.text();
     
     // Parse the HTML using JSDOM
     const dom = new JSDOM(htmlContent);
@@ -183,10 +296,21 @@ export async function POST(request: Request) {
       }
     }
     
+    // Cache the results
+    searchResultsCache.set(cacheKey, results);
+    
+    // Apply pagination if needed
+    const page = validationResult.data.page || 1;
+    const pageSize = validationResult.data.pageSize || 100;
+    const start = (page - 1) * pageSize;
+    const end = start + pageSize;
+    const paginatedResults = results.slice(start, end);
+    
     // Return the structured data
     return NextResponse.json({
       success: true,
-      data: results
+      data: paginatedResults,
+      totalResults: results.length
     });
   } catch (error) {
     console.error("Error processing House Rep search request:", error);
