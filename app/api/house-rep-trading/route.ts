@@ -32,17 +32,17 @@ interface HouseRepData {
 
 // Create a rate limiter for PDF processing
 const limiter = new Bottleneck({
-  minTime: 1000, // Minimum 1 second between requests
-  maxConcurrent: 2, // Process max 2 PDFs at a time
-  reservoir: 10, // Maximum number of jobs that can be queued
-  reservoirRefreshAmount: 10,
+  minTime: 500, // Reduced from 1000ms to 500ms between requests
+  maxConcurrent: 5, // Increased from 2 to 5 concurrent PDFs
+  reservoir: 200, // Increased from 100 to 200 jobs
+  reservoirRefreshAmount: 200,
   reservoirRefreshInterval: 60 * 1000, // Refresh every minute
 });
 
 // Create a cache for search results to avoid redundant requests
 const searchResultsCache = new LRUCache<string, HouseRepData[]>({
-  max: 100, // Maximum number of items to store
-  ttl: 1000 * 60 * 60, // 1 hour
+  max: 500, // Increased from 100 to 500 items
+  ttl: 1000 * 60 * 60 * 24, // Increased from 1 hour to 24 hours
   updateAgeOnGet: true,
 });
 
@@ -73,7 +73,7 @@ async function processAndStorePdf(url: string, pdfData: HouseRepData): Promise<a
       processedData: {
         transactions: [],
         summary: {},
-        insights: {},
+        // insights: {},
         rawText: ''
       }
     };
@@ -99,8 +99,13 @@ async function queuePdfProcessing(documentUrl: string, pdfData: HouseRepData): P
     return;
   }
 
-  // Add to processing queue
-  limiter.schedule(() => processAndStorePdf(documentUrl, pdfData))
+  // Determine priority based on filing year (more recent = higher priority)
+  const filingYear = parseInt(pdfData.filingYear || '0', 10);
+  const currentYear = new Date().getFullYear();
+  const priority = filingYear === currentYear ? 1 : 2; // Lower number = higher priority
+
+  // Add to processing queue with priority
+  limiter.schedule({ priority }, () => processAndStorePdf(documentUrl, pdfData))
     .then(result => {
       console.log('PDF processed');
       // console.log('Result:', result);

@@ -36,7 +36,7 @@ export default function TradingReports() {
   const [senatorFirstName, setSenatorFirstName] = useState(searchParams.get("senatorFirstName") || "");
   const [senatorLastName, setSenatorLastName] = useState(searchParams.get("senatorLastName") || "");
   const [senatorDateStart, setSenatorDateStart] = useState(searchParams.get("senatorDateStart") || "2024-01-01");
-  const [senatorDateEnd, setSenatorDateEnd] = useState(searchParams.get("senatorDateEnd") || "2024-12-31");
+  const [senatorDateEnd, setSenatorDateEnd] = useState(searchParams.get("senatorDateEnd") || new Date().toISOString().split('T')[0]);
   const [senatorPage, setSenatorPage] = useState(parseInt(searchParams.get("senatorPage") || "1"));
   const [senatorTotalResults, setSenatorTotalResults] = useState(0);
   
@@ -96,7 +96,13 @@ export default function TradingReports() {
       if (data && typeof data === 'object') {
         const reports = Array.isArray(data.data) ? data.data : [];
         console.log("Processed senator reports:", reports);
-        setSenatorReports(reports);
+        
+        // Sort senator reports by report date (most recent first)
+        const sortedReports = [...reports].sort((a, b) => {
+          return new Date(b.reportDate).getTime() - new Date(a.reportDate).getTime();
+        });
+        
+        setSenatorReports(sortedReports);
         setSenatorTotalResults(data.recordsTotal || 0);
       } else {
         console.error("Invalid senator API response format:", data);
@@ -147,7 +153,12 @@ export default function TradingReports() {
       console.log("House rep API response:", data);
       
       if (data.success) {
-        setHouseRepReports(data.data);
+        // Sort house rep reports by filing year (most recent first)
+        const sortedReports = [...data.data].sort((a, b) => {
+          return parseInt(b.filingYear) - parseInt(a.filingYear);
+        });
+        
+        setHouseRepReports(sortedReports);
         setHouseRepTotalResults(data.totalResults || data.data.length);
       } else {
         console.error("Error in house rep API response:", data.error);
@@ -378,14 +389,22 @@ export default function TradingReports() {
                   Filing Year
                 </label>
                 <div className="relative">
-                  <input
-                    type="text"
+                  <select
                     id="houseRepFilingYear"
                     value={houseRepFilingYear}
                     onChange={(e) => setHouseRepFilingYear(e.target.value)}
                     className="w-full rounded-md border border-input bg-background px-3 py-1.5 pl-10 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                    placeholder="Filing Year"
-                  />
+                  >
+                    <option value="">All Years</option>
+                    {Array.from({ length: 5 }, (_, i) => {
+                      const year = new Date().getFullYear() - i;
+                      return (
+                        <option key={year} value={year.toString()}>
+                          {year}
+                        </option>
+                      );
+                    })}
+                  </select>
                   <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
@@ -552,14 +571,13 @@ export default function TradingReports() {
                             <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Office</th>
                             <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Filing Year</th>
                             <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Filing Type</th>
-                            <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
                             <th className="px-6 py-4 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">Actions</th>
                           </tr>
                         </thead>
                         <tbody className="bg-card divide-y divide-border">
                           {houseRepReports.length === 0 ? (
                             <tr>
-                              <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
+                              <td colSpan={5} className="px-6 py-8 text-center text-muted-foreground">
                                 No house representative reports found. Try adjusting your search criteria.
                               </td>
                             </tr>
@@ -570,18 +588,6 @@ export default function TradingReports() {
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{report.office}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{report.filingYear}</td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-foreground">{report.filingType}</td>
-                                <td className="px-6 py-4 whitespace-nowrap text-sm">
-                                  {report.processingStatus ? (
-                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                      report.processingStatus === 'completed' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                                      report.processingStatus === 'processing' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                                      report.processingStatus === 'failed' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
-                                      'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400'
-                                    }`}>
-                                      {report.processingStatus}
-                                    </span>
-                                  ) : '-'}
-                                </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-sm">
                                   {report.documentUrl ? (
                                     <a

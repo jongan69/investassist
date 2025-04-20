@@ -1,0 +1,9 @@
+{
+  "buildCommand": "npm run build",
+  "installCommand": "npm install --legacy-peer-deps",
+  "framework": "nextjs",
+  "regions": ["sfo1"],
+  "env": {
+    "NODE_OPTIONS": "--max-old-space-size=4096"
+  }
+} 
