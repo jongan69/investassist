@@ -57,7 +57,8 @@ export const columns: ColumnDef<ExtendedScreenerResult>[] = [
         regularMarketPrice === undefined ||
         epsTrailingTwelveMonths === undefined ||
         regularMarketPrice === null ||
-        epsTrailingTwelveMonths === null
+        epsTrailingTwelveMonths === null ||
+        epsTrailingTwelveMonths === 0
       ) {
         return <div className="text-right w-full">N/A</div>
       }
@@ -68,6 +69,21 @@ export const columns: ColumnDef<ExtendedScreenerResult>[] = [
       }
 
       return <div className="text-right w-full">{pe.toFixed(2)}</div>
+    },
+    sortingFn: (rowA, rowB) => {
+      const getPE = (row: any) => {
+        const price = row.original.regularMarketPrice
+        const eps = row.original.epsTrailingTwelveMonths || 0
+        
+        if (!price || !eps || eps === 0) return Infinity
+        const pe = price / eps
+        return pe < 0 ? Infinity : pe
+      }
+      
+      const peA = getPE(rowA)
+      const peB = getPE(rowB)
+      
+      return peA - peB
     },
   },
   {
