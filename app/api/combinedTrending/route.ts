@@ -63,7 +63,7 @@ export async function GET() {
     }
 
     const data1 = await response1.json();
-
+    console.log(data1);
     // Validate the response format
     if (!Array.isArray(data1)) {
       console.error('Pump Fun API returned invalid response format:', data1);
@@ -77,9 +77,9 @@ export async function GET() {
     const isValidFormat = data1.every(item => 
       typeof item.word === 'string' &&
       typeof item.word_with_strength === 'string' &&
-      typeof item.score === 'number' &&
-      typeof item.total_txns === 'number' &&
-      typeof item.total_vol === 'number'
+      typeof item.score === 'number'
+      // typeof item.total_txns === 'number' &&
+      // typeof item.total_vol === 'number'
     );
 
     if (!isValidFormat) {

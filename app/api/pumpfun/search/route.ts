@@ -57,7 +57,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const URL = `https://frontend-api-v3.pump.fun/coins/search_ranked?offset=0&limit=48&sort=market_cap&includeNsfw=true&order=DESC&searchTerm=${encodeURIComponent(searchTerm)}&type=hybrid`;
+    const URL = `https://frontend-api-v3.pump.fun/coins/search?offset=0&limit=48&sort=market_cap&includeNsfw=true&order=DESC&searchTerm=${encodeURIComponent(searchTerm)}&type=hybrid`;
 
     const response = await fetch(URL, { 
       cache: 'no-store',

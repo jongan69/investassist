@@ -11,8 +11,9 @@ import { fetchFomc } from "@/lib/markets/fetchFomc"
 
 import { fetchStockSearch } from "@/lib/yahoo-finance/fetchStockSearch"
 import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
-import { fetchSectorPerformance } from "@/lib/yahoo-finance/fetchSectorPerformance"
+import { fetchSectorPerformanceServer } from "@/lib/yahoo-finance/fetchSectorPerformanceServer"
 import { getHighOpenInterestContracts } from "@/lib/alpaca/fetchHighOpenInterest"
+import { fetchCryptoTrendsServer } from "@/lib/solana/fetchTrendsServer"
 
 import { fetchWithTimeout, handleApiError, processBatch } from "@/lib/utils/utils"
 
@@ -23,11 +24,12 @@ export async function MarketSummaryWrapper({
   sentimentColor: string
 }) {
   try {
-    const [fearGreedValue, sectorPerformance, calendar, fomc] = await Promise.allSettled([
-      fetchWithTimeout(fetchFearGreedIndex(), 5000),
-      fetchWithTimeout(fetchSectorPerformance(), 5000),
-      fetchWithTimeout(fetchCalendar(), 5000),
-      fetchWithTimeout(fetchFomc(), 5000)
+    const [fearGreedValue, sectorPerformance, calendar, fomc, cryptoTrends] = await Promise.allSettled([
+      fetchWithTimeout(fetchFearGreedIndex(), 10000),
+      fetchWithTimeout(fetchSectorPerformanceServer(), 30000),
+      fetchWithTimeout(fetchCalendar(), 10000),
+      fetchWithTimeout(fetchFomc(), 10000),
+      fetchWithTimeout(fetchCryptoTrendsServer(), 10000)
     ]);
 
     // Handle individual failures
@@ -70,6 +72,7 @@ export async function MarketSummaryWrapper({
         sectorPerformance={validSectorPerformance}
         calendar={calendar}
         fomc={fomc}
+        cryptoTrends={cryptoTrends}
       />
     );
   } catch (error) {
@@ -98,7 +101,7 @@ export async function TrendingStocksWrapper({ latestNews }: { latestNews: any[] 
   try {
     if (!latestNews || !Array.isArray(latestNews)) {
       return (
-        <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100">
+        <div className="prose prose-sm max-w-full p-5 font-roboto bg-white dark:bg-black text-gray-900 dark:text-gray-100" suppressHydrationWarning>
           <div className="text-center text-gray-600 dark:text-gray-400">
             Unable to load trending stocks data.
           </div>

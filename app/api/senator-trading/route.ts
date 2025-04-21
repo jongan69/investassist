@@ -92,7 +92,7 @@ export async function POST(request: Request) {
     };
 
     const url = SUPABASE_URL + "/functions/v1/senate-data-fetcher";
-    console.log("Senator API request:", body);
+    // console.log("Senator API request:", body);
     
     const response = await fetch(url, {
       method: "POST",

@@ -14,41 +14,10 @@ const UserProfileContainer = (await import('@/components/users/UserProfileContai
 // Lib
 import { fetchUserTweets } from "@/lib/twitter/fetchUserTweets"
 import { fetchFearGreedIndex } from "@/lib/yahoo-finance/fetchFearGreedIndex"
-
+import { searchUsersServer } from "@/lib/users/SearchUserServer"
+import { fetchSectorPerformanceServer } from "@/lib/yahoo-finance/fetchSectorPerformanceServer"
+import { fetchCryptoTrendsServer } from "@/lib/solana/fetchTrendsServer"
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-
-const fetchCryptoTrendsServer = async () => {
-  try {
-    const response = await fetch(`${BASE_URL}/api/crypto-trends`);
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return response.json();
-  } catch (error) {
-    console.error('Error fetching crypto trends:', error);
-    return [];
-  }
-}
-
-const searchUsersServer = async (query: string) => {
-  try {
-    const response = await fetch(`${BASE_URL}/api/database/search-users?q=${query}`);
-    return response.json();
-  } catch (error) {
-    console.error('Error searching users:', error);
-    return [];
-  }
-}
-
-const fetchSectorPerformanceServer = async () => {
-  try {
-    const response = await fetch(`${BASE_URL}/api/sector-performance`);
-    return response.json();
-  } catch (error) {
-    console.error('Error fetching sector performance:', error);
-    return [];
-  }
-}
 
 // New interfaces for the holdings response
 interface TokenAccount {

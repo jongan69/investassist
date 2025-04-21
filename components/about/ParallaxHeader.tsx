@@ -69,11 +69,12 @@ export default function ParallaxHeader({
                 }}
             >
                 <Image
-                    src={imageUrl || '/placeholder-image.jpg'}
+                    src={imageUrl || '/banner.jpg'}
                     alt="Header Background"
                     fill
                     className="object-cover"
                     priority
+                    unoptimized
                 />
                 <div className="absolute inset-0 bg-black/50" />
             </div>

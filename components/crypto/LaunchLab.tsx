@@ -351,10 +351,12 @@ function TokenCard({ token, formatNumber, formatScore, isMobile }: { token: Toke
                                 src={token.imgUrl}
                                 alt={token.name}
                                 fill
+                                unoptimized
+                                sizes="(max-width: 640px) 40px, 48px"
                                 className="rounded-full object-cover"
                                 onError={(e) => {
                                     const target = e.target as HTMLImageElement;
-                                    target.src = '/placeholder.png';
+                                    target.src = '/placeholder-token.jpeg';
                                 }}
                             />
                         </div>

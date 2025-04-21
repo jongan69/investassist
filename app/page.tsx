@@ -112,7 +112,7 @@ export default async function Page({ searchParams }: Props) {
         : "bg-neutral-500/10"
 
   return (
-    <div className="flex flex-col gap-4 max-w-[2000px] mx-auto px-4">
+    <div className="flex flex-col gap-4 max-w-[2000px] mx-auto px-4" >
       <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white animate-gradient">Invest Assist</h1>
       
       <EmailSignupPrompt />

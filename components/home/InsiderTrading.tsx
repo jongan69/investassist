@@ -86,7 +86,7 @@ export default function InsiderTrading() {
       }
       
       const result = await response.json();
-      console.log('API response data:', result);
+      console.log('Insider Trading response data:', result);
       console.log('Data length:', result.length);
       
       setData(result);

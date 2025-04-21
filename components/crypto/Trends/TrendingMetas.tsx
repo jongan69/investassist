@@ -60,8 +60,9 @@ export const TrendingMetas: React.FC = () => {
             </div>
             <div className="space-y-2 text-sm text-muted-foreground">
               <p>Score: {meta.score.toFixed(4)}</p>
-              <p>Transactions: {meta.total_txns.toLocaleString()}</p>
-              <p>Volume: {meta.total_vol.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p>
+              {/* Got removed from PumpFun API */}
+              {/* <p>Transactions: {meta.total_txns.toLocaleString()}</p>
+              <p>Volume: {meta.total_vol.toLocaleString(undefined, { maximumFractionDigits: 2 })}</p> */}
             </div>
           </a>
         ))}

@@ -14,14 +14,14 @@ let chatgptOpenAI = new OpenAI({
 // Helper function to format economic events
 function formatEconomicEvents(calendar: any[]) {
   if (!calendar || calendar.length === 0) return "No economic events data available";
-  
+
   // Sort events by date and time (most recent first)
   const sortedEvents = [...calendar].sort((a, b) => {
     const dateA = new Date(a.Datetime);
     const dateB = new Date(b.Datetime);
     return dateB.getTime() - dateA.getTime();
   });
-  
+
   // Group events by date
   const eventsByDate: Record<string, any[]> = {};
   sortedEvents.forEach(event => {
@@ -30,7 +30,7 @@ function formatEconomicEvents(calendar: any[]) {
     }
     eventsByDate[event.Date].push(event);
   });
-  
+
   // Format events with impact indicators and actual vs expected values
   let formattedEvents = "";
   for (const date in eventsByDate) {
@@ -40,14 +40,14 @@ function formatEconomicEvents(calendar: any[]) {
       const actualValue = event.Actual !== null ? `Actual: ${event.Actual}` : "";
       const expectedValue = event.Expected !== null ? `Expected: ${event.Expected}` : "";
       const priorValue = event.Prior !== null ? `Prior: ${event.Prior}` : "";
-      
+
       formattedEvents += `  ${event.Time} - ${impactIndicator} ${event.Release} (${event.For})\n`;
       if (actualValue || expectedValue || priorValue) {
         formattedEvents += `    ${[actualValue, expectedValue, priorValue].filter(Boolean).join(", ")}\n`;
       }
     });
   }
-  
+
   return formattedEvents;
 }
 
@@ -97,49 +97,86 @@ export async function POST(req: Request) {
   const retryDelay = 1000; // Delay between retries in milliseconds
 
   try {
-    const { fearGreedValue, sectorPerformance, economicEvents, fomc } = await req.json();
+    const { fearGreedValue, sectorPerformance, economicEvents, fomc, cryptoTrends } = await req.json();
     // console.log('fomc data:', fomc);
+    // console.log('cryptoTrends data:', cryptoTrends.value);
 
+    // trends data
+    const bitcoinPrice = cryptoTrends?.value?.bitcoinPrice;
+    const solanaPrice = cryptoTrends?.value?.solanaPrice;
+    const ethereumPrice = cryptoTrends?.value?.ethereumPrice;
+    const topTweetedTickers = cryptoTrends?.value?.topTweetedTickers;
+    const bullishCryptoWhaleActivity = cryptoTrends?.value?.whaleActivity?.bullish;
+    const bearishCryptoWhaleActivity = cryptoTrends?.value?.whaleActivity?.bearish;
+    // const topTokensByValue = cryptoTrends.value.topTokensByValue;
+    // const portfolioMetrics = cryptoTrends.value.portfolioMetrics;
+    // const last24Hours = cryptoTrends.value.last24Hours;
+    // console.log('bullish whale activity:', bullishCryptoWhaleActivity);
+    // console.log('bearish whale activity:', bearishCryptoWhaleActivity);
+
+    // fomc data
     const latestMeeting = fomc?.value?.meeting;
     const latestMeetingDate = latestMeeting?.Date;
     const nextMeetingDate = fomc?.value?.next_meeting?.Date;
     const latestMeetingSummary = latestMeeting?.Minutes_Summary;
-    
+
     // Format economic events data
     const formattedEconomicEvents = formatEconomicEvents(economicEvents?.calendar);
-    
+
     // Get today's date in a readable format
-    const today = new Date().toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+    const today = new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
 
     const prompt = `
       As a market analyst, provide a concise summary of the current market conditions for ${today} based on the following data:
       
-      Fear & Greed Index: ${fearGreedValue}
+      ${fearGreedValue ? `Fear & Greed Index: ${fearGreedValue}` : ''}
       
-      Sector Performance:
+      ${sectorPerformance && sectorPerformance.length > 0 ? `Sector Performance:
       ${sectorPerformance
-        ?.map((sector: { sector: any; performance: any; }) => `${sector.sector}: ${sector.performance}%`)
-        .join('\n')}
+        .map((sector: { sector: any; performance: any; }) => `${sector.sector}: ${sector.performance}%`)
+        .join('\n')}` : ''}
       
-      Economic Events:
-      ${formattedEconomicEvents}
+      ${(bitcoinPrice || ethereumPrice || solanaPrice) ? `Crypto Market Overview:
+      - Major Cryptocurrencies:
+        ${bitcoinPrice ? `Bitcoin: $${bitcoinPrice}` : ''}
+        ${ethereumPrice ? `Ethereum: $${ethereumPrice}` : ''}
+        ${solanaPrice ? `Solana: $${solanaPrice}` : ''}` : ''}
+      
+      ${topTweetedTickers && topTweetedTickers.length > 0 ? `- Top Tweeted Tickers (24h):
+        ${topTweetedTickers.slice(0, 5).map((ticker: { ticker: string; count: number }) =>
+          `$${ticker.ticker}: ${ticker.count} mentions`
+        ).join('\n        ')}` : ''}
+      
+      ${(bullishCryptoWhaleActivity && bullishCryptoWhaleActivity.length > 0) || (bearishCryptoWhaleActivity && bearishCryptoWhaleActivity.length > 0) ? `- Whale Activity:
+        ${bullishCryptoWhaleActivity && bullishCryptoWhaleActivity.length > 0 ? `Bullish: ${bullishCryptoWhaleActivity.slice(0, 3).map((token: { symbol: string; bullishScore: number }) =>
+          `${token.symbol} (Score: ${token.bullishScore})`
+        ).join(', ')}` : ''}
+        
+        ${bearishCryptoWhaleActivity && bearishCryptoWhaleActivity.length > 0 ? `Bearish: ${bearishCryptoWhaleActivity.slice(0, 3).map((token: { symbol: string; bearishScore: number }) =>
+          `${token.symbol} (Score: ${token.bearishScore})`
+        ).join(', ')}` : ''}` : ''}
 
-      FOMC Latest Meeting Summary for ${latestMeetingDate}:
-      ${latestMeetingSummary}
+      ${formattedEconomicEvents !== "No economic events data available" ? `Economic Events:
+      ${formattedEconomicEvents}` : ''}
 
-      FOMC Next Meeting Date:
-      ${nextMeetingDate}
+      ${latestMeetingSummary ? `FOMC Latest Meeting Summary for ${latestMeetingDate}:
+      ${latestMeetingSummary}` : ''}
+
+      ${nextMeetingDate ? `FOMC Next Meeting Date:
+      ${nextMeetingDate}` : ''}
       
       Please analyze these indicators and provide insights about:
-      1. Overall market sentiment based on the Fear & Greed Index
-      2. Strongest and weakest performing sectors
-      3. Key economic indicators and their implications (focus on high-impact events marked with 🔴)
-      4. Potential opportunities or risks based on the economic data
+      ${fearGreedValue ? '1. Overall market sentiment based on the Fear & Greed Index' : ''}
+      ${sectorPerformance && sectorPerformance.length > 0 ? '2. Strongest and weakest performing sectors' : ''}
+      ${formattedEconomicEvents !== "No economic events data available" ? '3. Key economic indicators and their implications (focus on high-impact events marked with 🔴)' : ''}
+      ${formattedEconomicEvents !== "No economic events data available" ? '4. Potential opportunities or risks based on the economic data' : ''}
+      ${(bitcoinPrice || ethereumPrice || solanaPrice || topTweetedTickers || bullishCryptoWhaleActivity || bearishCryptoWhaleActivity) ? '5. Summary of the crypto market trends, including:\n         - Major cryptocurrency price movements and implications\n         - Most valuable tokens and their market dominance\n         - Social sentiment based on tweeted tickers\n         - Whale activity patterns and what they might indicate\n         - Overall crypto market health based on portfolio metrics' : ''}
+      ${topTweetedTickers && topTweetedTickers.length > 0 ? '6. Top Performing Meme Coins based on the latest tweets and whale activity' : ''}
       Limit the response to 4-5 sentences.
     `;
 
@@ -157,7 +194,7 @@ export async function POST(req: Request) {
             temperature: 0.7,
             max_tokens: 300,
           }).then(result => ({ model: "DeepSeek Reasoner", result })),
-          
+
           chatgptOpenAI.chat.completions.create({
             messages: [{ role: "user", content: prompt }],
             model: "gpt-4o-mini", // or another available ChatGPT model
@@ -189,7 +226,7 @@ export async function POST(req: Request) {
       try {
         console.log('Primary APIs failed, trying fallback API...');
         const fallbackResponse = await callFallbackAPI(prompt);
-        
+
         if (fallbackResponse.result.choices[0].message.content) {
           return NextResponse.json({
             summary: fallbackResponse.result.choices[0].message.content,
@@ -199,7 +236,7 @@ export async function POST(req: Request) {
       } catch (fallbackError) {
         console.error('Fallback API also failed:', fallbackError);
         const errorMessage = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
-        return NextResponse.json({ 
+        return NextResponse.json({
           error: "Failed to generate market summary from all available APIs",
           details: {
             primaryError: lastError?.message || 'Unknown error',

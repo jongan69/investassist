@@ -85,7 +85,7 @@ export function LiveTrades() {
   }, [])
 
   return (
-    <div className="rounded border bg-card p-4 shadow-md flex flex-col w-full mt-10">
+    <div className="rounded border bg-card p-4 shadow-md flex flex-col w-full mt-10" suppressHydrationWarning>
       <div className="flex justify-between items-center mb-4">
         <ConnectionStatus status={status} />
       </div>

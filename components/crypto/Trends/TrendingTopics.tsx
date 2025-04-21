@@ -128,7 +128,7 @@ export function TrendingTopics() {
                 signal: controller.signal
             });
             
-            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            if (!res.ok) console.warn(`PumpFun API HTTP error! status: ${res.status}`);
             
             const data = await res.json();
             
