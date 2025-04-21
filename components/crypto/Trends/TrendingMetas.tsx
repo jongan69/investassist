@@ -1,10 +1,9 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-
 import { fetchTrendingMetas } from '@/lib/solana/fetchTrendingMetas';
-
 import { cn } from "@/lib/utils/utils";
+import { TrendingUp, Twitter } from 'lucide-react';
 
 interface TrendingMeta {
   word: string;
@@ -37,7 +36,7 @@ export const TrendingMetas: React.FC = () => {
                 Trending Pumpfun Metas
               </h2>
               <div className="hidden sm:flex items-center space-x-2 text-sm text-muted-foreground">
-                <span className="w-3 h-3 rounded-full bg-green-500"></span>
+                <Twitter className="w-4 h-4 text-green-500" />
                 <span>Twitter Trending</span>
               </div>
             </div>
@@ -62,27 +61,36 @@ export const TrendingMetas: React.FC = () => {
                 >
                   <div className="flex flex-col h-full">
                     <div className="flex items-start justify-between mb-4">
-                      <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
-                        {meta.word_with_strength}
-                      </h3>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary transition-colors truncate">
+                          {meta.word_with_strength}
+                        </h3>
+                        <p className="text-sm text-muted-foreground mt-1 truncate">
+                          {meta.word}
+                        </p>
+                      </div>
                       {meta.isTrendingTwitterTopic && (
-                        <span className="sm:hidden px-2.5 py-1 text-xs font-medium text-green-700 dark:text-green-300 bg-green-100/80 dark:bg-green-900/50 rounded-full">
+                        <span className="flex-shrink-0 ml-2 px-2.5 py-1 text-xs font-medium text-green-700 dark:text-green-300 bg-green-100/80 dark:bg-green-900/50 rounded-full">
+                          <Twitter className="w-3 h-3 inline-block mr-1" />
                           Twitter
                         </span>
                       )}
                     </div>
                     
-                    <div className="mt-auto space-y-3">
-                      <div className="flex items-center space-x-4 text-sm">
-                        <div className="flex items-center space-x-1">
-                          <span className="text-muted-foreground">Score:</span>
-                          <span className="font-medium text-foreground">{meta.score.toFixed(4)}</span>
+                    <div className="mt-auto space-y-4">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex items-center space-x-2">
+                          <TrendingUp className="w-4 h-4 text-primary" />
+                          <div>
+                            <span className="text-xs text-muted-foreground block">Score</span>
+                            <span className="text-sm font-medium text-foreground">{meta.score}</span>
+                          </div>
                         </div>
                       </div>
                       
-                      <div className="pt-4 flex items-center justify-between">
+                      <div className="pt-2 flex items-center justify-between border-t border-border/50">
                         <span className="text-xs text-muted-foreground">
-                          Click to view details
+                          View details
                         </span>
                         <svg 
                           className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" 
