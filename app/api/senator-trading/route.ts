@@ -87,7 +87,7 @@ export async function POST(request: Request) {
       length: requestBody.length || 100, // 100 is the max
       firstName: requestBody.firstName || "",
       lastName: requestBody.lastName || "",
-      dateStart: formatDateForSupabase(requestBody.dateStart) || "12/31/2011 19:00:00",
+      dateStart: formatDateForSupabase(requestBody.dateStart) || "12/31/2024 19:00:00",
       dateEnd: formatDateForSupabase(requestBody.dateEnd) || ""
     };
 
