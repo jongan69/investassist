@@ -122,7 +122,7 @@ export default async function Page({ searchParams }: Props) {
           <Card className="relative flex h-full min-h-[15rem] flex-col justify-between overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
             <div className="flex flex-col">
               <CardHeader className="pb-2">
-                <CardTitle className="z-50 w-fit rounded-full px-4 py-2 font-medium dark:bg-neutral-100/5 backdrop-blur-sm transition-all duration-300 hover:scale-105">
+                <CardTitle className="z-1 w-fit rounded-full px-4 py-2 font-medium dark:bg-neutral-100/5 backdrop-blur-sm transition-all duration-300 hover:scale-105">
                   <Suspense fallback={<div className="animate-pulse h-6 w-32 bg-muted rounded" />}>
                     The markets are{" "}
                     <strong className={`${sentimentColor} transition-colors duration-300`}>{marketSentiment}</strong>

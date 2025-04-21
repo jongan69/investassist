@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useTheme } from "next-themes"
 import { motion } from "framer-motion"
 
@@ -37,7 +37,7 @@ export default function Calendar() {
     const [calendarData, setCalendarData] = useState<CalendarData | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState<boolean>(true)
-    const [retryCount, setRetryCount] = useState<number>(0)
+    const retryCountRef = useRef<number>(0)
     const maxRetries = 2
 
     useEffect(() => {
@@ -45,17 +45,30 @@ export default function Calendar() {
     }, [])
 
     useEffect(() => {
+        let timeoutId: NodeJS.Timeout | null = null;
+
         const loadCalendar = async () => {
+            // If we've already reached max retries, don't try again
+            if (retryCountRef.current > maxRetries) {
+                console.log('Calendar component: Maximum retries reached, stopping attempts');
+                setIsLoading(false);
+                return;
+            }
+
             try {
+                if (!mounted) return;
+                
                 setIsLoading(true)
                 setError(null)
                 console.log('Calendar component: Fetching calendar data...');
                 const data = await fetchCalendar();
-                // console.log('Calendar component: Received data:', data);
+                
+                if (!mounted) return;
                 
                 if (!data || !data.calendar) {
                     console.error('Calendar component: Invalid data structure:', data);
                     setError('Invalid data structure received');
+                    setIsLoading(false);
                     return;
                 }
                 
@@ -64,13 +77,14 @@ export default function Calendar() {
                     setError(`API Error: ${data.error}`);
                     
                     // Retry logic
-                    if (retryCount < maxRetries) {
-                        console.log(`Calendar component: Retrying (${retryCount + 1}/${maxRetries})...`);
-                        setRetryCount(prev => prev + 1);
-                        setTimeout(loadCalendar, 2000); // Retry after 2 seconds
-                        return;
+                    if (retryCountRef.current < maxRetries) {
+                        console.log(`Calendar component: Retrying (${retryCountRef.current + 1}/${maxRetries})...`);
+                        retryCountRef.current += 1;
+                        timeoutId = setTimeout(loadCalendar, 2000); // Retry after 2 seconds
+                    } else {
+                        console.log('Calendar component: Maximum retries reached, stopping attempts');
+                        setIsLoading(false);
                     }
-                    
                     return;
                 }
                 
@@ -83,20 +97,30 @@ export default function Calendar() {
                 setCalendarData(data);
                 setIsLoading(false);
             } catch (err) {
+                if (!mounted) return;
+                
                 console.error('Calendar component: Error loading calendar:', err);
                 setError('Failed to load calendar data');
-                setIsLoading(false);
                 
                 // Retry logic
-                if (retryCount < maxRetries) {
-                    console.log(`Calendar component: Retrying (${retryCount + 1}/${maxRetries})...`);
-                    setRetryCount(prev => prev + 1);
-                    setTimeout(loadCalendar, 2000); // Retry after 2 seconds
+                if (retryCountRef.current < maxRetries) {
+                    console.log(`Calendar component: Retrying (${retryCountRef.current + 1}/${maxRetries})...`);
+                    retryCountRef.current += 1;
+                    timeoutId = setTimeout(loadCalendar, 2000); // Retry after 2 seconds
+                } else {
+                    console.log('Calendar component: Maximum retries reached, stopping attempts');
+                    setIsLoading(false);
                 }
             }
         }
-        loadCalendar()
-    }, [retryCount])
+        
+        loadCalendar();
+        
+        // Cleanup function to prevent memory leaks and state updates after unmount
+        return () => {
+            if (timeoutId) clearTimeout(timeoutId);
+        };
+    }, [mounted]) // Only run when mounted changes
 
     const getImpactColor = (impact: string) => {
         switch (impact) {
@@ -121,38 +145,8 @@ export default function Calendar() {
     }
 
     if (error) {
-        return (
-            <TooltipProvider delayDuration={0}>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
-                        <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
-                            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
-                                Economic Calendar
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-4">
-                            <div className="flex flex-col justify-center items-center h-32">
-                                <div className="text-red-500 mb-2">{error}</div>
-                                <div className="text-sm text-muted-foreground mb-4">Please try again later or check your network connection.</div>
-                                <button 
-                                    onClick={() => {
-                                        setRetryCount(0);
-                                        setIsLoading(true);
-                                    }}
-                                    className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-                                >
-                                    Retry
-                                </button>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-            </TooltipProvider>
-        )
+        // Return null instead of showing an error message to hide the component
+        return null;
     }
 
     if (isLoading) {
@@ -171,32 +165,7 @@ export default function Calendar() {
                         </CardHeader>
                         <CardContent className="p-4">
                             <div className="flex justify-center items-center h-32">
-                                <div className="flex gap-1 px-1">
-                                    <motion.span 
-                                        className={cn(
-                                            "h-2 w-2 rounded-full",
-                                            mounted && isDark ? "bg-white" : "bg-black"
-                                        )}
-                                        animate={{ scale: [1, 1.5, 1] }}
-                                        transition={{ repeat: Infinity, duration: 0.6 }}
-                                    />
-                                    <motion.span 
-                                        className={cn(
-                                            "h-2 w-2 rounded-full",
-                                            mounted && isDark ? "bg-white" : "bg-black"
-                                        )}
-                                        animate={{ scale: [1, 1.5, 1] }}
-                                        transition={{ repeat: Infinity, duration: 0.6, delay: 0.2 }}
-                                    />
-                                    <motion.span 
-                                        className={cn(
-                                            "h-2 w-2 rounded-full",
-                                            mounted && isDark ? "bg-white" : "bg-black"
-                                        )}
-                                        animate={{ scale: [1, 1.5, 1] }}
-                                        transition={{ repeat: Infinity, duration: 0.6, delay: 0.4 }}
-                                    />
-                                </div>
+                                <div className="text-muted-foreground">Loading calendar data...</div>
                             </div>
                         </CardContent>
                     </Card>
@@ -207,28 +176,8 @@ export default function Calendar() {
 
     // Check if calendar array is empty
     if (!calendarData || !calendarData.calendar || calendarData.calendar.length === 0) {
-        return (
-            <TooltipProvider delayDuration={0}>
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
-                        <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
-                            <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
-                                Economic Calendar
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-4">
-                            <div className="flex justify-center items-center h-32">
-                                <div className="text-muted-foreground">No economic events available</div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-            </TooltipProvider>
-        )
+        // Return null instead of showing an empty state message to hide the component
+        return null;
     }
 
     return (

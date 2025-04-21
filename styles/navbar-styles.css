@@ -30,7 +30,7 @@ button[aria-label="Toggle menu"] .hamburger-icon::after {
 
 /* Animated hamburger icon */
 button[aria-label="Toggle menu"][data-state="open"] .hamburger-icon {
-  background-color: transparent;
+  background-color: #ffffff;
 }
 
 button[aria-label="Toggle menu"][data-state="open"] .hamburger-icon::before {
