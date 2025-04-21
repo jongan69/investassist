@@ -516,7 +516,8 @@ export default function TradingReports() {
                                 <td className="px-4 py-2 whitespace-nowrap text-sm text-foreground">{report.reportDate}</td>
                                 <td className="px-4 py-2 whitespace-nowrap text-sm">
                                   <a
-                                    href={`/api/senate-report-proxy?url=${encodeURIComponent(report.reportLink)}`}
+                                    // href={`/api/senate-report-proxy?url=${encodeURIComponent(report.reportLink)}`}
+                                    href={report.reportLink}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="text-primary hover:text-primary/80 inline-flex items-center gap-2 transition-all duration-300 hover:gap-3"
