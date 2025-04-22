@@ -80,7 +80,11 @@ const WalletConnectionHandler = ({
 const WalletContextProvider = ({ children }: { children: React.ReactNode }) => {
     const endpoint = HELIUS ?? web3.clusterApiUrl('mainnet-beta');
     const wallets = [
-        new walletAdapterWallets.TorusWalletAdapter()
+        new walletAdapterWallets.TorusWalletAdapter(),
+        new walletAdapterWallets.SolflareWalletAdapter(),
+        new walletAdapterWallets.SolletWalletAdapter(),
+        new walletAdapterWallets.LedgerWalletAdapter(),
+        new walletAdapterWallets.ExodusWalletAdapter(),
     ];
 
     const [wallet, setWallet] = useState<any>(null);
