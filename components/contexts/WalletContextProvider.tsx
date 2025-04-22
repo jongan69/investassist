@@ -85,6 +85,7 @@ const WalletContextProvider = ({ children }: { children: React.ReactNode }) => {
         new walletAdapterWallets.SolletWalletAdapter(),
         new walletAdapterWallets.LedgerWalletAdapter(),
         new walletAdapterWallets.ExodusWalletAdapter(),
+        new walletAdapterWallets.CoinbaseWalletAdapter(),
     ];
 
     const [wallet, setWallet] = useState<any>(null);
