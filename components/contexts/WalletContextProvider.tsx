@@ -80,8 +80,6 @@ const WalletConnectionHandler = ({
 const WalletContextProvider = ({ children }: { children: React.ReactNode }) => {
     const endpoint = HELIUS ?? web3.clusterApiUrl('mainnet-beta');
     const wallets = [
-        new walletAdapterWallets.CoinbaseWalletAdapter(),
-        new walletAdapterWallets.BraveWalletAdapter(),
         new walletAdapterWallets.TorusWalletAdapter()
     ];
 

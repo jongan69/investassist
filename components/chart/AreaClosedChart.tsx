@@ -232,7 +232,7 @@ function GraphSlider({ data, width, height, top, state, dispatch }: any) {
             x1={state.x}
             x2={state.x}
             y1={0}
-            y2={680}
+            y2={height}
             stroke={getChartColor(state.hovered, isIncreasing)}
             strokeWidth={2}
           />

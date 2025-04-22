@@ -82,7 +82,7 @@ export default function MarketSummary({
     };
 
     generateMarketSummary();
-  }, [fearGreedValue, sectorPerformance, calendar, fomc, isMounted]);
+  }, [fearGreedValue, sectorPerformance, calendar, fomc, cryptoTrends, isMounted]);
 
   if (!resolvedTheme || !isMounted) {
     return null; // Ensure the theme is resolved and component is mounted

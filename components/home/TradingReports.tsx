@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTheme } from "next-themes";
 import { Search, ChevronLeft, ChevronRight, FileText, ExternalLink, Loader2 } from "lucide-react";
@@ -54,7 +54,7 @@ export default function TradingReports() {
   const pageSize = 100;
 
   // Fetch Senator reports
-  const fetchSenatorReports = async () => {
+  const fetchSenatorReports = useCallback(async () => {
     setLoading(true);
     try {
       const start = (senatorPage - 1) * pageSize;
@@ -116,10 +116,10 @@ export default function TradingReports() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [senatorFirstName, senatorLastName, senatorDateStart, senatorDateEnd, senatorPage, pageSize]);
 
   // Fetch House Rep reports
-  const fetchHouseRepReports = async () => {
+  const fetchHouseRepReports = useCallback(async () => {
     setLoading(true);
     try {
       console.log("Fetching house rep reports with params:", {
@@ -172,7 +172,7 @@ export default function TradingReports() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [houseRepLastName, houseRepFilingYear, houseRepState, houseRepDistrict, houseRepPage, pageSize]);
 
   // Handle tab change
   const handleTabChange = (tab: 'senator' | 'house') => {
@@ -225,7 +225,8 @@ export default function TradingReports() {
     houseRepFilingYear,
     houseRepState,
     houseRepDistrict,
-    houseRepPage
+    houseRepPage,
+    router
   ]);
 
   // Fetch data when tab changes or search parameters change
@@ -235,20 +236,20 @@ export default function TradingReports() {
     } else {
       fetchHouseRepReports();
     }
-  }, [activeTab]);
+  }, [activeTab, fetchSenatorReports, fetchHouseRepReports]);
 
   // Add a separate useEffect for pagination changes
   useEffect(() => {
     if (activeTab === 'senator') {
       fetchSenatorReports();
     }
-  }, [senatorPage]);
+  }, [senatorPage, activeTab, fetchSenatorReports]);
 
   useEffect(() => {
     if (activeTab === 'house') {
       fetchHouseRepReports();
     }
-  }, [houseRepPage]);
+  }, [houseRepPage, activeTab, fetchHouseRepReports]);
 
   // Calculate pagination
   const senatorTotalPages = Math.ceil(senatorTotalResults / pageSize);
