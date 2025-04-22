@@ -327,43 +327,89 @@ export default function AboutContent() {
               <h2 className="text-3xl sm:text-5xl font-bold text-center mb-12 text-gray-900 dark:text-white">
                 Top Holders
               </h2>
-              <div className="bg-white dark:bg-gray-700 rounded-xl shadow-md overflow-hidden">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
-                  <thead className="bg-gray-50 dark:bg-gray-800">
-                    <tr>
-                      <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Rank
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Address
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        Balance
-                      </th>
-                      <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        % of Supply
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
-                    {topHolders?.map((holder: any, index: number) => (
-                      <tr key={holder.id} className="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                          #{index + 1}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
-                          {holder.id.substring(0, 6)}...{holder.id.substring(holder.id.length - 4)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+              
+              {/* Mobile View - Card Layout */}
+              <div className="block md:hidden">
+                <div className="space-y-4">
+                  {topHolders?.map((holder: any, index: number) => (
+                    <a 
+                      key={holder.id} 
+                      href={`https://solscan.io/account/${holder.id}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block bg-white dark:bg-gray-700 rounded-lg shadow-md p-4 hover:shadow-lg transition-all duration-300 transform hover:scale-[1.02]"
+                    >
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-300">Rank</span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-white">#{index + 1}</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-300">Address</span>
+                        <span className="text-sm text-gray-900 dark:text-white font-mono">
+                          {holder.id.substring(0, 4)}...{holder.id.substring(holder.id.length - 4)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-300">Balance</span>
+                        <span className="text-sm text-gray-900 dark:text-white">
                           {parseInt(holder.balance).toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-500 dark:text-gray-300">% of Supply</span>
+                        <span className="text-sm text-gray-900 dark:text-white">
                           {holder.percentage.toFixed(2)}%
-                        </td>
+                        </span>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Desktop View - Table Layout */}
+              <div className="hidden md:block overflow-x-auto">
+                <div className="bg-white dark:bg-gray-700 rounded-xl shadow-md overflow-hidden">
+                  <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                    <thead className="bg-gray-50 dark:bg-gray-800">
+                      <tr>
+                        <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          Rank
+                        </th>
+                        <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          Address
+                        </th>
+                        <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          Balance
+                        </th>
+                        <th scope="col" className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                          % of Supply
+                        </th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+                      {topHolders?.map((holder: any, index: number) => (
+                        <tr 
+                          key={holder.id} 
+                          className="hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 cursor-pointer"
+                          onClick={() => window.open(`https://solscan.io/account/${holder.id}`, '_blank')}
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                            #{index + 1}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300 font-mono">
+                            {holder.id.substring(0, 6)}...{holder.id.substring(holder.id.length - 4)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            {parseInt(holder.balance).toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">
+                            {holder.percentage.toFixed(2)}%
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
