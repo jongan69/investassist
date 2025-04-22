@@ -2,9 +2,9 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Text, useGLTF, Float, Sparkles } from '@react-three/drei';
+import { OrbitControls, Text, Float, Sparkles } from '@react-three/drei';
 import * as THREE from 'three';
-import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
+// import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader';
 import { useTheme } from 'next-themes';
 import logo from '../../public/logo.svg';
 
