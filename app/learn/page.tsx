@@ -10,6 +10,7 @@ import {
   TrendingUp,
   Wallet
 } from "lucide-react";
+import InvestmentSceneWrapper from "../../components/three/InvestmentSceneWrapper";
 
 const LEARNING_CONTENT = [
   {
@@ -104,22 +105,25 @@ const USEFUL_LINKS = [
 
 export default async function LearnPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-blue-900 dark:to-purple-900">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-12">
         {/* Hero Section */}
         <div className="text-center mb-16">
           <div className="relative">
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-48 h-48 bg-blue-500/10 dark:bg-blue-500/5 rounded-full blur-3xl transform -translate-y-4"></div>
-              <div className="w-48 h-48 bg-purple-500/10 dark:bg-purple-500/5 rounded-full blur-3xl transform translate-x-4"></div>
+              <div className="w-64 h-64 bg-blue-500/20 dark:bg-blue-500/10 rounded-full blur-3xl transform -translate-y-4"></div>
+              <div className="w-64 h-64 bg-purple-500/20 dark:bg-purple-500/10 rounded-full blur-3xl transform translate-x-4"></div>
             </div>
-            <h1 className="relative text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-black dark:text-white">
+            <h1 className="relative text-4xl md:text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               Investment Learning Hub
             </h1>
           </div>
-          <p className="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-700 dark:text-gray-300 max-w-3xl mx-auto mb-8">
             Your comprehensive guide to understanding investments and finding the right platforms for your financial journey.
           </p>
+          
+          {/* Investment Scene */}
+          <InvestmentSceneWrapper />
         </div>
 
         {/* Getting Started Section */}
@@ -128,12 +132,12 @@ export default async function LearnPage() {
             <BookOpen className="h-6 w-6 mr-2 text-blue-600" />
             <h2 className="text-2xl font-semibold dark:text-white">Getting Started with Investing</h2>
           </div>
-          <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden">
             <div className="p-6 md:p-8">
               <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-6">
                 {LEARNING_CONTENT[0].content}
               </p>
-              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 border border-blue-100 dark:border-blue-800">
+              <div className="backdrop-blur-md bg-gradient-to-r from-blue-100/50 to-indigo-100/50 dark:from-blue-900/30 dark:to-indigo-900/30 rounded-lg p-6 border border-white/50 dark:border-blue-800/50">
                 <h3 className="text-lg font-semibold mb-4 text-blue-800 dark:text-blue-300 flex items-center">
                   <Shield className="h-5 w-5 mr-2" />
                   Recommended Platforms for Beginners
@@ -141,21 +145,21 @@ export default async function LearnPage() {
                 <div className="space-y-3">
                   <Link
                     href={USEFUL_LINKS.find(link => link.title === "Wealthfront")?.url || "#"}
-                    className="flex items-center text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors group"
+                    className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <span className="group-hover:underline">Wealthfront - Automated Investment Management</span>
-                    <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    <span className="font-medium">Wealthfront - Automated Investment Management</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <Link
                     href={USEFUL_LINKS.find(link => link.title === "Public")?.url || "#"}
-                    className="flex items-center text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors group"
+                    className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <span className="group-hover:underline">Public - All-in-One Investment Platform</span>
-                    <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    <span className="font-medium">Public - All-in-One Investment Platform</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
@@ -172,7 +176,7 @@ export default async function LearnPage() {
 
           <div className="grid gap-6 md:grid-cols-2">
             {/* Stocks & Options Card */}
-            <div className="group bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="group backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="p-6">
                 <div className="flex items-center mb-4">
                   <LineChart className="h-5 w-5 mr-2 text-blue-600" />
@@ -184,19 +188,28 @@ export default async function LearnPage() {
                 <div className="space-y-2">
                   <Link
                     href={USEFUL_LINKS.find(link => link.title === "Webull")?.url || "#"}
-                    className="flex items-center text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors group"
+                    className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <span className="group-hover:underline">Webull - Advanced Stock & Options Trading</span>
-                    <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    <span className="font-medium">Webull - Advanced Stock & Options Trading</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <Link
+                    href={USEFUL_LINKS.find(link => link.title === "Kraken")?.url || "#"}
+                    className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="font-medium">Kraken - Cryptocurrency Exchange</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
             </div>
 
             {/* Traditional Cryptocurrency Card */}
-            <div className="group bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="group backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="p-6">
                 <div className="flex items-center mb-4">
                   <Coins className="h-5 w-5 mr-2 text-blue-600" />
@@ -208,28 +221,28 @@ export default async function LearnPage() {
                 <div className="space-y-2">
                   <Link
                     href={USEFUL_LINKS.find(link => link.title === "Axiom")?.url || "#"}
-                    className="flex items-center text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors group"
+                    className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <span className="group-hover:underline">Axiom - Advanced Crypto Trading</span>
-                    <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    <span className="font-medium">Axiom - Advanced Crypto Trading</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <Link
                     href={USEFUL_LINKS.find(link => link.title === "Ourbit")?.url || "#"}
-                    className="flex items-center text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors group"
+                    className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <span className="group-hover:underline">Ourbit - Multi-Chain Trading</span>
-                    <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    <span className="font-medium">Ourbit - Multi-Chain Trading</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
             </div>
 
             {/* Real Estate Investments Card */}
-            <div className="group bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="group backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="p-6">
                 <div className="flex items-center mb-4">
                   <Home className="h-5 w-5 mr-2 text-blue-600" />
@@ -241,19 +254,28 @@ export default async function LearnPage() {
                 <div className="space-y-2">
                   <Link
                     href={USEFUL_LINKS.find(link => link.title === "Groundfloor")?.url || "#"}
-                    className="flex items-center text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors group"
+                    className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <span className="group-hover:underline">Groundfloor - Real Estate Investment Platform</span>
-                    <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    <span className="font-medium">Groundfloor - Real Estate Investment Platform</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <Link
+                    href={USEFUL_LINKS.find(link => link.title === "Fundrise")?.url || "#"}
+                    className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="font-medium">Fundrise - Private Market Investments</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
             </div>
 
             {/* Portfolio Tracking Card */}
-            <div className="group bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="group backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="p-6">
                 <div className="flex items-center mb-4">
                   <Wallet className="h-5 w-5 mr-2 text-blue-600" />
@@ -265,12 +287,12 @@ export default async function LearnPage() {
                 <div className="space-y-2">
                   <Link
                     href={USEFUL_LINKS.find(link => link.title === "AssetDash")?.url || "#"}
-                    className="flex items-center text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors group"
+                    className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <span className="group-hover:underline">AssetDash - Comprehensive Portfolio Tracker</span>
-                    <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                    <span className="font-medium">AssetDash - Comprehensive Portfolio Tracker</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
               </div>
@@ -284,16 +306,16 @@ export default async function LearnPage() {
             <TrendingUp className="h-6 w-6 mr-2 text-blue-600" />
             <h2 className="text-2xl font-semibold dark:text-white">Meme Coins & Social Trading</h2>
           </div>
-          <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden">
             <div className="p-6 md:p-8">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/5 to-pink-500/5 rounded-lg blur-xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-pink-500/10 rounded-lg blur-xl"></div>
                 <p className="relative text-gray-700 dark:text-gray-300 mb-6">
                   Explore the exciting world of meme coins and social trading platforms. Note: These investments are typically highly volatile and risky.
                 </p>
               </div>
               <div className="grid gap-6 md:grid-cols-2">
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-800/50 rounded-lg p-6 border border-gray-100 dark:border-gray-600">
+                <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg p-6 border border-white/50 dark:border-gray-600/50">
                   <h3 className="text-xl font-semibold mb-4 dark:text-white flex items-center">
                     <Coins className="h-5 w-5 mr-2 text-blue-600" />
                     Solana Ecosystem
@@ -301,17 +323,35 @@ export default async function LearnPage() {
                   <div className="space-y-3">
                     <Link
                       href={USEFUL_LINKS.find(link => link.title === "Moonshot")?.url || "#"}
-                      className="flex items-center text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors group"
+                      className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <span className="group-hover:underline">Moonshot - Solana Investment Platform</span>
-                      <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                      <span className="font-medium">Moonshot - Solana Investment Platform</span>
+                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    <Link
+                      href={USEFUL_LINKS.find(link => link.title === "Vector")?.url || "#"}
+                      className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className="font-medium">Vector - Social Meme Coin Trading</span>
+                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    <Link
+                      href={USEFUL_LINKS.find(link => link.title === "Bags")?.url || "#"}
+                      className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className="font-medium">Bags - Solana Memecoin Trading</span>
+                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>
                 </div>
 
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-800/50 rounded-lg p-6 border border-gray-100 dark:border-gray-600">
+                <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg p-6 border border-white/50 dark:border-gray-600/50">
                   <h3 className="text-xl font-semibold mb-4 dark:text-white flex items-center">
                     <BarChart className="h-5 w-5 mr-2 text-blue-600" />
                     Trading Tools
@@ -319,12 +359,21 @@ export default async function LearnPage() {
                   <div className="space-y-3">
                     <Link
                       href={USEFUL_LINKS.find(link => link.title === "BonkBot")?.url || "#"}
-                      className="flex items-center text-blue-700 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors group"
+                      className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <span className="group-hover:underline">BonkBot - Meme Coin Trading Bot</span>
-                      <ArrowRight className="h-4 w-4 ml-1 group-hover:translate-x-1 transition-transform" />
+                      <span className="font-medium">BonkBot - Meme Coin Trading Bot</span>
+                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    <Link
+                      href={USEFUL_LINKS.find(link => link.title === "SolTrendio Watch App")?.url || "#"}
+                      className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className="font-medium">SolTrendio - Crypto Trends on Apple Watch</span>
+                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>
                 </div>
@@ -339,7 +388,7 @@ export default async function LearnPage() {
             <Shield className="h-6 w-6 mr-2 text-blue-600" />
             <h2 className="text-2xl font-semibold dark:text-white">Investment Best Practices</h2>
           </div>
-          <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden">
             <div className="p-6 md:p-8">
               <ul className="space-y-4">
                 {[
@@ -372,7 +421,7 @@ export default async function LearnPage() {
           </p>
           
           <div className="grid gap-6">
-            <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden transform hover:scale-[1.01] transition-all duration-300">
+            <div className="backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden transform hover:scale-[1.01] transition-all duration-300">
               <div className="p-6 md:p-8">
                 <h3 className="text-xl font-semibold mb-6 dark:text-white flex items-center">
                   <BarChart className="h-5 w-5 mr-2 text-blue-600" />
@@ -417,7 +466,7 @@ export default async function LearnPage() {
                       usage: "Ideal for income-focused investors or retirees. Good for building a portfolio that generates regular cash flow."
                     }
                   ].map((screener, index) => (
-                    <div key={index} className="group bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-800/50 rounded-lg p-6 border border-gray-100 dark:border-gray-600 hover:shadow-lg transition-all duration-300">
+                    <div key={index} className="group backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg p-6 border border-white/50 dark:border-gray-600/50 hover:shadow-lg transition-all duration-300">
                       <h4 className="font-medium text-lg dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{screener.title}</h4>
                       <div className="space-y-2">
                         <p className="text-gray-700 dark:text-gray-300">
@@ -433,7 +482,7 @@ export default async function LearnPage() {
               </div>
             </div>
             
-            <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden transform hover:scale-[1.01] transition-all duration-300">
+            <div className="backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden transform hover:scale-[1.01] transition-all duration-300">
               <div className="p-6 md:p-8">
                 <h3 className="text-xl font-semibold mb-6 dark:text-white flex items-center">
                   <BarChart className="h-5 w-5 mr-2 text-blue-600" />
@@ -473,7 +522,7 @@ export default async function LearnPage() {
                       usage: "Ideal for dividend investors looking for stocks with sustainable dividend growth. Good for finding income stocks that may also offer capital appreciation."
                     }
                   ].map((screener, index) => (
-                    <div key={index} className="group bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-800/50 rounded-lg p-6 border border-gray-100 dark:border-gray-600 hover:shadow-lg transition-all duration-300">
+                    <div key={index} className="group backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg p-6 border border-white/50 dark:border-gray-600/50 hover:shadow-lg transition-all duration-300">
                       <h4 className="font-medium text-lg dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{screener.title}</h4>
                       <div className="space-y-2">
                         <p className="text-gray-700 dark:text-gray-300">
@@ -489,7 +538,7 @@ export default async function LearnPage() {
               </div>
             </div>
             
-            <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden transform hover:scale-[1.01] transition-all duration-300">
+            <div className="backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden transform hover:scale-[1.01] transition-all duration-300">
               <div className="p-6 md:p-8">
                 <h3 className="text-xl font-semibold mb-6 dark:text-white flex items-center">
                   <BarChart className="h-5 w-5 mr-2 text-blue-600" />
@@ -519,7 +568,7 @@ export default async function LearnPage() {
                       usage: "Ideal for risk-averse investors or those nearing retirement. Good for building a more stable portfolio that may experience less dramatic price swings."
                     }
                   ].map((screener, index) => (
-                    <div key={index} className="group bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-800/50 rounded-lg p-6 border border-gray-100 dark:border-gray-600 hover:shadow-lg transition-all duration-300">
+                    <div key={index} className="group backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg p-6 border border-white/50 dark:border-gray-600/50 hover:shadow-lg transition-all duration-300">
                       <h4 className="font-medium text-lg dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{screener.title}</h4>
                       <div className="space-y-2">
                         <p className="text-gray-700 dark:text-gray-300">
@@ -544,10 +593,10 @@ export default async function LearnPage() {
             <h2 className="text-2xl font-semibold dark:text-white">DeFi Protocols</h2>
           </div>
           
-          <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+          <div className="backdrop-blur-md bg-white/30 dark:bg-gray-800/30 rounded-xl shadow-lg border border-white/50 dark:border-gray-700/50 overflow-hidden">
             <div className="p-6 md:p-8">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 rounded-lg blur-xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg blur-xl"></div>
                 <h3 className="relative text-xl font-semibold mb-6 dark:text-white flex items-center">
                   <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
                   Kamino Finance
@@ -555,14 +604,14 @@ export default async function LearnPage() {
               </div>
               
               <div className="space-y-6">
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-800/50 rounded-lg p-6 border border-gray-100 dark:border-gray-600">
+                <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg p-6 border border-white/50 dark:border-gray-600/50">
                   <h4 className="font-medium text-lg dark:text-white mb-3">Overview</h4>
                   <p className="text-gray-700 dark:text-gray-300">
                     Kamino Finance is a leading DeFi protocol on Solana that offers automated market making and liquidity provision services.
                   </p>
                 </div>
                 
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-800/50 rounded-lg p-6 border border-gray-100 dark:border-gray-600">
+                <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg p-6 border border-white/50 dark:border-gray-600/50">
                   <h4 className="font-medium text-lg dark:text-white mb-3">Key Features</h4>
                   <ul className="space-y-3">
                     {[
@@ -579,7 +628,7 @@ export default async function LearnPage() {
                   </ul>
                 </div>
                 
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-700/50 dark:to-gray-800/50 rounded-lg p-6 border border-gray-100 dark:border-gray-600">
+                <div className="backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg p-6 border border-white/50 dark:border-gray-600/50">
                   <h4 className="font-medium text-lg dark:text-white mb-3">Getting Started</h4>
                   <p className="text-gray-700 dark:text-gray-300 mb-4">
                     To begin using Kamino Finance:
@@ -599,6 +648,17 @@ export default async function LearnPage() {
                       </li>
                     ))}
                   </ol>
+                  <div className="mt-4">
+                    <Link
+                      href={USEFUL_LINKS.find(link => link.title === "Kamino Finance")?.url || "#"}
+                      className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className="font-medium">Visit Kamino Finance</span>
+                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -607,7 +667,7 @@ export default async function LearnPage() {
 
         {/* Call to Action */}
         <div className="mt-16">
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl shadow-lg border border-blue-100 dark:border-blue-800 overflow-hidden transform hover:scale-[1.01] transition-all duration-300">
+          <div className="backdrop-blur-md bg-gradient-to-r from-blue-100/50 to-purple-100/50 dark:from-blue-900/30 dark:to-purple-900/30 rounded-xl shadow-lg border border-white/50 dark:border-blue-800/50 overflow-hidden transform hover:scale-[1.01] transition-all duration-300">
             <div className="p-6 md:p-8">
               <h2 className="text-xl font-semibold mb-4 dark:text-white flex items-center">
                 <ArrowRight className="h-5 w-5 mr-2 text-blue-600" />
@@ -618,7 +678,7 @@ export default async function LearnPage() {
               </p>
               <Link
                 href="/about"
-                className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold transition-all duration-300 hover:from-blue-700 hover:to-purple-700 transform hover:scale-105"
+                className="inline-flex items-center justify-center w-full px-6 py-3 backdrop-blur-md bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg font-semibold transition-all duration-300 hover:from-blue-700 hover:to-purple-700 transform hover:scale-105"
               >
                 Learn More About InvestAssist
                 <ArrowRight className="h-5 w-5 ml-2" />
