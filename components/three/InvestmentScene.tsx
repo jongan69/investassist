@@ -289,6 +289,7 @@ const InteractiveLogo: React.FC = () => {
   const logoRef = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
     const loader = new THREE.TextureLoader();
@@ -297,6 +298,7 @@ const InteractiveLogo: React.FC = () => {
       loadedTexture.magFilter = THREE.LinearFilter;
       loadedTexture.flipY = true;
       setTexture(loadedTexture);
+      setIsLoading(false);
     });
   }, []);
   
@@ -317,6 +319,11 @@ const InteractiveLogo: React.FC = () => {
   const baseColor = resolvedTheme === 'dark' ? '#ffffff' : '#000000';
   const hoverColor = resolvedTheme === 'dark' ? '#60a5fa' : '#4f46e5';
   const glowColor = resolvedTheme === 'dark' ? '#60a5fa' : '#4f46e5';
+  
+  // Don't render anything until the texture is loaded
+  if (isLoading || !texture) {
+    return null;
+  }
   
   return (
     <group
@@ -409,10 +416,11 @@ const InvestmentScene: React.FC = () => {
     setMounted(true);
   }, []);
   
-  if (!webGLAvailable || !mounted) {
+  // Don't render anything until the component is mounted and theme is resolved
+  if (!webGLAvailable || !mounted || !resolvedTheme) {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-gray-500">WebGL is not available in your browser.</p>
+        <p className="text-gray-500">Loading...</p>
       </div>
     );
   }
