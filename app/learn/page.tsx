@@ -33,7 +33,7 @@ const USEFUL_LINKS = [
   },
   {
     title: "Axiom",
-    description: "Axiom is a platform that allows you to trade cryptocurrencies.",
+    description: "Axiom is a platform that allows you to trade cryptocurrencies with hyperliquid integration.",
     url: "https://axiom.trade/@jongan69"
   },
   {
@@ -93,13 +93,23 @@ const USEFUL_LINKS = [
   },
   {
     title: "Kraken",
-    description: "Kraken is a platform that allows you to trade cryptocurrencies.",
+    description: "Kraken is a platform that allows you to trade cryptocurrencies andstocks.",
     url: "https://kraken.onelink.me/JDNW/m6z2wu7k"
   },
   {
     title: "Kamino Finance",
-    description: "Kamino Finance is a platform that allows you to multiply your holdings of any token by supplying it to the protocol for lending.",
+    description: "Kamino is a Solana DeFi protocol that unifies Lending, Liquidity, and Leverage into a single, secure DeFi product suite.",
     url: "https://swap.kamino.finance/?ref=lockin"
+  },
+  {
+    title: "Bybit",
+    description: "Bybit is a prominent digital currency exchange that allows users to buy, sell, and trade a variety of cryptocurrencies, including Bitcoin, Ethereum, and other altcoins.",
+    url: "https://www.bybit.com/invite?ref=ZLQOBYV"
+  },
+  {
+    title: "PvP Trade",
+    description: "Long and short tokens together in your Telegram group. Share alpha, copy, and countertrade your friends using Hyperliquid.",
+    url: "https://pvp.trade/join/b2t25s"
   }
 ]
 
@@ -235,6 +245,15 @@ export default async function LearnPage() {
                     rel="noopener noreferrer"
                   >
                     <span className="font-medium">Ourbit - Multi-Chain Trading</span>
+                    <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <Link
+                    href={USEFUL_LINKS.find(link => link.title === "Bybit")?.url || "#"}
+                    className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <span className="font-medium">Bybit - Advanced Crypto Trading</span>
                     <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>
@@ -373,6 +392,15 @@ export default async function LearnPage() {
                       rel="noopener noreferrer"
                     >
                       <span className="font-medium">SolTrendio - Crypto Trends on Apple Watch</span>
+                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    <Link
+                      href={USEFUL_LINKS.find(link => link.title === "PvP Trade")?.url || "#"}
+                      className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className="font-medium">PvP Trade - Social Trading with Hyperliquid</span>
                       <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>
