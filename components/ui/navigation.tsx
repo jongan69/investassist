@@ -76,7 +76,7 @@ export default function Navigation() {
   }, [publicKey]);
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background !bg-white dark:!bg-black z-50">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
         <div className="flex items-center gap-4 md:gap-6">
           <Link href="/" className="flex items-center">
@@ -131,7 +131,7 @@ export default function Navigation() {
         <Collapsible.Root
           open={isMenuOpen}
           onOpenChange={setIsMenuOpen}
-          className="absolute left-0 top-14 w-full bg-white dark:bg-black md:hidden"
+          className="absolute left-0 top-14 w-full bg-white/95 dark:bg-[#121212]/95 backdrop-blur supports-[backdrop-filter]:bg-white/70 dark:supports-[backdrop-filter]:bg-[#121212]/70 md:hidden"
         >
           <Collapsible.Content className="border-b">
             <div className="container py-2">

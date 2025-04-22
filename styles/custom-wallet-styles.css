@@ -28,7 +28,7 @@
 @media (prefers-color-scheme: dark) {
     :root:not(.light) {
         --foreground: #ffffff;
-        --background: #000000;
+        --background: #121212;
         --primary: #7e57c2;
         --primary-foreground: #ffffff;
         --muted: #2d2d2d;
@@ -40,9 +40,12 @@
 
 /* Use the global CSS variables */
 .wallet-adapter-button {
-    background-color: var(--background);
-    border: none;
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--foreground);
+    /* Existing properties */
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -53,7 +56,22 @@
     line-height: 48px;
     padding: 0 24px;
     border-radius: 4px;
+    transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
 }
+
+/* If browser supports backdrop-filter, use it */
+@supports (backdrop-filter: blur(12px)) {
+    .wallet-adapter-button {
+        background-color: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+    }
+
+    .dark .wallet-adapter-button {
+        background-color: rgba(18, 18, 18, 0.7);
+    }
+}
+
 
 .wallet-adapter-button-trigger {
     background-color: var(--background);
