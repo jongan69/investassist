@@ -2,16 +2,22 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import { ViewTransitions } from "next-view-transitions"
+
+// Analytics
+import { PostHogProvider } from "@/components/contexts/PosthogProvider"
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Analytics } from '@vercel/analytics/next';
+
+// UI
 import { ThemeProvider } from "@/components/ui/theme-provider"
 import Navigation from "@/components/ui/navigation"
 import Footer from "@/components/ui/footer"
 import WalletContextProvider from "@/components/contexts/WalletContextProvider"
 import { Toaster } from 'sonner';
 import ProfileForm from '@/components/profile/ProfileForm'
-import { Analytics } from '@vercel/analytics/next';
+
+// Lib
 import { getTokenPrice } from "@/lib/solana/fetchTokenPirce";
-// import Script from "next/script"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -77,6 +83,7 @@ export default function RootLayout({
         <body
           className={`${inter.className} min-h-screen bg-background pb-6 antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black`}
         >
+          <PostHogProvider>
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -93,8 +100,9 @@ export default function RootLayout({
               <ProfileForm />
               <Toaster position="top-right" />
               <Footer />
-            </WalletContextProvider>
-          </ThemeProvider>
+              </WalletContextProvider>
+            </ThemeProvider>
+          </PostHogProvider>
         </body>
       </html>
     </ViewTransitions>
