@@ -3,7 +3,7 @@ import { MARKET_API } from "@/lib/utils/constants";
 export async function GET() {
     try {
         // console.log('API route: Fetching calendar data...');
-        const URL = `${MARKET_API}/calendar/fomc/latest`;
+        const URL = `${MARKET_API}/screener/volume`;
         // console.log('External API URL:', URL);
         
         // Add timeout to the fetch request
@@ -15,7 +15,7 @@ export async function GET() {
         
         // Log the start time
         const startTime = Date.now();
-        console.log('API route: Starting fetch at:', new Date().toISOString());
+        console.log('Finviz Futures API route: Starting fetch at:', new Date().toISOString());
         
         const response = await fetch(URL, { 
             cache: 'no-store',
@@ -28,12 +28,11 @@ export async function GET() {
         
         // Log the end time and duration
         const endTime = Date.now();
-        console.log('FOMC API route: Fetch completed at:', new Date().toISOString());
-        console.log('FOMC API route: Fetch duration:', endTime - startTime, 'ms');
-        
+        console.log('Finviz Futures API route: Fetch completed at:', new Date().toISOString());
+        console.log('Finviz Futures API route: Fetch duration:', endTime - startTime, 'ms');
         clearTimeout(timeoutId);
         
-        console.log('FOMC API route response status:', response.status);
+        console.log('Finviz Futures API route response status:', response.status);
         
         if (!response.ok) {
             const errorText = await response.text().catch(() => 'Could not read error response');
@@ -41,12 +40,20 @@ export async function GET() {
             throw new Error(`External API returned status: ${response.status}, body: ${errorText.substring(0, 100)}...`);
         }
         
-        const fomc = await response.json();
+        const rawData = await response.json();
+        // console.log('External API raw data:', rawData);
         
-        // console.log('fomc data:', fomc);
+        // Transform the data into the expected format
+        const transformedData = {
+            futures: rawData || [],
+            total_futures: rawData ? rawData.length : 0,
+
+        };
+        
+        // console.log('Transformed futures data:', transformedData);
         
         // Return with CORS headers
-        return new Response(JSON.stringify(fomc), {
+        return new Response(JSON.stringify(transformedData), {
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*',
@@ -56,16 +63,18 @@ export async function GET() {
             }
         });
     } catch (error) {
-        console.error('Error fetching fomc minutes data:', error);
+        console.error('Error fetching futures data:', error);
         
         // Return a more detailed error message with CORS headers
         const errorMessage = error instanceof Error 
-            ? `Failed to load fomc minutes data: ${error.message}` 
-            : 'Failed to load fomc minutes data';
+            ? `Failed to load futures data: ${error.message}` 
+            : 'Failed to load futures data';
             
         return new Response(JSON.stringify({ 
             error: errorMessage,
-            fomc: []
+            futures: [],
+            total_futures: 0,
+            dates: []
         }), {
             status: 500,
             headers: {
