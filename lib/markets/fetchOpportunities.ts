@@ -1,9 +1,12 @@
 import { MARKET_API } from "../utils/constants";
 
-export async function fetchFomc() {
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+
+export async function fetchVolume() {
     try {
+        // fetch from calendar API
         const isServer = typeof window === 'undefined';
-        const url = isServer ? `${process.env.NEXT_PUBLIC_BASE_URL}/api/fomc/latest` : `/api/fomc/latest`;
+        const url = isServer ? `${BASE_URL}/api/finviz/highestvolume` : `/api/finviz/highestvolume`;
         
         // Add timeout to the fetch request - increase to 20 seconds
         const controller = new AbortController();
@@ -30,17 +33,19 @@ export async function fetchFomc() {
         
         // Log the start time
         const startTime = Date.now();
-        console.log('Starting fomc fetch request at:', new Date().toISOString());
+        console.log('Starting high volume stocks fetch request at:', new Date().toISOString());
         
         const response = await fetch(url, fetchOptions);
         
         // Log the end time and duration
         const endTime = Date.now();
-        console.log('FOMC API Fetch completed at:', new Date().toISOString());
-        console.log('FOMC API Fetch duration:', endTime - startTime, 'ms');
+        console.log('High volume stocks API route: Fetch completed at:', new Date().toISOString());
+        console.log('High volume stocks API route: Fetch duration:', endTime - startTime, 'ms');
         
         clearTimeout(timeoutId);
-                
+        
+        console.log('High volume stocks API route response status:', response.status);
+        
         if (!response.ok) {
             const errorText = await response.text().catch(() => 'Could not read error response');
             console.error('Error response body:', errorText);
@@ -57,12 +62,12 @@ export async function fetchFomc() {
         // The API already returns data in the correct format
         return data;
     } catch (error) {
-        console.error('Error fetching calendar:', error);
+        console.error('Error fetching high volume stocks:', error);
         
         // Try a fallback to the external API directly if the internal API fails
         try {
             console.log('Attempting fallback to external API...');
-            const externalUrl = `${MARKET_API}/calendar/fomc/latest`;
+            const externalUrl = `${MARKET_API}/screener/volume`;
             // console.log('External API URL:', externalUrl);
             
             const controller = new AbortController();
@@ -99,9 +104,8 @@ export async function fetchFomc() {
             
             // Transform the data into the expected format
             const transformedData = {
-                calendar: rawData.events || [],
-                total_events: rawData.events ? rawData.events.length : 0,
-                dates: rawData.events ? [...new Set(rawData.events.map((event: any) => event.Date))] : []
+                high_volume_stocks: rawData.high_volume_stocks || [],
+                total_high_volume_stocks: rawData.high_volume_stocks ? rawData.high_volume_stocks.length : 0,
             };
             
             console.log('Fallback successful, returning transformed data');
@@ -111,9 +115,8 @@ export async function fetchFomc() {
             
             // Return a default structure with a message about the error
             return {
-                calendar: [],
-                total_events: 0,
-                dates: [],
+                high_volume_stocks: [],
+                total_high_volume_stocks: 0,
                 error: error instanceof Error ? error.message : 'Unknown error occurred'
             };
         }

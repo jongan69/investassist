@@ -74,7 +74,6 @@ export async function GET() {
             error: errorMessage,
             futures: [],
             total_futures: 0,
-            dates: []
         }), {
             status: 500,
             headers: {

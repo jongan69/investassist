@@ -43,6 +43,7 @@ import { EmailSignupPrompt } from "@/components/home/EmailSignupPrompt"
 import { FuturesTable } from "@/components/home/FuturesTable"
 import Calendar from "@/components/home/Calendar"
 import InsiderTrading from "@/components/home/InsiderTrading"
+import HighVolume from "@/components/home/HighVolume"
 
 // Extra components imports
 import { TrendingTopics } from "@/components/crypto/Trends/TrendingTopics"
@@ -154,6 +155,9 @@ export default async function Page({ searchParams }: Props) {
             </Suspense>
             <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
               <TradingReports />
+            </Suspense>
+            <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+              <HighVolume />
             </Suspense>
             <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
               <RealEstateMarketTrends />
