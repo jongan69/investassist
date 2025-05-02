@@ -286,14 +286,16 @@ function AxiomPulseClient() {
     try {
       setLoading(true);
       const data = await fetchPulse();
-      if (data) {
+      if (Array.isArray(data)) {
         setTokens(data);
         setLastUpdated(new Date());
         setError(null);
       } else {
+        setTokens([]);
         setError("Failed to fetch data");
       }
     } catch (err) {
+      setTokens([]);
       setError("An error occurred while fetching data");
       console.error(err);
     } finally {

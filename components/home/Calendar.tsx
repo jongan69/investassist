@@ -157,7 +157,7 @@ export default function Calendar() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                 >
-                    <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+                    <Card className="w-full overflow-hidden border-0 dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300">
                         <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
                             <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
                                 Economic Calendar   
@@ -187,7 +187,7 @@ export default function Calendar() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <Card className="w-full overflow-hidden border-0 shadow-lg dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
+                <Card className="w-full overflow-hidden border-0 dark:bg-black/80 bg-white/80 backdrop-blur-sm transition-all duration-300">
                     <CardHeader className="border-b dark:border-gray-700/50 border-gray-200/50 p-4">
                         <CardTitle className="text-xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black dark:text-white">
                             Economic Calendar

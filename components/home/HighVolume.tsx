@@ -33,11 +33,11 @@ const HighVolume: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-48">
+      <div className="flex items-center justify-center h-48 flex-col gap-4">
         <p className="text-gray-600 dark:text-gray-300 text-lg animate-pulse">
           Loading high volume stocks...
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 dark:border-blue-400"></div>
         </p>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500 dark:border-blue-400"></div>
       </div>
     );
   }
