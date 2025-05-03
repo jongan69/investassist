@@ -7,6 +7,7 @@ import ParallaxHeader from './ParallaxHeader';
 import BackToTopButton from './BackToTopButton';
 import LearnMoreButton from './LearnMoreButton';
 import LoadingSpinner from './LoadingSpinner';
+import JupiterModalClient from '../crypto/JupiterModalClient';
 
 // Default placeholder data to use when API fails
 const defaultTokenInfo = {
@@ -64,6 +65,7 @@ export default function AboutContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [tokenInfo, setTokenInfo] = useState<any>(defaultTokenInfo);
   const [error, setError] = useState<string | null>(null);
+  const [isJupiterOpen, setIsJupiterOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -123,6 +125,12 @@ export default function AboutContent() {
     volume24h: mainPair?.volume?.h24 || 0
   };
 
+  // Utility to detect mobile
+  function isMobile() {
+    if (typeof window === 'undefined') return false;
+    return /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(window.navigator.userAgent);
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Header Section with fixed height */}
@@ -155,17 +163,24 @@ export default function AboutContent() {
                     With InvestAssist, you can track market trends, analyze investment opportunities, and make data-driven decisions
                     to optimize your portfolio performance.
                   </p>
-                  <a 
-                    href={MOONSHOT_LINK}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
-                  >
-                    Invest Now
+                  {isMobile() ? (
+                    <button
+                      onClick={() => {
+                        window.open(MOONSHOT_LINK, '_blank');
+                      }}
+                      className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105"
+                    >
+                      Invest Now
                     <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
-                  </a>
+                  </button>
+                  ) : (
+                    <JupiterModalClient
+                      contractAddress={INVEST_ASSIST_MINT}
+                      buttonText="Invest Now"
+                    />
+                  )}
                 </div>
                 <div className="flex-shrink-0">
                   <div className="w-48 h-48 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-2xl shadow-lg p-6 flex items-center justify-center transform rotate-6 hover:rotate-0 transition-transform duration-300">

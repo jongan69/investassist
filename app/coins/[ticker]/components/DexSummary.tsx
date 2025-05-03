@@ -7,6 +7,7 @@ import { Twitter, Send, Globe, Search } from "lucide-react"
 import { getTokenInfoFromTicker } from "@/lib/solana/fetchTokenInfoFromTicker"
 import AxiomTradeButton from "./AxiomTradeButton"
 import { formatNumber } from "@/lib/utils/utils"
+import JupiterModalClient from '@/components/crypto/JupiterModalClient';
 
 function formatWholeNumber(num: number) {
   if (num >= 1e12) return `${Math.round(num / 1e12)}T`
@@ -227,6 +228,7 @@ export default async function DexSummary({ ticker, ca, hasCa, axiomLink }: { tic
               </div>
             )}
             <AxiomTradeButton axiomLink={axiomLink} />
+            <JupiterModalClient contractAddress={ca} buttonText={`Buy ${datiledOfPair?.ti?.name}`} />
             <SocialLinks dexScreenerData={datiledOfPair} pairDetails={datiledOfPair} hasCmc={hasCmc} />
 
           </div>
