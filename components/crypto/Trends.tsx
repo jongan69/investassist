@@ -19,6 +19,7 @@ import AxiomPulse from './Trends/AxiomPulse';
 import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
 import { fetchLatestTweets } from '@/lib/twitter/fetchLatestTweets';
 import { fetchTweetedCas } from '@/lib/twitter/fetchTweetedCas';
+import D3aiSignals from './d3ai';
 
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
@@ -168,7 +169,7 @@ export default function CryptoTrends({ data }: { data: any }) {
                             <TrendingMetas />
                             {trends?.topTweetedTickers?.length > 0 && <TopTweeted trends={trends} />}
                             <WhaleActivity trends={trends} />
-
+                            <D3aiSignals />
                         </Fragment>
                     ) : (
                         <p className="text-sm text-muted-foreground">
