@@ -110,6 +110,11 @@ const USEFUL_LINKS = [
     title: "PvP Trade",
     description: "Long and short tokens together in your Telegram group. Share alpha, copy, and countertrade your friends using Hyperliquid.",
     url: "https://pvp.trade/join/b2t25s"
+  },
+  {
+    title: "Slingshot",
+    description: "Slingshot is a platform that allows you to trade crypto and meme coins on multiple chains with no bridging required.",
+    url: "https://slingshot.app/signup?code=lockin"
   }
 ]
 
@@ -365,6 +370,15 @@ export default async function LearnPage() {
                       rel="noopener noreferrer"
                     >
                       <span className="font-medium">Bags - Solana Memecoin Trading</span>
+                      <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                    <Link
+                      href={USEFUL_LINKS.find(link => link.title === "Slingshot")?.url || "#"}
+                      className="flex items-center justify-between w-full px-4 py-3 backdrop-blur-md bg-white/40 dark:bg-gray-800/40 rounded-lg border border-white/50 dark:border-gray-700/50 text-blue-700 dark:text-blue-400 hover:bg-white/60 dark:hover:bg-gray-800/60 transition-all duration-300 group"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <span className="font-medium">Slingshot - Trade Crypto & Meme Coins (Multi-Chain, No Bridging)</span>
                       <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </div>
