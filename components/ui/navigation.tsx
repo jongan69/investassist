@@ -9,7 +9,7 @@ import { usePathname } from "next/navigation"
 
 import CommandMenu from "./command-menu"
 import dynamic from 'next/dynamic'
-import { useTheme } from 'next-themes'
+// import { useTheme } from 'next-themes'
 import { useState, useEffect } from 'react'
 import * as Collapsible from '@radix-ui/react-collapsible'
 import '../../styles/navbar-styles.css'
@@ -32,9 +32,9 @@ const NAVIGATION = [
 
 export default function Navigation() {
   const pathname = usePathname()
-  const { resolvedTheme } = useTheme()
+  // const { resolvedTheme } = useTheme()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const { publicKey } = useWallet();
+  const { publicKey, connected } = useWallet();
   const [username, setUsername] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -108,7 +108,7 @@ export default function Navigation() {
           <div className="hidden sm:block">
             <WalletMultiButton className="wallet-adapter-button" />
           </div>
-          {publicKey && (
+          {connected && publicKey && (
             <Link href={`/users/${publicKey.toString()}`} className="hidden sm:block">
               <Button variant="outline" size="sm">
                 Profile
