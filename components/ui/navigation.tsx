@@ -88,9 +88,8 @@ export default function Navigation() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`transition-colors hover:text-foreground/80 ${
-                  pathname === item.href ? "text-foreground" : "text-foreground/60"
-                }`}
+                className={`transition-colors hover:text-foreground/80 ${pathname === item.href ? "text-foreground" : "text-foreground/60"
+                  }`}
               >
                 {item.title}
               </Link>
@@ -101,13 +100,13 @@ export default function Navigation() {
         <div className="flex-1" />
 
         <div className="flex items-center gap-2 md:gap-4">
+          
           <div className="hidden md:block">
             <CommandMenu />
           </div>
+
           <ThemeToggle />
-          <div className="hidden sm:block">
-            <WalletMultiButton className="wallet-adapter-button" />
-          </div>
+
           {connected && publicKey && (
             <Link href={`/users/${publicKey.toString()}`} className="hidden sm:block">
               <Button variant="outline" size="sm">
@@ -115,7 +114,12 @@ export default function Navigation() {
               </Button>
             </Link>
           )}
-          
+
+          <div className="hidden sm:block">
+            <WalletMultiButton className="wallet-adapter-button" />
+          </div>
+
+
           <button
             className="inline-flex items-center justify-center rounded-md p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -148,11 +152,10 @@ export default function Navigation() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`block py-2 px-4 text-sm rounded-md ${
-                      pathname === item.href 
-                        ? "bg-accent text-accent-foreground" 
+                    className={`block py-2 px-4 text-sm rounded-md ${pathname === item.href
+                        ? "bg-accent text-accent-foreground"
                         : "text-foreground/60 hover:bg-accent/50"
-                    }`}
+                      }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {item.title}
