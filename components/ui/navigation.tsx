@@ -1,10 +1,10 @@
 "use client"
 import { ThemeToggle } from "./theme-toggle"
-import {
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu"
+// import {
+//   navigationMenuTriggerStyle,
+// } from "@/components/ui/navigation-menu"
 import Link from "next/link"
-import GoBack from "./go-back"
+// import GoBack from "./go-back"
 import { usePathname } from "next/navigation"
 
 import CommandMenu from "./command-menu"
@@ -15,6 +15,7 @@ import * as Collapsible from '@radix-ui/react-collapsible'
 import '../../styles/navbar-styles.css'
 import { useWallet } from "@solana/wallet-adapter-react"
 import { getProfileByWalletAddress } from "@/lib/users/getProfileByWallet"
+import { Button } from "@/components/ui/button"
 
 // Dynamically import WalletMultiButton with no SSR
 const WalletMultiButton = dynamic(
@@ -107,6 +108,13 @@ export default function Navigation() {
           <div className="hidden sm:block">
             <WalletMultiButton className="wallet-adapter-button" />
           </div>
+          {publicKey && (
+            <Link href={`/users/${publicKey.toString()}`} className="hidden sm:block">
+              <Button variant="outline" size="sm">
+                Profile
+              </Button>
+            </Link>
+          )}
           
           <button
             className="inline-flex items-center justify-center rounded-md p-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring md:hidden"
@@ -156,6 +164,15 @@ export default function Navigation() {
                 <div className="px-4 py-2 sm:hidden">
                   <WalletMultiButton className="wallet-adapter-button w-full" />
                 </div>
+                {publicKey && (
+                  <div className="px-4 py-2 sm:hidden">
+                    <Link href={`/users/${publicKey.toString()}`}>
+                      <Button variant="outline" size="sm" className="w-full">
+                        Profile
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </Collapsible.Content>
