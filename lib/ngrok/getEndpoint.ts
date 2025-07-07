@@ -22,6 +22,7 @@ const validateEndpoint = async (url: string): Promise<boolean> => {
         if (!response.ok) return false;
 
         const health: HealthCheckResponse = await response.json();
+        console.log("[validateEndpoint] Health:", health);
         return health.status === 'healthy';
     } catch (error) {
         console.warn('Health check failed:', error);
@@ -71,7 +72,7 @@ export const getEndpoint = async () => {
     try {
         const data = await fetchWithRetry();
         const url = data.tunnels[0].public_url;
-        
+        console.log("[getEndpoint] Endpoint:", url);
         // Validate new endpoint before caching
         const isValid = await validateEndpoint(url);
         if (!isValid) {

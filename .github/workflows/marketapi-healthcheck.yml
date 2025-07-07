@@ -1,0 +1,14 @@
+name: MarketAPI Healthcheck
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  healthcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check MarketAPI Health Endpoint
+        run: |
+          curl -f https://marketapi-mu83.onrender.com/health 

@@ -153,9 +153,9 @@ export default async function Page({ searchParams }: Props) {
             <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
               <Calendar />
             </Suspense>
-            <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
+            {/* <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
               <TradingReports />
-            </Suspense>
+            </Suspense> */}
             <Suspense fallback={<div className="animate-pulse h-64 bg-muted rounded-lg" />}>
               <HighVolume />
             </Suspense>
@@ -211,9 +211,9 @@ export default async function Page({ searchParams }: Props) {
           <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded-lg" />}>
             <CryptoTrends data={resultsWithTitles} />
           </Suspense>
-          <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded-lg" />}>
+          {/* <Suspense fallback={<div className="animate-pulse h-96 bg-muted rounded-lg" />}>
             <BoxOffice />
-          </Suspense>
+          </Suspense> */}
           <Card className="rounded-md border-none transition-all duration-300 hover:shadow-lg hover:shadow-primary/5">
             <Suspense fallback={<div className="animate-pulse h-48 bg-muted rounded-lg" />}>
               <CardHeader>
