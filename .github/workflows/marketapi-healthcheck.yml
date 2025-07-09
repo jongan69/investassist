@@ -9,6 +9,24 @@ jobs:
   healthcheck:
     runs-on: ubuntu-latest
     steps:
-      - name: Check MarketAPI Health Endpoint
+      - name: Wake up MarketAPI
         run: |
-          curl -f https://marketapi-mu83.onrender.com/health 
+          echo "Pinging MarketAPI..."
+          for i in {1..5}; do
+            response=$(curl -s -o /dev/null -w "%{http_code}" --max-time 10 \
+              -H "User-Agent: Mozilla/5.0 (Healthcheck)" \
+              https://marketapi-mu83.onrender.com/health)
+
+            echo "Attempt $i: HTTP $response"
+
+            if [ "$response" -ge 200 ] && [ "$response" -lt 400 ]; then
+              echo "Healthcheck successful."
+              exit 0
+            fi
+
+            echo "Retrying in 5 seconds..."
+            sleep 5
+          done
+
+          echo "All healthcheck attempts failed."
+          exit 1
