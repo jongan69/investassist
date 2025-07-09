@@ -1,5 +1,7 @@
 ## InvestAssist: Stocks and Crypto tracking app
 
+[![MarketAPI Healthcheck](https://github.com/jongan69/investassist/actions/workflows/marketapi-healthcheck.yml/badge.svg)](https://github.com/jongan69/investassist/actions/workflows/marketapi-healthcheck.yml)
+
 ![InvestAssist](./public/demo.png)
 
 ## Key Features
