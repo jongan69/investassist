@@ -69,7 +69,7 @@ export default function JupiterTerminalPopup({ contractAddress, isOpen, setIsOpe
                 },
             });
         }
-    }, [isOpen, isJupiterReady, initialInputMint, initialOutputMint, PLATFORM_FEE_AND_ACCOUNTS]);
+    }, [isOpen, isJupiterReady, initialInputMint, initialOutputMint, PLATFORM_FEE_AND_ACCOUNTS, JUPITER_ENDPOINT]);
 
     // Cleanup Jupiter terminal on modal close
     useEffect(() => {
