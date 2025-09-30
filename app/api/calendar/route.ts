@@ -48,7 +48,7 @@ export async function GET() {
         const transformedData = {
             calendar: rawData.events || [],
             total_events: rawData.events ? rawData.events.length : 0,
-            dates: rawData.events ? [...new Set(rawData.events.map((event: any) => event.Date))] : []
+            dates: rawData.events ? [...new Set(rawData.events?.map((event: any) => event.Date))] : []
         };
         
         // console.log('Transformed calendar data:', transformedData);

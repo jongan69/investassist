@@ -37,7 +37,7 @@ export async function GET(request: Request) {
         const rawData = await response.json();
         
         // Transform the data into the expected format
-        const transformedData = rawData.map((item: any) => ({
+        const transformedData = rawData?.map((item: any) => ({
             Ticker: item.Ticker || '',
             Owner: item.Owner || '',
             Relationship: item.Relationship || '',

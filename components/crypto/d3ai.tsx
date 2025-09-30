@@ -60,7 +60,7 @@ export default function D3aiSignals() {
               </tr>
             </thead>
             <tbody>
-              {data.buys.map((signal, idx) => (
+              {data.buys?.map((signal, idx) => (
                 <tr key={signal.txHash + idx} className="even:bg-muted/40 hover:bg-accent/40 transition-colors">
                   <td className="px-3 py-2 font-mono font-medium">
                     <button
@@ -94,7 +94,7 @@ export default function D3aiSignals() {
               </tr>
             </thead>
             <tbody>
-              {data.sells.map((signal, idx) => (
+              {data.sells?.map((signal, idx) => (
                 <tr key={signal.txHash + idx} className="even:bg-muted/40 hover:bg-accent/40 transition-colors">
                   <td className="px-3 py-2 font-mono font-medium">
                     <button

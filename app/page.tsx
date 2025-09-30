@@ -38,7 +38,6 @@ import {
   NewsSectionWrapper, 
   SectorPerformanceWrapper 
 } from "@/components/home/WrapperComponents"
-import TradingReports from "@/components/home/TradingReports"
 import { EmailSignupPrompt } from "@/components/home/EmailSignupPrompt"
 import { FuturesTable } from "@/components/home/FuturesTable"
 import Calendar from "@/components/home/Calendar"
@@ -50,8 +49,6 @@ import { TrendingTopics } from "@/components/crypto/Trends/TrendingTopics"
 import { CarPriceIndex } from "@/components/automotive/CarPriceIndex"
 import RealEstateMarketTrends from "@/components/realestate/RealEstateMarketTrends"
 import TrumpPosts from "@/components/truthsocial/TrumpPosts"
-import BoxOffice from "@/components/crypto/BoxOffice"
-
 
 
 // Add route segment config

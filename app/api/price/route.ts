@@ -10,7 +10,7 @@ export async function POST(
         const { outputMint } = await request.json();
         console.log(`Fetching price for token: ${outputMint}`);
         
-        const url = `https://api.jup.ag/price/v2?ids=${outputMint}&showExtraInfo=true`;
+        const url = `https://lite-api.jup.ag/price/v3?ids=${outputMint}&showExtraInfo=true`;
         // console.log(`Fetching price from: ${url}`);
         const response = await fetch(url, { 
             cache: 'no-store',
