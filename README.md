@@ -42,12 +42,6 @@ If you have bug reports, feature suggestions, or want to get involved in develop
 First, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
 bun dev
 ```
 

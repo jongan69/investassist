@@ -12,14 +12,13 @@ import { LatestTweets } from './Trends/LatestTweets';
 import { Overview } from './Trends/Overview';
 import { TopTweeted } from './Trends/TopTweeted';
 import { TrendingMetas } from './Trends/TrendingMetas';
-import { LaunchLab } from './LaunchLab';
+// import { LaunchLab } from './LaunchLab';
 import TrendingVideos from '../tiktok/TrendingVideos';
-import AxiomPulse from './Trends/AxiomPulse';
+// import AxiomPulse from './Trends/AxiomPulse';
 
 import { fetchCryptoTrends } from '@/lib/solana/fetchTrends';
 import { fetchLatestTweets } from '@/lib/twitter/fetchLatestTweets';
 import { fetchTweetedCas } from '@/lib/twitter/fetchTweetedCas';
-import D3aiSignals from './d3ai';
 
 export default function CryptoTrends({ data }: { data: any }) {
     const { resolvedTheme } = useTheme();
@@ -135,8 +134,6 @@ export default function CryptoTrends({ data }: { data: any }) {
 
     return (
         <div className="space-y-8">
-            <LaunchLab />
-            <AxiomPulse />
 
             <Card className="max-w-full mx-auto">
                 <CardHeader>
@@ -169,7 +166,6 @@ export default function CryptoTrends({ data }: { data: any }) {
                             <TrendingMetas />
                             {trends?.topTweetedTickers?.length > 0 && <TopTweeted trends={trends} />}
                             <WhaleActivity trends={trends} />
-                            <D3aiSignals />
                         </Fragment>
                     ) : (
                         <p className="text-sm text-muted-foreground">

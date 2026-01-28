@@ -5,6 +5,7 @@ import { DEFAULT_SCREENER } from "@/lib/yahoo-finance/constants"
 import { fetchScreenerStocks } from "@/lib/yahoo-finance/fetchScreenerStocks"
 import { fetchCustomScreenerStocks } from "@/lib/yahoo-finance/fetchCustomScreenerStocks"
 import { CustomScreenerType } from "@/lib/yahoo-finance/customScreeners"
+import StonksjsScreenerWidget from "@/components/stonksjs/StonksjsScreenerWidget"
 
 export const metadata: Metadata = {
   title: "InvestAssist: Investment Assistant",
@@ -69,8 +70,15 @@ export default async function ScreenerPage({
   }
 
   return (
-    <div>
-      <DataTable columns={columns} data={screenerDataResults.quotes as any} />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <DataTable columns={columns} data={screenerDataResults.quotes as any} />
+        </div>
+        <div className="lg:col-span-1">
+          <StonksjsScreenerWidget />
+        </div>
+      </div>
     </div>
   )
 }

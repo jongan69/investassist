@@ -27,11 +27,20 @@ const inter = Inter({
 })
 
 export async function generateMetadata(): Promise<Metadata> {
-  const priceData = await getTokenPrice();
-  return {
-    title: `InvestAssist - $IA: ${priceData.price}`,
-    description:
-      "InvestAssist is a source of free stock and crypto quotes, business and finance news, portfolio management tools, and global market data.",
+  try {
+    const priceData = await getTokenPrice();
+    return {
+      title: `InvestAssist - $IA: ${priceData.price}`,
+      description:
+        "InvestAssist is a source of free stock and crypto quotes, business and finance news, portfolio management tools, and global market data.",
+    }
+  } catch (error) {
+    // Fallback metadata if price fetch fails during build
+    return {
+      title: `InvestAssist - Investment Tools & Market Data`,
+      description:
+        "InvestAssist is a source of free stock and crypto quotes, business and finance news, portfolio management tools, and global market data.",
+    }
   }
 }
 

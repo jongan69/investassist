@@ -19,31 +19,40 @@ export default function SectorPerformance() {
       try {
         const response = await fetchSectorPerformance()
         
-        if ('error' in response) {
-          console.error('Sector performance API error:', response.error)
-          setError(response.error)
+        // Check if response has error property
+        if (response && typeof response === 'object' && 'error' in response) {
+          const errorMessage = (response as { error: string }).error
+          console.error('Sector performance API error:', errorMessage)
+          setError(errorMessage || 'Failed to fetch sector performance data')
+          setLoading(false)
           return
         }
 
+        // Validate response is an array
         if (!Array.isArray(response)) {
-          console.error('Invalid response format from sector performance API')
+          console.error('Invalid response format from sector performance API:', response)
           setError('Sector performance data unavailable')
+          setLoading(false)
           return
         }
 
         const sectorData = response as Sector[]
         if (!sectorData || sectorData.length === 0) {
-          setError('No sector performance data available')
+          setError('Sector performance data is currently unavailable. The data provider has deprecated this endpoint.')
+          setLoading(false)
           return
         }
 
+        // Calculate average change percentage
         const totalChangePercentage = sectorData.reduce((total, sector) => {
-          const percentage = parseFloat(sector.changesPercentage)
+          const percentage = parseFloat(sector.changesPercentage?.replace('%', '') || '0')
           return isNaN(percentage) ? total : total + percentage
         }, 0)
 
         const averageChangePercentage =
-          (totalChangePercentage / sectorData.length).toFixed(2) + "%"
+          sectorData.length > 0 
+            ? (totalChangePercentage / sectorData.length).toFixed(2) + "%"
+            : "0.00%"
 
         const allSectors = {
           sector: "All sectors",
@@ -54,7 +63,7 @@ export default function SectorPerformance() {
         setData(sectorData)
       } catch (error) {
         console.error('Error in SectorPerformance component:', error)
-        setError('Unable to load sector performance data')
+        setError(error instanceof Error ? error.message : 'Unable to load sector performance data')
       } finally {
         setLoading(false)
       }

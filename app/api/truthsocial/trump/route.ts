@@ -17,6 +17,7 @@ export async function GET() {
       const endpoint = await getEndpoint();
       
       if (endpoint) {
+        console.log('Fallback endpoint:', endpoint);
         const fallbackUrl = `${endpoint}/api/truthsocial/trumpTruthSocial`;
         const fallbackResponse = await fetch(fallbackUrl);
         
