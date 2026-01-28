@@ -15,7 +15,7 @@ import { ParentSize } from "@visx/responsive"
 import { Button } from "@/components/ui/button"
 
 import { DEFAULT_RANGE } from "@/lib/yahoo-finance/constants"
-import { Range } from "@/lib/yahoo-finance/types"
+import { Range } from "@/types/yahoo-finance"
 
 // UTILS
 const toDate = (d: any) => +new Date(d?.date || d)
