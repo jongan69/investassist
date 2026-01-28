@@ -84,10 +84,14 @@ export default async function Page({ searchParams }: Props) {
     fetchStockNews()
   ])
 
-  const resultsWithTitles = marketData?.map((result, index) => ({
-    ...result,
-    shortName: tickers[index].shortName,
-  }))
+  // Match results with tickers by symbol to handle failed API calls correctly
+  const resultsWithTitles = marketData?.map((result) => {
+    const tickerInfo = tickers.find(t => t.symbol === result.symbol)
+    return {
+      ...result,
+      shortName: tickerInfo?.shortName || result.shortName || result.symbol,
+    }
+  }) || []
 
   const marketSentiment = getMarketSentiment(
     resultsWithTitles[0]?.regularMarketChangePercent

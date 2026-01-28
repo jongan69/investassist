@@ -33,7 +33,10 @@ export const columns: ColumnDef<Quote>[] = [
     header: () => <div className="text-right">Price</div>,
     cell: (props) => {
       const { row } = props
-      const price = row.getValue("regularMarketPrice") as number
+      const price = row.getValue("regularMarketPrice") as number | undefined
+      if (price === undefined || price === null || isNaN(price)) {
+        return <div className="text-right">N/A</div>
+      }
       return <div className="text-right">{price.toFixed(2)}</div>
     },
   },
@@ -42,7 +45,10 @@ export const columns: ColumnDef<Quote>[] = [
     header: () => <div className="text-right">$ Change</div>,
     cell: (props) => {
       const { row } = props
-      const change = row.getValue("regularMarketChange") as number
+      const change = row.getValue("regularMarketChange") as number | undefined
+      if (change === undefined || change === null || isNaN(change)) {
+        return <div className="text-right">N/A</div>
+      }
       return (
         <div
           className={cn(
@@ -61,7 +67,16 @@ export const columns: ColumnDef<Quote>[] = [
     header: () => <div className="text-right">% Change</div>,
     cell: (props) => {
       const { row } = props
-      const changePercent = row.getValue("regularMarketChangePercent") as number
+      const changePercent = row.getValue("regularMarketChangePercent") as number | undefined
+      if (changePercent === undefined || changePercent === null || isNaN(changePercent)) {
+        return (
+          <div className="flex justify-end">
+            <div className="w-[4rem] min-w-fit rounded-md px-2 py-0.5 text-right text-muted-foreground">
+              N/A
+            </div>
+          </div>
+        )
+      }
       return (
         <div className="flex justify-end">
           <div
