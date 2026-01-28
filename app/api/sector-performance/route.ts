@@ -13,18 +13,42 @@ interface SectorPerformance {
 }
 
 /**
+ * Validates that a snapshot object has all required properties with correct types
+ */
+function isValidSectorSnapshot(snapshot: any): snapshot is SectorSnapshot {
+    return (
+        snapshot &&
+        typeof snapshot === 'object' &&
+        typeof snapshot.sector === 'string' &&
+        snapshot.sector.trim() !== '' &&
+        typeof snapshot.averageChange === 'number' &&
+        !isNaN(snapshot.averageChange) &&
+        isFinite(snapshot.averageChange)
+    )
+}
+
+/**
  * Aggregates sector performance data across exchanges
  * Converts decimal values to percentage strings
+ * Validates input data to prevent NaN values in output
  */
-function transformSectorData(snapshots: SectorSnapshot[]): SectorPerformance[] {
+function transformSectorData(snapshots: any[]): SectorPerformance[] {
     if (!Array.isArray(snapshots) || snapshots.length === 0) {
+        return []
+    }
+
+    // Validate and filter out invalid snapshots
+    const validSnapshots = snapshots.filter(isValidSectorSnapshot)
+    
+    if (validSnapshots.length === 0) {
+        console.warn("No valid sector snapshots found after validation")
         return []
     }
 
     // Group by sector and aggregate across exchanges
     const sectorMap = new Map<string, number[]>()
     
-    for (const snapshot of snapshots) {
+    for (const snapshot of validSnapshots) {
         if (!sectorMap.has(snapshot.sector)) {
             sectorMap.set(snapshot.sector, [])
         }
@@ -35,7 +59,28 @@ function transformSectorData(snapshots: SectorSnapshot[]): SectorPerformance[] {
     const result: SectorPerformance[] = []
     
     for (const [sector, changes] of Array.from(sectorMap.entries())) {
-        const averageChange = changes.reduce((sum, val) => sum + val, 0) / changes.length
+        // Additional validation: ensure changes array is not empty and contains only numbers
+        if (changes.length === 0) {
+            console.warn(`Sector ${sector} has no valid changes`)
+            continue
+        }
+        
+        // Filter out any invalid numbers (shouldn't happen after validation, but double-check)
+        const validChanges = changes.filter((val) => typeof val === 'number' && !isNaN(val) && isFinite(val))
+        
+        if (validChanges.length === 0) {
+            console.warn(`Sector ${sector} has no valid numeric changes`)
+            continue
+        }
+        
+        const averageChange = validChanges.reduce((sum, val) => sum + val, 0) / validChanges.length
+        
+        // Final validation: ensure averageChange is a valid number before formatting
+        if (isNaN(averageChange) || !isFinite(averageChange)) {
+            console.error(`Invalid averageChange calculated for sector ${sector}: ${averageChange}`)
+            continue
+        }
+        
         const percentage = (averageChange * 100).toFixed(2) + "%"
         
         result.push({
@@ -99,6 +144,7 @@ export async function GET() {
                 // Check if API returned an error message in JSON format
                 if (errorData && typeof errorData === 'object' && 'Error Message' in errorData) {
                     const errorMsg = errorData['Error Message']
+                    // Type check: ensure errorMsg is a string before calling string methods
                     const errorMessage = typeof errorMsg === 'string' ? errorMsg : String(errorMsg)
                     
                     console.error("FMP API error:", errorMessage)
@@ -139,6 +185,7 @@ export async function GET() {
                 // Check if API returned an error message (some errors might return 200 with error object)
                 if (data && typeof data === 'object' && 'Error Message' in data) {
                     const errorMsg = data['Error Message']
+                    // Type check: ensure errorMsg is a string before calling string methods
                     const errorMessage = typeof errorMsg === 'string' ? errorMsg : String(errorMsg)
                     
                     console.error("FMP API error:", errorMessage)
@@ -159,11 +206,11 @@ export async function GET() {
                 )
             }
 
-            // Transform the new format to expected format
-            const transformedData = transformSectorData(data as SectorSnapshot[])
+            // Transform the new format to expected format with validation
+            const transformedData = transformSectorData(data)
             
             if (transformedData.length === 0) {
-                console.warn("FMP API returned empty array or no valid sector data")
+                console.warn("FMP API returned empty array or no valid sector data after transformation")
                 return NextResponse.json([], {
                     headers: {
                         'Cache-Control': 'public, max-age=300, stale-while-revalidate=60',
