@@ -1,10 +1,6 @@
 import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 interface InvestmentPlanResponse {
   marketAnalysis: {
     overview?: string;
@@ -29,6 +25,8 @@ const MODEL = process.env.OPENAI_MODEL || "gpt-4o"; // Add fallback model
 export async function POST(req: Request) {
   const maxRetries = 2;
   const retryDelay = 1000;
+  const openAiApiKey = process.env.OPENAI_API_KEY;
+  const openai = openAiApiKey ? new OpenAI({ apiKey: openAiApiKey }) : null;
   let responseGenerated = false;
   let userPortfolio: any;
   let memecoinPercentage = 0;
@@ -99,7 +97,7 @@ export async function POST(req: Request) {
     // console.log('Generated prompt for OpenAI:', prompt); // Debug log
     let attempt = 0;
 
-    while (attempt < maxRetries && !responseGenerated) {
+    while (attempt < maxRetries && !responseGenerated && openai) {
       try {
         // console.log(`Attempt ${attempt + 1} to generate response`); // Debug log
         const completion = await openai.chat.completions.create({
@@ -173,6 +171,10 @@ export async function POST(req: Request) {
     }
 
     if (!responseGenerated) {
+      if (!openai) {
+        console.warn('OPENAI_API_KEY is missing; using fallback investment allocation response');
+      }
+
       // console.log('Generating fallback response'); // Debug log
       // Update the fallback response to include memecoins if present
       const fallbackResponse: InvestmentPlanResponse = {

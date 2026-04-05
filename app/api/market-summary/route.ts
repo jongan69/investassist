@@ -2,15 +2,6 @@ import { OpenAI } from 'openai';
 import { NextResponse } from 'next/server';
 import { AI_API } from '@/lib/utils/constants';
 
-let deepseekOpenAI = new OpenAI({
-  baseURL: 'https://api.deepseek.com',
-  apiKey: process.env.DEEPSEEK_API_KEY,
-});
-
-let chatgptOpenAI = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 // Helper function to format economic events
 function formatEconomicEvents(calendar: any[]) {
   if (!calendar || calendar.length === 0) return "No economic events data available";
@@ -95,6 +86,12 @@ async function callFallbackAPI(prompt: string) {
 export async function POST(req: Request) {
   const maxRetries = 2; // Maximum number of retry attempts
   const retryDelay = 1000; // Delay between retries in milliseconds
+  const deepseekApiKey = process.env.DEEPSEEK_API_KEY;
+  const openAiApiKey = process.env.OPENAI_API_KEY;
+  const deepseekOpenAI = deepseekApiKey
+    ? new OpenAI({ baseURL: 'https://api.deepseek.com', apiKey: deepseekApiKey })
+    : null;
+  const chatgptOpenAI = openAiApiKey ? new OpenAI({ apiKey: openAiApiKey }) : null;
 
   try {
     const { fearGreedValue, sectorPerformance, economicEvents, fomc, cryptoTrends } = await req.json();
@@ -184,24 +181,42 @@ export async function POST(req: Request) {
     let responseGenerated = false;
     let lastError: Error | null = null;
 
+    if (!deepseekOpenAI && !chatgptOpenAI) {
+      console.warn('DEEPSEEK_API_KEY and OPENAI_API_KEY are missing; using fallback market summary API');
+    }
+
     while (attempt < maxRetries && !responseGenerated) {
       try {
-        // Use Promise.race to get the first successful response from primary APIs
-        const completion = await Promise.race([
-          deepseekOpenAI.chat.completions.create({
-            messages: [{ role: "user", content: prompt }],
-            model: "deepseek-reasoner",
-            temperature: 0.7,
-            max_tokens: 300,
-          }).then(result => ({ model: "DeepSeek Reasoner", result })),
+        const providers: Array<Promise<{ model: string; result: any }>> = [];
 
-          chatgptOpenAI.chat.completions.create({
-            messages: [{ role: "user", content: prompt }],
-            model: "gpt-4o-mini", // or another available ChatGPT model
-            temperature: 0.7,
-            max_tokens: 300,
-          }).then(result => ({ model: "GPT-4o-mini", result }))
-        ]);
+        if (deepseekOpenAI) {
+          providers.push(
+            deepseekOpenAI.chat.completions.create({
+              messages: [{ role: "user", content: prompt }],
+              model: "deepseek-reasoner",
+              temperature: 0.7,
+              max_tokens: 300,
+            }).then(result => ({ model: "DeepSeek Reasoner", result }))
+          );
+        }
+
+        if (chatgptOpenAI) {
+          providers.push(
+            chatgptOpenAI.chat.completions.create({
+              messages: [{ role: "user", content: prompt }],
+              model: "gpt-4o-mini", // or another available ChatGPT model
+              temperature: 0.7,
+              max_tokens: 300,
+            }).then(result => ({ model: "GPT-4o-mini", result }))
+          );
+        }
+
+        if (providers.length === 0) {
+          break;
+        }
+
+        // Use Promise.race to get the first successful response from primary APIs
+        const completion = await Promise.race(providers);
 
         if (completion.result.choices[0].message.content) {
           responseGenerated = true;

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import clientPromise from "@/lib/mongo/connect"
+import { getMongoClient } from "@/lib/mongo/connect"
 import trackedAccounts from "@/data/trackedAccounts.json"
 import { PublicKey } from "@solana/web3.js"
 
@@ -27,7 +27,7 @@ export async function GET(req: Request) {
 
         const searchQuery = isWalletAddress ? query : query.toLowerCase();
 
-        const client = await clientPromise;
+        const client = await getMongoClient();
         const db = client.db("investassist");
         const collection = db.collection("profiles");
 

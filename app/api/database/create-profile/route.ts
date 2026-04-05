@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
-import clientPromise from "@/lib/mongo/connect"
+import { getMongoClient } from "@/lib/mongo/connect"
 
 export async function POST(req: Request) {
     try {
         const { username, walletAddress, holdings, totalValue } = await req.json();
 
-        const client = await clientPromise; 
+        const client = await getMongoClient(); 
 
         const db = client.db("investassist");
         const collection = db.collection("profiles");

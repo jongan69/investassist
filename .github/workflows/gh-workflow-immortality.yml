@@ -6,11 +6,26 @@ on:
     - cron: '20 0 1 * *'
   workflow_dispatch: {}
 
+permissions:
+  contents: read
+
+concurrency:
+  group: gh-workflow-immortality
+  cancel-in-progress: false
+
 jobs:
   keepalive:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
+      - name: Validate keepalive secret
+        if: ${{ secrets.PERSONAL_ACCESS_TOKEN == '' }}
+        run: |
+          echo "PERSONAL_ACCESS_TOKEN secret is missing; skipping keepalive run."
+          exit 0
+
       - name: Keep cronjob based triggers of GitHub workflows alive
+        if: ${{ secrets.PERSONAL_ACCESS_TOKEN != '' }}
         uses: PhrozenByte/gh-workflow-immortality@v1
         with:
           secret: ${{ secrets.PERSONAL_ACCESS_TOKEN }}

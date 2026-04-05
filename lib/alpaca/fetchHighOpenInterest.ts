@@ -1,17 +1,27 @@
 import { OptionPrices, OptionContract } from '@/types/alpaca';
 import { DateTime } from 'luxon';
 
-const ALPACA_API_KEY = process.env.ALPACA_API_LIVE_KEY;
-const ALPACA_API_SECRET = process.env.ALPACA_API_SECRET;
+const getAlpacaCredentials = () => {
+    const apiKey = process.env.ALPACA_API_LIVE_KEY;
+    const apiSecret = process.env.ALPACA_API_SECRET;
 
-if (!ALPACA_API_KEY || !ALPACA_API_SECRET) {
-    throw new Error('Alpaca API credentials are not configured');
-}
+    if (!apiKey || !apiSecret) {
+        return null;
+    }
+
+    return { apiKey, apiSecret };
+};
 
 // Helper function to fetch current option prices
 export const getOptionPrices = async (contract: { symbol: string }): Promise<OptionPrices | null> => {
     const normalizedSymbol = contract.symbol === 'FB' ? 'META' : contract.symbol;
     try {
+        const credentials = getAlpacaCredentials();
+        if (!credentials) {
+            console.warn('Alpaca credentials missing; skipping option price fetch');
+            return null;
+        }
+
         const url = `https://api.alpaca.markets/v2/options/contracts/${normalizedSymbol}`;
         
         // console.info(`Fetching current prices for option ${contract.symbol}`);
@@ -19,8 +29,8 @@ export const getOptionPrices = async (contract: { symbol: string }): Promise<Opt
         const response = await fetch(url, {
             method: 'GET',
             headers: {
-                'Apca-Api-Key-Id': ALPACA_API_KEY,
-                'Apca-Api-Secret-Key': ALPACA_API_SECRET,
+                'Apca-Api-Key-Id': credentials.apiKey,
+                'Apca-Api-Secret-Key': credentials.apiSecret,
             },
         });
 
@@ -74,6 +84,17 @@ export const getOptionPrices = async (contract: { symbol: string }): Promise<Opt
 // Fetch high open-interest contracts
 export const getHighOpenInterestContracts = async (ticker: String, optionType = 'call') => {
     try {
+        const credentials = getAlpacaCredentials();
+        if (!credentials) {
+            const message = 'Alpaca API credentials are not configured';
+            console.warn(`${message}; skipping high open-interest contracts fetch`);
+            return {
+                shortTerm: null,
+                leap: null,
+                error: message
+            };
+        }
+
         // Convert FB to META if needed
         const normalizedTicker = ticker === 'FB' ? 'META' : ticker;
 
@@ -102,8 +123,8 @@ export const getHighOpenInterestContracts = async (ticker: String, optionType = 
                 const response = await fetch(url, {
                     method: 'GET',
                     headers: {
-                        'Apca-Api-Key-Id': ALPACA_API_KEY,
-                        'Apca-Api-Secret-Key': ALPACA_API_SECRET,
+                        'Apca-Api-Key-Id': credentials.apiKey,
+                        'Apca-Api-Secret-Key': credentials.apiSecret,
                     },
                 });
 
